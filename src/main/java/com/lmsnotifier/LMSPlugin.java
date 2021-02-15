@@ -16,6 +16,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
@@ -25,6 +26,8 @@ import net.runelite.client.plugins.PluginDescriptor;
 )
 public class LMSPlugin extends Plugin
 {
+	static final String CONFIG_GROUP_KEY = "lmsconfig";
+
 	private static final WorldArea lmsCompetitiveLobby = new WorldArea(3138, 3639, 8, 7, 0);
 	private static final WorldArea lmsCasualLobby = new WorldArea(3139, 3639, 6, 6, 1);
 	private static final WorldArea lmsHighStakesLobby = new WorldArea(3138, 3639, 8, 7, 2);
@@ -114,6 +117,14 @@ public class LMSPlugin extends Plugin
 		}
 		else if (!client.getHintArrowPoint().equals(originalHintPoint))
 		{
+			restoreOriginalHint();
+		}
+	}
+
+	private void restoreOriginalHint()
+	{
+		if (originalHintPoint != null && client.hasHintArrow())
+		{
 			client.clearHintArrow();
 			client.setHintArrow(originalHintPoint);
 		}
@@ -144,5 +155,18 @@ public class LMSPlugin extends Plugin
 	LMSConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(LMSConfig.class);
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if (!event.getGroup().equals(CONFIG_GROUP_KEY))
+		{
+			return;
+		}
+		if (event.getKey().equals(LMSConfig.POINT_SAFE_KEY) && Boolean.FALSE.toString().equals(event.getNewValue()))
+		{
+			restoreOriginalHint();
+		}
 	}
 }

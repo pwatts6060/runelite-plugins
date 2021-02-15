@@ -4,11 +4,13 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("example")
+@ConfigGroup(LMSPlugin.CONFIG_GROUP_KEY)
 public interface LMSConfig extends Config
 {
+	static final String POINT_SAFE_KEY = "pointToSafeZone";
+
 	@ConfigItem(
-		keyName = "pointToSafeZone",
+		keyName = POINT_SAFE_KEY,
 		name = "Extended Safe Zone hint arrow",
 		description = "Always show safe zone hint arrow even at distance"
 	)
