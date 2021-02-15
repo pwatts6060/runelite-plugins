@@ -22,7 +22,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Lms Notifier"
+	name = "Last Man Standing"
 )
 public class LMSPlugin extends Plugin
 {
