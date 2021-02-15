@@ -3,11 +3,11 @@ package com.lmsnotifier;
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class LMSNotifierPluginTest
+public class LMSPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(LMSNotifier.class);
+		ExternalPluginManager.loadBuiltin(LMSPlugin.class);
 		RuneLite.main(args);
 	}
 }
