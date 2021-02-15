@@ -4,4 +4,4 @@ A Runelite plugin for the Last Man Standing minigame with the following toggleab
 - Always show the hint arrow pointing to the safe zone even at far distances away.
 
 Hint arrow working at farther distance than normal
-![alt text](https/i.gyazo.com/54aa6a1ea369efeb392ed5f04a366c73.gif "hint arrow gif")
+https/i.gyazo.com/54aa6a1ea369efeb392ed5f04a366c73.gif
