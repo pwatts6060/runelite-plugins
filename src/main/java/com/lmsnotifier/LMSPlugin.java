@@ -1,13 +1,23 @@
 package com.lmsnotifier;
 
 import com.google.inject.Provides;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.HintArrowType;
+import net.runelite.api.InventoryID;
+import net.runelite.api.ItemID;
+import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.WidgetClosed;
@@ -19,6 +29,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(
@@ -31,10 +42,11 @@ public class LMSPlugin extends Plugin
 	private static final WorldArea lmsCompetitiveLobby = new WorldArea(3138, 3639, 8, 7, 0);
 	private static final WorldArea lmsCasualLobby = new WorldArea(3139, 3639, 6, 6, 1);
 	private static final WorldArea lmsHighStakesLobby = new WorldArea(3138, 3639, 8, 7, 2);
+	private static final Set<Integer> lms_chest_ids = new HashSet<>(ObjectID.CHEST_29069, ObjectID.CHEST_29070);
+	boolean inGame = false;
+	List<GameObject> crates = new LinkedList<>();
 	private boolean inLobby = false;
-	private boolean inGame = false;
 	private WorldPoint originalHintPoint;
-
 	@Inject
 	private Client client;
 
@@ -44,16 +56,24 @@ public class LMSPlugin extends Plugin
 	@Inject
 	private Notifier notifier;
 
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	private LMSOverlay overlay;
+
 	@Override
 	protected void startUp() throws Exception
 	{
 		log.info("Lms Notifier started!");
+		overlayManager.add(overlay);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
 		log.info("Lms Notifier stopped!");
+		overlayManager.remove(overlay);
 	}
 
 	@Subscribe
@@ -63,6 +83,9 @@ public class LMSPlugin extends Plugin
 		{
 			return;
 		}
+
+		crates.clear();
+
 		if (inLobby && config.notifiesGameStart())
 		{
 			notifier.notify("Last Man Standing has started!");
@@ -167,6 +190,35 @@ public class LMSPlugin extends Plugin
 		if (event.getKey().equals(LMSConfig.POINT_SAFE_KEY) && Boolean.FALSE.toString().equals(event.getNewValue()))
 		{
 			restoreOriginalHint();
+		}
+	}
+
+	boolean highlightChests()
+	{
+		switch (config.highlightChests())
+		{
+			case NEVER:
+				return false;
+			case HAS_KEY:
+				return client.getItemContainer(InventoryID.INVENTORY).contains(ItemID.BLOODY_KEY) || client.getItemContainer(InventoryID.INVENTORY).contains(ItemID.BLOODIER_KEY);
+			case ALWAYS:
+			default:
+				return true;
+		}
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(GameObjectDespawned event)
+	{
+		crates.remove(event.getGameObject());
+	}
+
+	@Subscribe
+	public void onGameObjectSpawned(GameObjectSpawned event)
+	{
+		if (lms_chest_ids.contains(event.getGameObject().getId()))
+		{
+			crates.add(event.getGameObject());
 		}
 	}
 }
