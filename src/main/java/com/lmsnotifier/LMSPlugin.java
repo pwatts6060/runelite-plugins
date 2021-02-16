@@ -1,25 +1,29 @@
 package com.lmsnotifier;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.HintArrowType;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemID;
 import net.runelite.api.ObjectID;
+import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.GameObjectChanged;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.GroundObjectChanged;
+import net.runelite.api.events.GroundObjectDespawned;
+import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.WidgetInfo;
@@ -42,9 +46,10 @@ public class LMSPlugin extends Plugin
 	private static final WorldArea lmsCompetitiveLobby = new WorldArea(3138, 3639, 8, 7, 0);
 	private static final WorldArea lmsCasualLobby = new WorldArea(3139, 3639, 6, 6, 1);
 	private static final WorldArea lmsHighStakesLobby = new WorldArea(3138, 3639, 8, 7, 2);
-	private static final Set<Integer> lms_chest_ids = new HashSet<>(ObjectID.CHEST_29069, ObjectID.CHEST_29070);
+	private static final Set<Integer> chestIds = ImmutableSet.of(ObjectID.CHEST_29069, ObjectID.CHEST_29070);
+	static final int LOOT_CRATE = ObjectID.CRATE_29081;
 	boolean inGame = false;
-	List<GameObject> crates = new LinkedList<>();
+	Map<WorldPoint, TileObject> chests = new HashMap<>();
 	private boolean inLobby = false;
 	private WorldPoint originalHintPoint;
 	@Inject
@@ -84,7 +89,8 @@ public class LMSPlugin extends Plugin
 			return;
 		}
 
-		crates.clear();
+		log.info("crates cleared!");
+		chests.clear();
 
 		if (inLobby && config.notifiesGameStart())
 		{
@@ -99,6 +105,10 @@ public class LMSPlugin extends Plugin
 			|| client.getLocalPlayer().getWorldLocation().distanceTo(lmsCasualLobby) == 0
 			|| client.getLocalPlayer().getWorldLocation().distanceTo(lmsHighStakesLobby) == 0;
 		tryUpdateSafeZoneArrow();
+		if (inGame)
+		{
+			log.info("num crates {}", chests.size());
+		}
 	}
 
 	private void tryUpdateSafeZoneArrow()
@@ -161,6 +171,7 @@ public class LMSPlugin extends Plugin
 			inGame = false;
 			originalHintPoint = null;
 			client.clearHintArrow();
+			chests.clear();
 		}
 	}
 
@@ -208,17 +219,57 @@ public class LMSPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameObjectDespawned(GameObjectDespawned event)
+	public void onGameObjectSpawned(GameObjectSpawned event)
 	{
-		crates.remove(event.getGameObject());
+		onTileObject(null, event.getGameObject());
 	}
 
 	@Subscribe
-	public void onGameObjectSpawned(GameObjectSpawned event)
+	public void onGameObjectChanged(GameObjectChanged event)
 	{
-		if (lms_chest_ids.contains(event.getGameObject().getId()))
+		onTileObject(event.getPrevious(), event.getGameObject());
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(GameObjectDespawned event)
+	{
+		onTileObject(event.getGameObject(), null);
+	}
+
+	@Subscribe
+	public void onGroundObjectSpawned(GroundObjectSpawned event)
+	{
+		onTileObject(null, event.getGroundObject());
+	}
+
+	@Subscribe
+	public void onGroundObjectChanged(GroundObjectChanged event)
+	{
+		onTileObject(event.getPrevious(), event.getGroundObject());
+	}
+
+	@Subscribe
+	public void onGroundObjectDespawned(GroundObjectDespawned event)
+	{
+		onTileObject(event.getGroundObject(), null);
+	}
+
+	private void onTileObject(TileObject oldObject, TileObject newObject)
+	{
+		if (oldObject != null)
 		{
-			crates.add(event.getGameObject());
+			WorldPoint oldLocation = oldObject.getWorldLocation();
+			chests.remove(oldLocation);
+		}
+
+		if (newObject == null)
+		{
+			return;
+		}
+
+		if (chestIds.contains(newObject.getId()))
+		{
+			chests.put(newObject.getWorldLocation(), newObject);
 		}
 	}
 }

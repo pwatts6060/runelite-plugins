@@ -47,7 +47,7 @@ public interface LMSConfig extends Config
 	)
 	default ChestHightlightType highlightChestType()
 	{
-		return ChestHightlightType.HULL;
+		return ChestHightlightType.CLICK_BOX;
 	}
 
 	@ConfigItem(
