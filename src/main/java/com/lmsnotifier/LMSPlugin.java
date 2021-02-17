@@ -46,7 +46,7 @@ public class LMSPlugin extends Plugin
 	private static final WorldArea lmsCompetitiveLobby = new WorldArea(3138, 3639, 8, 7, 0);
 	private static final WorldArea lmsCasualLobby = new WorldArea(3139, 3639, 6, 6, 1);
 	private static final WorldArea lmsHighStakesLobby = new WorldArea(3138, 3639, 8, 7, 2);
-	private static final Set<Integer> chestIds = ImmutableSet.of(ObjectID.CHEST_29069, ObjectID.CHEST_29070);
+	private static final Set<Integer> chestIds = ImmutableSet.of(ObjectID.CHEST_29069, ObjectID.CHEST_29072);
 	boolean inGame = false;
 	Map<WorldPoint, TileObject> chests = new HashMap<>();
 	Map<WorldPoint, TileObject> lootCrates = new HashMap<>();
