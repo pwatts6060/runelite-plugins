@@ -42,14 +42,14 @@ import net.runelite.client.ui.overlay.OverlayManager;
 public class LMSPlugin extends Plugin
 {
 	static final String CONFIG_GROUP_KEY = "lmsconfig";
-
+	private static final int LOOT_CRATE = ObjectID.CRATE_29081;
 	private static final WorldArea lmsCompetitiveLobby = new WorldArea(3138, 3639, 8, 7, 0);
 	private static final WorldArea lmsCasualLobby = new WorldArea(3139, 3639, 6, 6, 1);
 	private static final WorldArea lmsHighStakesLobby = new WorldArea(3138, 3639, 8, 7, 2);
 	private static final Set<Integer> chestIds = ImmutableSet.of(ObjectID.CHEST_29069, ObjectID.CHEST_29070);
-	static final int LOOT_CRATE = ObjectID.CRATE_29081;
 	boolean inGame = false;
 	Map<WorldPoint, TileObject> chests = new HashMap<>();
+	Map<WorldPoint, TileObject> lootCrates = new HashMap<>();
 	private boolean inLobby = false;
 	private WorldPoint originalHintPoint;
 	@Inject
@@ -89,9 +89,8 @@ public class LMSPlugin extends Plugin
 			return;
 		}
 
-		log.info("crates cleared!");
 		chests.clear();
-
+		lootCrates.clear();
 		if (inLobby && config.notifiesGameStart())
 		{
 			notifier.notify("Last Man Standing has started!");
@@ -105,10 +104,6 @@ public class LMSPlugin extends Plugin
 			|| client.getLocalPlayer().getWorldLocation().distanceTo(lmsCasualLobby) == 0
 			|| client.getLocalPlayer().getWorldLocation().distanceTo(lmsHighStakesLobby) == 0;
 		tryUpdateSafeZoneArrow();
-		if (inGame)
-		{
-			log.info("num crates {}", chests.size());
-		}
 	}
 
 	private void tryUpdateSafeZoneArrow()
@@ -172,6 +167,7 @@ public class LMSPlugin extends Plugin
 			originalHintPoint = null;
 			client.clearHintArrow();
 			chests.clear();
+			lootCrates.clear();
 		}
 	}
 
@@ -260,6 +256,7 @@ public class LMSPlugin extends Plugin
 		{
 			WorldPoint oldLocation = oldObject.getWorldLocation();
 			chests.remove(oldLocation);
+			lootCrates.remove(oldLocation);
 		}
 
 		if (newObject == null)
@@ -270,6 +267,17 @@ public class LMSPlugin extends Plugin
 		if (chestIds.contains(newObject.getId()))
 		{
 			chests.put(newObject.getWorldLocation(), newObject);
+			return;
 		}
+
+		if (newObject.getId() == LOOT_CRATE)
+		{
+			lootCrates.put(newObject.getWorldLocation(), newObject);
+		}
+	}
+
+	boolean highlightLootCrates()
+	{
+		return lootCrates.size() > 0 && !config.lootCrateHighlightType().equals(LootCrateHightlight.NONE);
 	}
 }
