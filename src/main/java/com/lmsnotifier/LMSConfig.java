@@ -141,4 +141,61 @@ public interface LMSConfig extends Config
 	{
 		return 25;
 	}
+
+
+	@ConfigSection(
+		name = "Player Ranks",
+		description = "Show Lms ranks/scores of players",
+		position = 4,
+		closedByDefault = false
+	)
+	String playerRanks = "playerRanks";
+
+	@ConfigItem(
+		keyName = "showPlayerRank",
+		name = "Rank Visual",
+		description = "Options for displaying other players lms rank",
+		section = playerRanks,
+		position = 0
+	)
+	default RankVisual rankVisual()
+	{
+		return RankVisual.NONE;
+	}
+
+	@ConfigItem(
+		keyName = "metricColour",
+		name = "Text Colour",
+		description = "Colour of the metric text",
+		section = playerRanks,
+		position = 1
+	)
+	default Color metricColour()
+	{
+		return Color.RED;
+	}
+
+	@ConfigItem(
+		keyName = "metricHeatmap",
+		name = "Heatmap",
+		description = "Colour metrics differently based on score",
+		section = playerRanks,
+		position = 2
+	)
+	default boolean metricHeatmap()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "rankMetric",
+		name = "Metric",
+		description = "Display the LMS Score or Rank of players",
+		section = playerRanks,
+		position = 3
+	)
+	default RankMetric rankMetric()
+	{
+		return RankMetric.SCORE;
+	}
 }

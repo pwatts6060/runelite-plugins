@@ -2,7 +2,11 @@ package com.lmsnotifier;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
@@ -13,7 +17,9 @@ import net.runelite.api.HintArrowType;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemID;
 import net.runelite.api.ObjectID;
+import net.runelite.api.Player;
 import net.runelite.api.TileObject;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameObjectChanged;
@@ -47,11 +53,14 @@ public class LMSPlugin extends Plugin
 	private static final WorldArea lmsCasualLobby = new WorldArea(3139, 3639, 6, 6, 1);
 	private static final WorldArea lmsHighStakesLobby = new WorldArea(3138, 3639, 8, 7, 2);
 	private static final Set<Integer> chestIds = ImmutableSet.of(ObjectID.CHEST_29069, ObjectID.CHEST_29072);
+	private static final int FEROX_REGION_ID = 12600;
 	boolean inGame = false;
 	Map<WorldPoint, TileObject> chests = new HashMap<>();
 	Map<WorldPoint, TileObject> lootCrates = new HashMap<>();
+	List<LMSPlayer> localLMSPlayers = new LinkedList<>();
 	private boolean inLobby = false;
 	private WorldPoint originalHintPoint;
+	private LMSHiscores lmsHiscores = new LMSHiscores();
 	@Inject
 	private Client client;
 
@@ -78,6 +87,7 @@ public class LMSPlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		log.info("Lms Notifier stopped!");
+		restoreOriginalHint();
 		overlayManager.remove(overlay);
 	}
 
@@ -93,6 +103,7 @@ public class LMSPlugin extends Plugin
 		lootCrates.clear();
 		if (inLobby && config.notifiesGameStart())
 		{
+			clearHintPoint();
 			notifier.notify("Last Man Standing has started!");
 		}
 	}
@@ -104,13 +115,48 @@ public class LMSPlugin extends Plugin
 			|| client.getLocalPlayer().getWorldLocation().distanceTo(lmsCasualLobby) == 0
 			|| client.getLocalPlayer().getWorldLocation().distanceTo(lmsHighStakesLobby) == 0;
 		tryUpdateSafeZoneArrow();
+		refreshNearbyPlayerRanks();
+	}
+
+	private void refreshNearbyPlayerRanks()
+	{
+		if (!inGame || client.getLocalPlayer().getWorldLocation().getRegionID() == FEROX_REGION_ID || config.rankVisual().equals(RankVisual.NONE))
+		{
+			localLMSPlayers.clear();
+			return;
+		}
+		List<Player> players = new ArrayList<>(client.getPlayers());
+		LocalPoint localPoint = client.getLocalPlayer().getLocalLocation();
+		players.sort(Comparator.comparingInt(o -> LMSUtil.distSquared(o.getLocalLocation(), localPoint)));
+		for (Player player : players)
+		{
+			if (client.getLocalPlayer().getName().equals(player.getName()))
+			{
+				continue;
+			}
+			lmsHiscores.fetchRank(player.getName());
+		}
+		localLMSPlayers.clear();
+		for (Player player : players)
+		{
+			String name = player.getName();
+			if (client.getLocalPlayer().getName().equals(name))
+			{
+				continue;
+			}
+			LMSRank lmsRank = lmsHiscores.getRankFor(name);
+			if (lmsRank != null)
+			{
+				localLMSPlayers.add(new LMSPlayer(player, lmsRank));
+			}
+		}
 	}
 
 	private void tryUpdateSafeZoneArrow()
 	{
 		if (!inGame)
 		{
-			originalHintPoint = null;
+			clearHintPoint();
 			return;
 		}
 
@@ -121,12 +167,13 @@ public class LMSPlugin extends Plugin
 
 		if (!client.hasHintArrow() || !client.getHintArrowType().equals(HintArrowType.WORLD_POSITION))
 		{
-			originalHintPoint = null;
+			clearHintPoint();
 			return;
 		}
 
 		if (originalHintPoint == null)
 		{
+			log.info("Setting orig hint point {}", client.getHintArrowPoint());
 			originalHintPoint = client.getHintArrowPoint();
 		}
 
@@ -142,9 +189,11 @@ public class LMSPlugin extends Plugin
 			int newY = (int) (74 * Math.sin(theta));
 			WorldPoint newArrow = new WorldPoint(client.getLocalPlayer().getWorldLocation().getX() + newX, client.getLocalPlayer().getWorldLocation().getY() + newY, 0);
 			client.setHintArrow(newArrow);
+			log.info("{},{} | {},{} | {},{}", client.getLocalPlayer().getWorldLocation().getX(), client.getLocalPlayer().getWorldLocation().getY(), newArrow.getX(), newArrow.getY(), originalHintPoint.getX(), originalHintPoint.getY());
 		}
 		else if (!client.getHintArrowPoint().equals(originalHintPoint))
 		{
+			log.info("restore to {},{}", originalHintPoint.getX(), originalHintPoint.getY());
 			restoreOriginalHint();
 		}
 	}
@@ -164,7 +213,7 @@ public class LMSPlugin extends Plugin
 		if (ev.getGroupId() == WidgetInfo.LMS_KDA.getGroupId())
 		{
 			inGame = false;
-			originalHintPoint = null;
+			clearHintPoint();
 			client.clearHintArrow();
 			chests.clear();
 			lootCrates.clear();
@@ -177,8 +226,13 @@ public class LMSPlugin extends Plugin
 		if (widgetLoaded.getGroupId() == WidgetInfo.LMS_KDA.getGroupId())
 		{
 			inGame = true;
-			originalHintPoint = null;
+			clearHintPoint();
 		}
+	}
+
+	private void clearHintPoint()
+	{
+		originalHintPoint = null;
 	}
 
 	@Provides

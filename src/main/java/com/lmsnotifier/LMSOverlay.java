@@ -7,6 +7,7 @@ import java.awt.Shape;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
+import net.runelite.api.Point;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.ui.overlay.Overlay;
@@ -33,13 +34,6 @@ class LMSOverlay extends Overlay
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
 
-	private static int distSquared(LocalPoint point1, LocalPoint point2)
-	{
-		int dx = point1.getX() - point2.getX();
-		int dy = point1.getY() - point2.getY();
-		return dx * dx + dy * dy;
-	}
-
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
@@ -58,7 +52,47 @@ class LMSOverlay extends Overlay
 			renderLootCrates(graphics);
 		}
 
+		if (!config.rankVisual().equals(RankVisual.NONE))
+		{
+			renderRanks(graphics);
+		}
+
 		return null;
+	}
+
+	private static final int MIN_SCORE = 500;
+	private static final int MAX_SCORE = 3_000;
+
+	private void renderRanks(Graphics2D graphics)
+	{
+		for (LMSPlayer lmsPlayer : plugin.localLMSPlayers)
+		{
+			Color colour;
+			if (config.metricHeatmap())
+			{
+				int clampedScore = Math.max(MIN_SCORE, Math.min(lmsPlayer.lmsRank.score, MAX_SCORE));
+				double proportion = (double) (clampedScore - MIN_SCORE) / (MAX_SCORE - MIN_SCORE);
+				colour = new Color(ColourUtil.interpolateBetweenRgbs(0x00FF00, 0xFF0000, proportion));
+			}
+			else
+			{
+				colour = config.metricColour();
+			}
+			String text = "";
+			if (config.rankMetric().equals(RankMetric.RANK))
+			{
+				text = lmsPlayer.lmsRank.rank < 0 ? "n/a" : Integer.toString(lmsPlayer.lmsRank.rank);
+			}
+			else if (config.rankMetric().equals(RankMetric.SCORE))
+			{
+				text = lmsPlayer.lmsRank.score < 0 ? "n/a" : Integer.toString(lmsPlayer.lmsRank.score);
+			}
+			Point textLocation = lmsPlayer.player.getCanvasTextLocation(graphics, text, 0);
+			if (textLocation != null)
+			{
+				OverlayUtil.renderTextLocation(graphics, textLocation, text, colour);
+			}
+		}
 	}
 
 	private void renderLootCrates(Graphics2D graphics)
@@ -67,7 +101,7 @@ class LMSOverlay extends Overlay
 		LocalPoint playerLocation = client.getLocalPlayer().getLocalLocation();
 		for (TileObject object : plugin.lootCrates.values())
 		{
-			if (distSquared(object.getLocalLocation(), playerLocation) >= max)
+			if (LMSUtil.distSquared(object.getLocalLocation(), playerLocation) >= max)
 			{
 				continue;
 			}
@@ -111,7 +145,11 @@ class LMSOverlay extends Overlay
 		LocalPoint playerLocation = client.getLocalPlayer().getLocalLocation();
 		for (TileObject object : plugin.chests.values())
 		{
-			if (distSquared(object.getLocalLocation(), playerLocation) >= max)
+			if (object.getPlane() != client.getPlane())
+			{
+				continue;
+			}
+			if (LMSUtil.distSquared(object.getLocalLocation(), playerLocation) >= max)
 			{
 				continue;
 			}
