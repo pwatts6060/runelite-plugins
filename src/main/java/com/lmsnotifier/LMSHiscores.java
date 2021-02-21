@@ -19,7 +19,7 @@ class LMSHiscores
 	private final Set<String> currentLookups = ConcurrentHashMap.newKeySet();
 	private final Map<String, LMSRank> usernameToRank = new ConcurrentHashMap<>();
 	@Inject
-	private HiscoreClient hiscoreClient = new HiscoreClient(new OkHttpClient());;
+	private HiscoreClient hiscoreClient = new HiscoreClient(new OkHttpClient());
 
 	void fetchRank(String username)
 	{

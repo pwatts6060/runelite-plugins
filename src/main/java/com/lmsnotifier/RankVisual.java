@@ -4,5 +4,4 @@ public enum RankVisual
 {
 	NONE,
 	TEXT
-	;
 }
