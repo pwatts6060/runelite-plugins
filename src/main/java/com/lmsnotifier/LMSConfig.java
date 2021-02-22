@@ -10,19 +10,6 @@ import net.runelite.client.config.Range;
 @ConfigGroup(LMSPlugin.CONFIG_GROUP_KEY)
 public interface LMSConfig extends Config
 {
-	String POINT_SAFE_KEY = "pointToSafeZone";
-
-	@ConfigItem(
-		keyName = POINT_SAFE_KEY,
-		name = "Extended Safe Zone hint arrow",
-		description = "Always show safe zone hint arrow even at distance",
-		position = 0
-	)
-	default boolean pointToSafeZone()
-	{
-		return true;
-	}
-
 	@ConfigItem(
 		keyName = "notifyGameStart",
 		name = "Game Start Notification",

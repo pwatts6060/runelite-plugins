@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.HintArrowType;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemID;
 import net.runelite.api.ObjectID;
@@ -36,7 +35,6 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -59,7 +57,6 @@ public class LMSPlugin extends Plugin
 	Map<WorldPoint, TileObject> lootCrates = new HashMap<>();
 	List<LMSPlayer> localLMSPlayers = new LinkedList<>();
 	private boolean inLobby = false;
-	private WorldPoint originalHintPoint;
 	private LMSHiscores lmsHiscores = new LMSHiscores();
 	@Inject
 	private Client client;
@@ -87,7 +84,6 @@ public class LMSPlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		log.info("Lms Notifier stopped!");
-		restoreOriginalHint();
 		overlayManager.remove(overlay);
 	}
 
@@ -110,11 +106,9 @@ public class LMSPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
-//		log.info("{} {}", client.getHintArrowPoint(), originalHintPoint);
 		inLobby = client.getLocalPlayer().getWorldLocation().distanceTo(lmsCompetitiveLobby) == 0
 			|| client.getLocalPlayer().getWorldLocation().distanceTo(lmsCasualLobby) == 0
 			|| client.getLocalPlayer().getWorldLocation().distanceTo(lmsHighStakesLobby) == 0;
-		tryUpdateSafeZoneArrow();
 		refreshNearbyPlayerRanks();
 	}
 
@@ -152,64 +146,12 @@ public class LMSPlugin extends Plugin
 		}
 	}
 
-	private void tryUpdateSafeZoneArrow()
-	{
-		if (!inGame)
-		{
-			return;
-		}
-
-		if (!config.pointToSafeZone())
-		{
-			return;
-		}
-
-		if (!client.hasHintArrow() || !client.getHintArrowType().equals(HintArrowType.WORLD_POSITION))
-		{
-			return;
-		}
-
-		if (originalHintPoint == null)
-		{
-//			log.info("Setting orig hint point {}", client.getHintArrowPoint());
-			originalHintPoint = new WorldPoint(client.getHintArrowPoint().getX(), client.getHintArrowPoint().getY(), client.getHintArrowPoint().getPlane());
-		}
-
-		int arrowSceneX = originalHintPoint.getX() * 4 - client.getBaseX() * 4 + 2 - client.getLocalPlayer().getLocalLocation().getX() / 32;
-		int arrowSceneY = originalHintPoint.getY() * 4 - client.getBaseY() * 4 + 2 - client.getLocalPlayer().getLocalLocation().getY() / 32;
-		int distance = arrowSceneX * arrowSceneX + arrowSceneY * arrowSceneY;
-
-		if (distance >= 90_000) // hint arrow won't show in minimap
-		{
-			// make a closer new point for the arrow that is in the same direction
-			double theta = Math.atan2(arrowSceneY, arrowSceneX);
-			int newX = (int) (74 * Math.cos(theta));
-			int newY = (int) (74 * Math.sin(theta));
-			WorldPoint newArrow = new WorldPoint(client.getLocalPlayer().getWorldLocation().getX() + newX, client.getLocalPlayer().getWorldLocation().getY() + newY, 0);
-			client.setHintArrow(newArrow);
-		}
-		else if (!client.getHintArrowPoint().equals(originalHintPoint))
-		{
-			restoreOriginalHint();
-		}
-	}
-
-	private void restoreOriginalHint()
-	{
-		if (originalHintPoint != null && client.hasHintArrow())
-		{
-			client.setHintArrow(new WorldPoint(originalHintPoint.getX(), originalHintPoint.getY(), originalHintPoint.getPlane()));
-		}
-	}
-
 	@Subscribe
 	public void onWidgetClosed(WidgetClosed ev)
 	{
 		if (ev.getGroupId() == WidgetInfo.LMS_KDA.getGroupId())
 		{
 			inGame = false;
-			clearHintPoint();
-			client.clearHintArrow();
 			chests.clear();
 			lootCrates.clear();
 		}
@@ -224,29 +166,10 @@ public class LMSPlugin extends Plugin
 		}
 	}
 
-	private void clearHintPoint()
-	{
-		originalHintPoint = null;
-	}
-
 	@Provides
 	LMSConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(LMSConfig.class);
-	}
-
-	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals(CONFIG_GROUP_KEY))
-		{
-			return;
-		}
-		if (event.getKey().equals(LMSConfig.POINT_SAFE_KEY) && Boolean.FALSE.toString().equals(event.getNewValue()))
-		{
-//			log.info("restoring hint cause of deactivation.");
-			restoreOriginalHint();
-		}
 	}
 
 	boolean highlightChests()
