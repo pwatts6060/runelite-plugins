@@ -103,7 +103,6 @@ public class LMSPlugin extends Plugin
 		lootCrates.clear();
 		if (inLobby && config.notifiesGameStart())
 		{
-			clearHintPoint();
 			notifier.notify("Last Man Standing has started!");
 		}
 	}
@@ -111,6 +110,7 @@ public class LMSPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
+//		log.info("{} {}", client.getHintArrowPoint(), originalHintPoint);
 		inLobby = client.getLocalPlayer().getWorldLocation().distanceTo(lmsCompetitiveLobby) == 0
 			|| client.getLocalPlayer().getWorldLocation().distanceTo(lmsCasualLobby) == 0
 			|| client.getLocalPlayer().getWorldLocation().distanceTo(lmsHighStakesLobby) == 0;
@@ -156,7 +156,6 @@ public class LMSPlugin extends Plugin
 	{
 		if (!inGame)
 		{
-			clearHintPoint();
 			return;
 		}
 
@@ -167,14 +166,13 @@ public class LMSPlugin extends Plugin
 
 		if (!client.hasHintArrow() || !client.getHintArrowType().equals(HintArrowType.WORLD_POSITION))
 		{
-			clearHintPoint();
 			return;
 		}
 
 		if (originalHintPoint == null)
 		{
-			log.info("Setting orig hint point {}", client.getHintArrowPoint());
-			originalHintPoint = client.getHintArrowPoint();
+//			log.info("Setting orig hint point {}", client.getHintArrowPoint());
+			originalHintPoint = new WorldPoint(client.getHintArrowPoint().getX(), client.getHintArrowPoint().getY(), client.getHintArrowPoint().getPlane());
 		}
 
 		int arrowSceneX = originalHintPoint.getX() * 4 - client.getBaseX() * 4 + 2 - client.getLocalPlayer().getLocalLocation().getX() / 32;
@@ -189,11 +187,9 @@ public class LMSPlugin extends Plugin
 			int newY = (int) (74 * Math.sin(theta));
 			WorldPoint newArrow = new WorldPoint(client.getLocalPlayer().getWorldLocation().getX() + newX, client.getLocalPlayer().getWorldLocation().getY() + newY, 0);
 			client.setHintArrow(newArrow);
-			log.info("{},{} | {},{} | {},{}", client.getLocalPlayer().getWorldLocation().getX(), client.getLocalPlayer().getWorldLocation().getY(), newArrow.getX(), newArrow.getY(), originalHintPoint.getX(), originalHintPoint.getY());
 		}
 		else if (!client.getHintArrowPoint().equals(originalHintPoint))
 		{
-			log.info("restore to {},{}", originalHintPoint.getX(), originalHintPoint.getY());
 			restoreOriginalHint();
 		}
 	}
@@ -202,8 +198,7 @@ public class LMSPlugin extends Plugin
 	{
 		if (originalHintPoint != null && client.hasHintArrow())
 		{
-			client.clearHintArrow();
-			client.setHintArrow(originalHintPoint);
+			client.setHintArrow(new WorldPoint(originalHintPoint.getX(), originalHintPoint.getY(), originalHintPoint.getPlane()));
 		}
 	}
 
@@ -226,7 +221,6 @@ public class LMSPlugin extends Plugin
 		if (widgetLoaded.getGroupId() == WidgetInfo.LMS_KDA.getGroupId())
 		{
 			inGame = true;
-			clearHintPoint();
 		}
 	}
 
@@ -250,6 +244,7 @@ public class LMSPlugin extends Plugin
 		}
 		if (event.getKey().equals(LMSConfig.POINT_SAFE_KEY) && Boolean.FALSE.toString().equals(event.getNewValue()))
 		{
+//			log.info("restoring hint cause of deactivation.");
 			restoreOriginalHint();
 		}
 	}
