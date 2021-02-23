@@ -17,6 +17,7 @@ class ColourUtil
 		return (converted.r & 0xFF) << 16 | (converted.g & 0xFF) << 8 | converted.b & 0xFF;
 	}
 
+	//Hsv and Rgb code modified from https://stackoverflow.com/a/14733008
 	private static RgbColour HsvToRgb(HsvColour hsv)
 	{
 		RgbColour rgb = new RgbColour(1, 1, 1);
