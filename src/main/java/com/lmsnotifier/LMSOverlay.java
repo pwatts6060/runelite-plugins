@@ -19,6 +19,8 @@ import net.runelite.client.util.ColorUtil;
 
 class LMSOverlay extends Overlay
 {
+	private static final int MIN_SCORE = 500;
+	private static final int MAX_SCORE = 3_000;
 	private final Client client;
 	private final LMSConfig config;
 	private final LMSPlugin plugin;
@@ -59,9 +61,6 @@ class LMSOverlay extends Overlay
 
 		return null;
 	}
-
-	private static final int MIN_SCORE = 500;
-	private static final int MAX_SCORE = 3_000;
 
 	private void renderRanks(Graphics2D graphics)
 	{

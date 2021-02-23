@@ -1,8 +1,8 @@
 package com.lmsnotifier;
 
-public class ColourUtil
+class ColourUtil
 {
-	public static int interpolateBetweenRgbs(int rgb1, int rgb2, double proportion)
+	static int interpolateBetweenRgbs(int rgb1, int rgb2, double proportion)
 	{
 		HsvColour first = RgbToHsv(new RgbColour(rgb1));
 		HsvColour second = RgbToHsv(new RgbColour(rgb2));
@@ -17,42 +17,7 @@ public class ColourUtil
 		return (converted.r & 0xFF) << 16 | (converted.g & 0xFF) << 8 | converted.b & 0xFF;
 	}
 
-	static class RgbColour
-	{
-		int r;
-		int g;
-		int b;
-
-		RgbColour(int r, int g, int b)
-		{
-			this.r = r;
-			this.g = g;
-			this.b = b;
-		}
-
-		RgbColour(int rgb)
-		{
-			this.r = (rgb >> 16) & 0xFF;
-			this.g = (rgb >> 8) & 0xFF;
-			this.b = rgb & 0xFF;
-		}
-	}
-
-	static class HsvColour
-	{
-		int h;
-		int s;
-		int v;
-
-		HsvColour(int h, int s, int v)
-		{
-			this.h = h;
-			this.s = s;
-			this.v = v;
-		}
-	}
-
-	static RgbColour HsvToRgb(HsvColour hsv)
+	private static RgbColour HsvToRgb(HsvColour hsv)
 	{
 		RgbColour rgb = new RgbColour(1, 1, 1);
 		int region, remainder, p, q, t;
@@ -109,7 +74,7 @@ public class ColourUtil
 		return rgb;
 	}
 
-	static HsvColour RgbToHsv(RgbColour rgb)
+	private static HsvColour RgbToHsv(RgbColour rgb)
 	{
 		HsvColour hsv = new HsvColour(0, 0, 0);
 		int rgbMin, rgbMax;
@@ -146,5 +111,40 @@ public class ColourUtil
 		}
 
 		return hsv;
+	}
+
+	static class RgbColour
+	{
+		int r;
+		int g;
+		int b;
+
+		RgbColour(int r, int g, int b)
+		{
+			this.r = r;
+			this.g = g;
+			this.b = b;
+		}
+
+		RgbColour(int rgb)
+		{
+			this.r = (rgb >> 16) & 0xFF;
+			this.g = (rgb >> 8) & 0xFF;
+			this.b = rgb & 0xFF;
+		}
+	}
+
+	static class HsvColour
+	{
+		int h;
+		int s;
+		int v;
+
+		HsvColour(int h, int s, int v)
+		{
+			this.h = h;
+			this.s = s;
+			this.v = v;
+		}
 	}
 }

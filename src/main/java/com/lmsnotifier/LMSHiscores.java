@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.util.Text;
 import net.runelite.http.api.hiscore.HiscoreClient;
 import net.runelite.http.api.hiscore.HiscoreEndpoint;
+import net.runelite.http.api.hiscore.HiscoreSkill;
 import net.runelite.http.api.hiscore.Skill;
 import okhttp3.OkHttpClient;
 
@@ -29,19 +30,19 @@ class LMSHiscores
 		{
 			return;
 		}
-//		log.info("Looking up hiscores for {}", username);
+		log.debug("Looking up hiscores for {}", username);
 		currentLookups.add(username);
 		final HiscoreEndpoint endPoint = HiscoreEndpoint.NORMAL;
 		hiscoreClient.lookupAsync(name, endPoint).whenCompleteAsync(((result, ex) -> {
 			if (ex != null)
 			{
-//				log.warn("error looking up {}", HiscoreSkill.LAST_MAN_STANDING.getName().toLowerCase(), ex);
+				log.debug("error looking up {}", HiscoreSkill.LAST_MAN_STANDING.getName().toLowerCase(), ex);
 				currentLookups.remove(username);
 				return;
 			}
 			if (result == null)
 			{
-//				log.warn("error looking up {} score: not found", HiscoreSkill.LAST_MAN_STANDING.getName().toLowerCase());
+				log.debug("error looking up {} score: not found", HiscoreSkill.LAST_MAN_STANDING.getName().toLowerCase());
 				currentLookups.remove(username);
 				usernameToRank.put(username, new LMSRank(-1, -1, Instant.now()));
 				return;
@@ -52,7 +53,7 @@ class LMSHiscores
 			int rank = hiscoreSkill.getRank();
 			usernameToRank.put(username, new LMSRank(rank, score, Instant.now()));
 			currentLookups.remove(username);
-//			log.info("Retrieved hiscores for {} {} {}", username, rank, score);
+			log.debug("Retrieved hiscores for {} {} {}", username, rank, score);
 		}));
 	}
 
