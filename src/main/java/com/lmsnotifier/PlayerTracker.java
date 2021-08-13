@@ -95,8 +95,6 @@ public class PlayerTracker {
                 setStatus(BotIdentification.Status.HUMAN, "50%- 2t switches"); // bots always do 2t prayer changes
             }
         }
-        if (total >= 5)
-           System.out.println(name + " 2t switches " + exact2t + "/" + total + " " + 100.0 * exact2t / total + "%");
     }
 
     private HeadIcon getStyleFor(int weaponItemId) {
