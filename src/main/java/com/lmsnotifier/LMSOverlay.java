@@ -1,21 +1,15 @@
 package com.lmsnotifier;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.Point;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.client.ui.overlay.Overlay;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.OverlayUtil;
+import net.runelite.client.ui.overlay.*;
 import net.runelite.client.util.ColorUtil;
+
+import javax.inject.Inject;
+import java.awt.*;
 
 class LMSOverlay extends Overlay
 {
@@ -59,7 +53,44 @@ class LMSOverlay extends Overlay
 			renderRanks(graphics);
 		}
 
+		if (config.getBotDisplay() != BotDisplay.NONE)
+		{
+			renderBots(graphics);
+		}
+
 		return null;
+	}
+
+	private void renderBots(Graphics2D graphics) {
+		for (LMSPlayer lmsPlayer : plugin.localLMSPlayers)
+		{
+			BotIdentification.Status status = plugin.botIdentification.statusFor(lmsPlayer.player.getName());
+			if (config.getBotDisplay() == BotDisplay.BOTS_ONLY && status != BotIdentification.Status.BOT) {
+				continue;
+			}
+			Color color;
+			String text;
+			switch (status) {
+				case BOT:
+					color = Color.RED;
+					text = "Bot";
+					break;
+				case HUMAN:
+					color = Color.GREEN;
+					text = "Human";
+					break;
+				case UNSURE:
+				default:
+					color = Color.WHITE;
+					text = "?";
+					break;
+			}
+			Point textLocation = lmsPlayer.player.getCanvasTextLocation(graphics, text, 0);
+			if (textLocation != null)
+			{
+				OverlayUtil.renderTextLocation(graphics, new Point(textLocation.getX(), textLocation.getY() - 15), text, color);
+			}
+		}
 	}
 
 	private void renderRanks(Graphics2D graphics)

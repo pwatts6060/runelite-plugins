@@ -1,11 +1,8 @@
 package com.lmsnotifier;
 
-import java.awt.Color;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigSection;
-import net.runelite.client.config.Range;
+import net.runelite.client.config.*;
+
+import java.awt.*;
 
 @ConfigGroup(LMSPlugin.CONFIG_GROUP_KEY)
 public interface LMSConfig extends Config
@@ -184,5 +181,38 @@ public interface LMSConfig extends Config
 	default RankMetric rankMetric()
 	{
 		return RankMetric.SCORE;
+	}
+
+	@ConfigSection(
+			name = "Bot Detection",
+			description = "Options for showing potential bots",
+			position = 5,
+			closedByDefault = false
+	)
+	String botDetection = "botDetection";
+
+
+	@ConfigItem(
+			keyName = "showBots",
+			name = "Text Overlay",
+			description = "Shows players who might be bots",
+			section = botDetection,
+			position = 1
+	)
+	default BotDisplay getBotDisplay()
+	{
+		return BotDisplay.BOTS_ONLY;
+	}
+
+	@ConfigItem(
+			keyName = "summarizeBots",
+			name = "Summarize bots",
+			description = "Displays the number of humans/bots encountered at the end of the game",
+			section = botDetection,
+			position = 2
+	)
+	default boolean summarizeBots()
+	{
+		return true;
 	}
 }
