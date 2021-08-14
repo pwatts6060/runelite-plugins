@@ -43,6 +43,7 @@ public class PlayerTracker {
             return;
         int total = 0;
         int exact2t = 0;
+        int exact1T = 0;
         boolean whipSinceStart = true; // whether they haven't changed their weapon from whip when first seen
         for (int i = 1, n = snapshotIndex - 2; i < n; i++) {
             PlayerSnapshot prev = snapshots[i-1];
@@ -82,17 +83,19 @@ public class PlayerTracker {
                 if (curStyle != prevStyle) { // other player changed weapons
                     if (next.headIcon != curStyle && next2.headIcon == curStyle) {
                         exact2t++;
+                    } else if (next.headIcon == curStyle) {
+                        exact1T++;
                     }
                     total++;
                 }
             }
         }
-        double proportion = (double) exact2t / total;
+        double proportion = (double) (exact1T + exact2t) / total;
         if (total > 6) {
             if (proportion >= 0.85) {
-                setStatus(BotIdentification.Status.BOT, "85%+ 2t switches"); // bots always do 2t prayer changes
+                setStatus(BotIdentification.Status.BOT, "85%+ 2t switches"); // bots always do 1-2t prayer changes
             } else if (proportion < 0.5) {
-                setStatus(BotIdentification.Status.HUMAN, "50%- 2t switches"); // bots always do 2t prayer changes
+                setStatus(BotIdentification.Status.HUMAN, "50%- 2t switches"); // bots always do 1-2t prayer changes
             }
         }
     }
