@@ -32,7 +32,7 @@ public class BotIdentification {
     }
 
     public void reset() {
-        dumpInfo();
+//        dumpInfo();
         if (config.summarizeBots()) {
             displaySummary();
         }
@@ -68,16 +68,16 @@ public class BotIdentification {
         client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", message, "");
     }
 
-    private void dumpInfo() {
-        playerToTracker.forEach((name, playerTracker) -> {
-            System.out.println(name);
-            for (PlayerSnapshot snapshot : playerTracker.snapshots) {
-                if (snapshot == null)
-                    continue;
-                System.out.println(snapshot.toString());
-            }
-        });
-    }
+//    private void dumpInfo() {
+//        playerToTracker.forEach((name, playerTracker) -> {
+//            System.out.println(name);
+//            for (PlayerSnapshot snapshot : playerTracker.snapshots) {
+//                if (snapshot == null)
+//                    continue;
+//                System.out.println(snapshot.toString());
+//            }
+//        });
+//    }
 
     public void tick() {
         if (!shouldAnalyze() || !plugin.inGame || client.getLocalPlayer().getWorldLocation().getRegionID() == LMSPlugin.FEROX_REGION_ID) {
