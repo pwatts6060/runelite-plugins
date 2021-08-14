@@ -1,20 +1,27 @@
 package com.lmsnotifier;
 
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.HeadIcon;
+import net.runelite.client.util.ColorUtil;
+
+import java.awt.*;
 
 @Slf4j
 public class PlayerTracker {
+
     private static final int TOTAL = 500;
 
+    private final LMSPlugin plugin;
     String name;
     PlayerSnapshot[] snapshots;
     int snapshotIndex;
     BotIdentification.Status status;
     String statusReason;
 
-    PlayerTracker(String name) {
+    PlayerTracker(String name, LMSPlugin plugin) {
         this.name = name;
+        this.plugin = plugin;
         snapshots = new PlayerSnapshot[TOTAL];
         snapshotIndex = 0;
         status = null;
@@ -36,6 +43,9 @@ public class PlayerTracker {
         this.status = status;
         this.statusReason = reason;
         log.debug("{} is a {} reason: {}", name, status, statusReason);
+        if (plugin.getConfig().putNamesInChat() && status == BotIdentification.Status.BOT) {
+            plugin.getClient().addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Bot: " + ColorUtil.wrapWithColorTag(name, Color.RED), "");
+        }
     }
 
     public void updateStatus() {
@@ -53,7 +63,7 @@ public class PlayerTracker {
             if (cur.equipment[3] != 20917) {
                 whipSinceStart = false;
             }
-            if (!whipSinceStart && cur.animation == 1658) {
+            if (!whipSinceStart && cur.animation == 1658 && cur.equipment[3] == 20917) { // make sure they have whip on still cause anim plays for 2t
                 // bots never attack with whip except at start of the game sometimes
                 setStatus(BotIdentification.Status.HUMAN, "Attacked with whip");
                 return;
@@ -91,6 +101,9 @@ public class PlayerTracker {
             }
         }
         double proportion = (double) (exact1T + exact2t) / total;
+        if (total > 3) {
+            log.debug("{} 1t:{} 2t:{} total:{} {}%", name, exact1T, exact2t, total, String.format("%.2f", 100 * proportion));
+        }
         if (total > 6) {
             if (proportion >= 0.85) {
                 setStatus(BotIdentification.Status.BOT, "85%+ 2t switches"); // bots always do 1-2t prayer changes

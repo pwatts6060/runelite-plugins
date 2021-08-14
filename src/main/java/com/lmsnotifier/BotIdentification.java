@@ -68,16 +68,16 @@ public class BotIdentification {
         client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", message, "");
     }
 
-//    private void dumpInfo() {
-//        playerToTracker.forEach((name, playerTracker) -> {
-//            System.out.println(name);
-//            for (PlayerSnapshot snapshot : playerTracker.snapshots) {
-//                if (snapshot == null)
-//                    continue;
-//                System.out.println(snapshot.toString());
-//            }
-//        });
-//    }
+    private void dumpInfo() {
+        playerToTracker.forEach((name, playerTracker) -> {
+            System.out.println(name);
+            for (PlayerSnapshot snapshot : playerTracker.snapshots) {
+                if (snapshot == null)
+                    continue;
+                System.out.println(snapshot);
+            }
+        });
+    }
 
     public void tick() {
         if (!shouldAnalyze() || !plugin.inGame || client.getLocalPlayer().getWorldLocation().getRegionID() == LMSPlugin.FEROX_REGION_ID) {
@@ -90,7 +90,7 @@ public class BotIdentification {
             }
             Player opponent = getOpponent(player);
             PlayerSnapshot snapshot = new PlayerSnapshot(player, opponent, tick);
-            PlayerTracker tracker = playerToTracker.computeIfAbsent(player.getName(), name -> new PlayerTracker(player.getName()));
+            PlayerTracker tracker = playerToTracker.computeIfAbsent(player.getName(), name -> new PlayerTracker(player.getName(), plugin));
             tracker.addSnapshot(snapshot);
             tracker.updateStatus();
         }
@@ -98,7 +98,7 @@ public class BotIdentification {
     }
 
     private boolean shouldAnalyze() {
-        return config.summarizeBots() || config.getBotDisplay() != BotDisplay.NONE;
+        return config.putNamesInChat() || config.summarizeBots() || config.getBotDisplay() != BotDisplay.NONE;
     }
 
     private Player getOpponent(Player player) {

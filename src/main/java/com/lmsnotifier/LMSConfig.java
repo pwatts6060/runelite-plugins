@@ -215,4 +215,16 @@ public interface LMSConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+			keyName = "botsInChat",
+			name = "Add bots to chat",
+			description = "Displays names of bots detected in the game chat",
+			section = botDetection,
+			position = 3
+	)
+	default boolean putNamesInChat()
+	{
+		return false;
+	}
 }
