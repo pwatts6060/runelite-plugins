@@ -2,6 +2,7 @@ package com.lmsnotifier;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -39,9 +40,11 @@ public class LMSPlugin extends Plugin {
     private LMSHiscores lmsHiscores = new LMSHiscores();
 
     @Inject
+    @Getter
     private Client client;
 
     @Inject
+    @Getter
     private LMSConfig config;
 
     @Inject
