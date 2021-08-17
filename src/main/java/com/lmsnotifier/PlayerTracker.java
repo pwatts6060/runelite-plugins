@@ -54,20 +54,20 @@ public class PlayerTracker {
         int total = 0;
         int exact2t = 0;
         int exact1T = 0;
-        boolean whipSinceStart = true; // whether they haven't changed their weapon from whip when first seen
+//        boolean whipSinceStart = true; // whether they haven't changed their weapon from whip when first seen
         for (int i = 1, n = snapshotIndex - 2; i < n; i++) {
             PlayerSnapshot prev = snapshots[i-1];
             PlayerSnapshot cur = snapshots[i];
             PlayerSnapshot next = snapshots[i+1];
             PlayerSnapshot next2 = snapshots[i+2];
-            if (cur.equipment[3] != 20917) {
-                whipSinceStart = false;
-            }
-            if (!whipSinceStart && cur.animation == 1658 && cur.equipment[3] == 20917) { // make sure they have whip on still cause anim plays for 2t
-                // bots never attack with whip except at start of the game sometimes
-                setStatus(BotIdentification.Status.HUMAN, "Attacked with whip");
-                return;
-            }
+//            if (cur.equipment[3] != 20917) {
+//                whipSinceStart = false;
+//            }
+//            if (!whipSinceStart && cur.animation == 1658 && cur.equipment[3] == 20917) { // make sure they have whip on still cause anim plays for 2t
+//                // bots never attack with whip except at start of the game sometimes
+//                setStatus(BotIdentification.Status.HUMAN, "Attacked with whip");
+//                return;
+//            }
             if (prev.headIcon == null)
                 continue;
             if (next2.tick - next.tick > 1) { // skip gaps where the player went out of tracking range
