@@ -1,17 +1,18 @@
 package com.lmsnotifier;
 
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.client.hiscore.HiscoreClient;
+import net.runelite.client.hiscore.HiscoreEndpoint;
+import net.runelite.client.hiscore.HiscoreSkill;
+import net.runelite.client.hiscore.Skill;
+import net.runelite.client.util.Text;
+import okhttp3.OkHttpClient;
+
+import javax.inject.Inject;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import net.runelite.client.util.Text;
-import net.runelite.http.api.hiscore.HiscoreClient;
-import net.runelite.http.api.hiscore.HiscoreEndpoint;
-import net.runelite.http.api.hiscore.HiscoreSkill;
-import net.runelite.http.api.hiscore.Skill;
-import okhttp3.OkHttpClient;
 
 @Slf4j
 class LMSHiscores
@@ -20,7 +21,7 @@ class LMSHiscores
 	private final Set<String> currentLookups = ConcurrentHashMap.newKeySet();
 	private final Map<String, LMSRank> usernameToRank = new ConcurrentHashMap<>();
 	@Inject
-	private HiscoreClient hiscoreClient = new HiscoreClient(new OkHttpClient());
+	private final HiscoreClient hiscoreClient = new HiscoreClient(new OkHttpClient());
 
 	void fetchRank(String username)
 	{
