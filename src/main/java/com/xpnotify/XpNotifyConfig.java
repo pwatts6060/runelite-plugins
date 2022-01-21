@@ -13,7 +13,7 @@ public interface XpNotifyConfig extends Config {
     @ConfigItem(
             keyName = "skillsToFilter",
             name = "Skills to filter",
-            description = "Names of the skills for which a XP drop should not be shown, each name separated by a comma. Must be the full name of the skill as shown when hovered in the skills tab."
+            description = "Names of the skills for which a XP drop should not be notified, each name separated by a comma. Must be the full name of the skill as shown when hovered in the skills tab."
     )
     default String skillsToFilter() {
         return "";
@@ -23,7 +23,7 @@ public interface XpNotifyConfig extends Config {
             max = 5322 // Manually have to increase over time to let people use newer sounds
     )
     @ConfigItem(
-            keyName = "sound id",
+            keyName = "soundId",
             name = "Sound ID",
             description = "The sound ID to play"
     )
@@ -37,7 +37,7 @@ public interface XpNotifyConfig extends Config {
     @ConfigItem(
             keyName = "volume",
             name = "Volume",
-            description = "The volume of the xp drop sound effect"
+            description = "The volume of the xp drop sound effect (used when your sound effect setting are muted)"
     )
     default int volume() {
         return SoundEffectVolume.MEDIUM_LOW;
