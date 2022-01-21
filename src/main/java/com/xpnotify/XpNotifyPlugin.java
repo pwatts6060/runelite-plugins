@@ -75,8 +75,8 @@ public class XpNotifyPlugin extends Plugin {
         int currentXp = event.getXp();
         int previousXp = previous_exp[event.getSkill().ordinal()];
         if (previousXp > 0 && currentXp - previousXp > 0 && !filteredSkills.contains(event.getSkill().getName().toLowerCase())) {
-            XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, false);
-            client.playSoundEffect(SoundEffectID.TOWN_CRIER_BELL_DING, config.volume());
+//            XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, false);
+            client.playSoundEffect(config.soundId(), config.volume());
         }
 
         previous_exp[event.getSkill().ordinal()] = event.getXp();
