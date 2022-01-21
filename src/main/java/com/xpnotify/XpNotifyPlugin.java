@@ -56,6 +56,8 @@ public class XpNotifyPlugin extends Plugin {
         if ("XpNotify".equals(configChanged.getGroup())) {
             if ("skillsToFilter".equals(configChanged.getKey())) {
                 loadFilteredSkills();
+            } else if ("soundId".equals(configChanged.getKey())) {
+                clientThread.invoke(() -> client.playSoundEffect(config.soundId(), config.volume()));
             }
         }
     }
