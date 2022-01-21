@@ -30,9 +30,6 @@ public class XpNotifyPlugin extends Plugin {
     @Inject
     private Client client;
 
-    @Getter
-    private final Queue<XpDrop> queue = new LinkedList<>();
-
     @Inject
     private ClientThread clientThread;
 
@@ -50,7 +47,6 @@ public class XpNotifyPlugin extends Plugin {
         } else {
             Arrays.fill(previous_exp, 0);
         }
-        queue.clear();
 
         loadFilteredSkills();
     }
@@ -80,7 +76,6 @@ public class XpNotifyPlugin extends Plugin {
         int previousXp = previous_exp[event.getSkill().ordinal()];
         if (previousXp > 0 && currentXp - previousXp > 0 && !filteredSkills.contains(event.getSkill().getName().toLowerCase())) {
             XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, false);
-            queue.add(xpDrop);
             client.playSoundEffect(SoundEffectID.TOWN_CRIER_BELL_DING, config.volume());
         }
 
