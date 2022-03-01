@@ -1,2 +1,2 @@
-# Example
-An example greeter plugin
+# Star tier indicator
+Displays a string of the star tier above a crashed star
