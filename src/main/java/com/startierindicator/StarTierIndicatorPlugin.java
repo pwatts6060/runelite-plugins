@@ -93,7 +93,7 @@ public class StarTierIndicatorPlugin extends Plugin
     @Subscribe
     public void onGameStateChanged(GameStateChanged state)
     {
-	if (state.getGameState() == GameState.HOPPING)
+	if (state.getGameState() == GameState.HOPPING || state.getGameState() == GameState.LOGGING_IN)
 	    starOverlay.removeStar();
     }
 

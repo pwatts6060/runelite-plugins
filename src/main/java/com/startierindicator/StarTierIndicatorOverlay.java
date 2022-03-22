@@ -112,12 +112,9 @@ public class StarTierIndicatorOverlay extends Overlay
 	    }
 	    catch (Exception e)
 	    {
-		removeStar();
+		return null;
 	    }
 	}
-	else
-	    removeStar();
-
 	return null;
     }
 }
