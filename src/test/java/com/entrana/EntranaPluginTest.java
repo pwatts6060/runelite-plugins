@@ -1,13 +1,13 @@
-package com.example;
+package com.entrana;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class ExamplePluginTest
+public class EntranaPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(ExamplePlugin.class);
+		ExternalPluginManager.loadBuiltin(EntranaPlugin.class);
 		RuneLite.main(args);
 	}
 }
