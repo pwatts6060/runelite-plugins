@@ -47,7 +47,13 @@ public class ProhibitedItems
 		ItemID.BLACK_WIZARD_ROBE_T,
 		ItemID.BLACK_WIZARD_ROBE_G,
 		ItemID.ZAMORAK_MONK_BOTTOM,
-		ItemID.ZAMORAK_MONK_TOP
+		ItemID.ZAMORAK_MONK_TOP,
+		ItemID.HAM_ROBE,
+		ItemID.HAM_SHIRT,
+		ItemID.HAM_HOOD,
+		ItemID.HAM_BOOTS,
+		ItemID.HAM_GLOVES,
+		ItemID.HAM_CLOAK
 	);
 	private static final Set<Integer> prohibitedIds = ImmutableSet.of(
 		ItemID.CUTTHROAT_FLAG,
