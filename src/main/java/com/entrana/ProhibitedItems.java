@@ -105,7 +105,72 @@ public class ProhibitedItems
 		ItemID.FREMENNIK_ROBE,
 		ItemID.FREMENNIK_SKIRT,
 		ItemID.FREMENNIK_HAT,
-		ItemID.FREMENNIK_GLOVES
+		ItemID.FREMENNIK_GLOVES,
+		ItemID.SPIKED_BOOTS,
+		ItemID.LEATHER_BOOTS,
+		ItemID.LEATHER_GLOVES,
+		ItemID.CLIMBING_BOOTS,
+		ItemID.CLIMBING_BOOTS_G,
+		ItemID.LEATHER_VAMBRACES,
+		ItemID.GUTHIX_CLOAK,
+		ItemID.ZAMORAK_CLOAK,
+		ItemID.SARADOMIN_CLOAK,
+		ItemID.ARMADYL_CLOAK,
+		ItemID.ANCIENT_CLOAK,
+		ItemID.BANDOS_CLOAK,
+		ItemID.TEAM1_CAPE,
+		ItemID.TEAM2_CAPE,
+		ItemID.TEAM3_CAPE,
+		ItemID.TEAM4_CAPE,
+		ItemID.TEAM5_CAPE,
+		ItemID.TEAM6_CAPE,
+		ItemID.TEAM7_CAPE,
+		ItemID.TEAM8_CAPE,
+		ItemID.TEAM9_CAPE,
+		ItemID.TEAM10_CAPE,
+		ItemID.TEAM11_CAPE,
+		ItemID.TEAM12_CAPE,
+		ItemID.TEAM13_CAPE,
+		ItemID.TEAM14_CAPE,
+		ItemID.TEAM15_CAPE,
+		ItemID.TEAM16_CAPE,
+		ItemID.TEAM17_CAPE,
+		ItemID.TEAM18_CAPE,
+		ItemID.TEAM19_CAPE,
+		ItemID.TEAM20_CAPE,
+		ItemID.TEAM21_CAPE,
+		ItemID.TEAM22_CAPE,
+		ItemID.TEAM23_CAPE,
+		ItemID.TEAM24_CAPE,
+		ItemID.TEAM25_CAPE,
+		ItemID.TEAM26_CAPE,
+		ItemID.TEAM27_CAPE,
+		ItemID.TEAM28_CAPE,
+		ItemID.TEAM29_CAPE,
+		ItemID.TEAM30_CAPE,
+		ItemID.TEAM31_CAPE,
+		ItemID.TEAM32_CAPE,
+		ItemID.TEAM33_CAPE,
+		ItemID.TEAM34_CAPE,
+		ItemID.TEAM35_CAPE,
+		ItemID.TEAM36_CAPE,
+		ItemID.TEAM37_CAPE,
+		ItemID.TEAM38_CAPE,
+		ItemID.TEAM39_CAPE,
+		ItemID.TEAM40_CAPE,
+		ItemID.TEAM41_CAPE,
+		ItemID.TEAM42_CAPE,
+		ItemID.TEAM43_CAPE,
+		ItemID.TEAM44_CAPE,
+		ItemID.TEAM45_CAPE,
+		ItemID.TEAM46_CAPE,
+		ItemID.TEAM47_CAPE,
+		ItemID.TEAM48_CAPE,
+		ItemID.TEAM49_CAPE,
+		ItemID.TEAM50_CAPE,
+		ItemID.TEAM_CAPE_I,
+		ItemID.TEAM_CAPE_X,
+		ItemID.TEAM_CAPE_ZERO
 	);
 	private static final Set<Integer> prohibitedIds = ImmutableSet.of(
 		ItemID.CUTTHROAT_FLAG,
@@ -147,6 +212,10 @@ public class ProhibitedItems
 		ItemID.BANDOS_HILT,
 		ItemID.ZAMORAK_HILT,
 		ItemID.ARMADYL_HILT,
+		ItemID.GODSWORD_BLADE,
+		ItemID.GODSWORD_SHARD_1,
+		ItemID.GODSWORD_SHARD_2,
+		ItemID.GODSWORD_SHARD_3,
 		ItemID.HAM_JOINT,
 		ItemID.SWIFT_BLADE,
 		ItemID.IMCANDO_HAMMER,
@@ -220,36 +289,34 @@ public class ProhibitedItems
 		if (slot == EquipmentInventorySlot.AMULET.getSlotIdx()) {
 			return false;
 		}
+		if (slot == EquipmentInventorySlot.RING.getSlotIdx()) {
+			return false;
+		}
 
 		ItemComposition itemComposition = itemManager.getItemComposition(id);
 		String name = itemComposition.getName().toLowerCase();
-		if (name.contains("necklace"))
-		{
-			return false;
-		}
 		if (name.contains("bracelet"))
 		{
 			return false;
 		}
-		if (name.contains("amulet"))
-		{
-			return false;
-		}
-		if (name.contains("ring"))
-		{
-			return false;
-		}
-
-		int sum = stats.getAcrush()
-			+ stats.getAstab()
-			+ stats.getAslash()
-			+ stats.getAmagic()
-			+ stats.getArange()
-			+ stats.getDcrush()
-			+ stats.getDmagic()
-			+ stats.getDrange()
-			+ stats.getDslash()
-			+ stats.getDstab();
-		return sum > 0;
+		if (stats.getAcrush() > 0)
+			return true;
+		if (stats.getAstab() > 0)
+			return true;
+		if (stats.getAslash() > 0)
+			return true;
+		if (stats.getAmagic() > 0)
+			return true;
+		if (stats.getArange() > 0)
+			return true;
+		if (stats.getDmagic() > 0)
+			return true;
+		if (stats.getDrange() > 0)
+			return true;
+		if (stats.getDslash() > 0)
+			return true;
+		if (stats.getDstab() > 0)
+			return true;
+		return false;
 	}
 }
