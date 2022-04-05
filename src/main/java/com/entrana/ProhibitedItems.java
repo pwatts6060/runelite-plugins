@@ -197,7 +197,8 @@ public class ProhibitedItems
 		ItemID.TURQUOISE_HAT,
 		ItemID.ROCKSHELL_BOOTS,
 		ItemID.BOOTS_OF_STONE,
-		ItemID.WIZARD_BOOTS
+		ItemID.WIZARD_BOOTS,
+		ItemID.FIGHTING_BOOTS
 	);
 	private static final Set<Integer> prohibitedIds = ImmutableSet.of(
 		ItemID.CUTTHROAT_FLAG,
