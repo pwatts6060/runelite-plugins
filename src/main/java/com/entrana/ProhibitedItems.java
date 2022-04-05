@@ -170,7 +170,31 @@ public class ProhibitedItems
 		ItemID.TEAM50_CAPE,
 		ItemID.TEAM_CAPE_I,
 		ItemID.TEAM_CAPE_X,
-		ItemID.TEAM_CAPE_ZERO
+		ItemID.TEAM_CAPE_ZERO,
+		ItemID.GHOSTLY_BOOTS,
+		ItemID.GHOSTLY_GLOVES,
+		ItemID.ICE_GLOVES,
+		ItemID.GLOVES_OF_SILENCE,
+		ItemID.PINK_BOOTS,
+		ItemID.GREEN_BOOTS,
+		ItemID.BLUE_BOOTS,
+		ItemID.CREAM_BOOTS,
+		ItemID.TURQUOISE_BOOTS,
+		ItemID.PINK_ROBE_TOP,
+		ItemID.GREEN_ROBE_TOP,
+		ItemID.BLUE_ROBE_TOP,
+		ItemID.CREAM_ROBE_TOP,
+		ItemID.TURQUOISE_ROBE_TOP,
+		ItemID.PINK_ROBE_BOTTOMS,
+		ItemID.GREEN_ROBE_BOTTOMS,
+		ItemID.BLUE_ROBE_BOTTOMS,
+		ItemID.CREAM_ROBE_BOTTOMS,
+		ItemID.TURQUOISE_ROBE_BOTTOMS,
+		ItemID.PINK_HAT,
+		ItemID.GREEN_HAT,
+		ItemID.BLUE_HAT,
+		ItemID.CREAM_HAT,
+		ItemID.TURQUOISE_HAT
 	);
 	private static final Set<Integer> prohibitedIds = ImmutableSet.of(
 		ItemID.CUTTHROAT_FLAG,
@@ -240,7 +264,8 @@ public class ProhibitedItems
 		ItemID.LUCKY_IMPLING_JAR,
 		ItemID.CRYSTAL_IMPLING_JAR,
 		ItemID.SUPPLY_CRATE,
-		ItemID.SPOILS_OF_WAR
+		ItemID.SPOILS_OF_WAR,
+		ItemID.BUTTERFLY_NET
 	);
 	private static final Map<Integer, Boolean> cachedIds = new HashMap<>();
 	private final ItemManager itemManager;
