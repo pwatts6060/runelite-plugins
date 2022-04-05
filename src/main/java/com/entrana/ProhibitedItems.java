@@ -194,7 +194,10 @@ public class ProhibitedItems
 		ItemID.GREEN_HAT,
 		ItemID.BLUE_HAT,
 		ItemID.CREAM_HAT,
-		ItemID.TURQUOISE_HAT
+		ItemID.TURQUOISE_HAT,
+		ItemID.ROCKSHELL_BOOTS,
+		ItemID.BOOTS_OF_STONE,
+		ItemID.WIZARD_BOOTS
 	);
 	private static final Set<Integer> prohibitedIds = ImmutableSet.of(
 		ItemID.CUTTHROAT_FLAG,
@@ -360,6 +363,10 @@ public class ProhibitedItems
 			return true;
 		}
 		if (stats.getDstab() > 0)
+		{
+			return true;
+		}
+		if (stats.getStr() > 0)
 		{
 			return true;
 		}
