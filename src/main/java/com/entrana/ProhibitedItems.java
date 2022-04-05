@@ -308,13 +308,16 @@ public class ProhibitedItems
 
 		ItemEquipmentStats stats = itemStats.getEquipment();
 		int slot = itemStats.getEquipment().getSlot();
-		if (slot == EquipmentInventorySlot.AMMO.getSlotIdx()) {
+		if (slot == EquipmentInventorySlot.AMMO.getSlotIdx())
+		{
 			return false;
 		}
-		if (slot == EquipmentInventorySlot.AMULET.getSlotIdx()) {
+		if (slot == EquipmentInventorySlot.AMULET.getSlotIdx())
+		{
 			return false;
 		}
-		if (slot == EquipmentInventorySlot.RING.getSlotIdx()) {
+		if (slot == EquipmentInventorySlot.RING.getSlotIdx())
+		{
 			return false;
 		}
 
@@ -325,23 +328,41 @@ public class ProhibitedItems
 			return false;
 		}
 		if (stats.getAcrush() > 0)
+		{
 			return true;
+		}
 		if (stats.getAstab() > 0)
+		{
 			return true;
+		}
 		if (stats.getAslash() > 0)
+		{
 			return true;
+		}
 		if (stats.getAmagic() > 0)
+		{
 			return true;
+		}
 		if (stats.getArange() > 0)
+		{
 			return true;
+		}
 		if (stats.getDmagic() > 0)
+		{
 			return true;
+		}
 		if (stats.getDrange() > 0)
+		{
 			return true;
+		}
 		if (stats.getDslash() > 0)
+		{
 			return true;
+		}
 		if (stats.getDstab() > 0)
+		{
 			return true;
+		}
 		return false;
 	}
 }
