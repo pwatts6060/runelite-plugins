@@ -55,4 +55,10 @@ public class EntranaPlugin extends Plugin
 		}
 		overlayManager.add(containerHighlight);
 	}
+
+	@Override
+	protected void shutDown() throws Exception
+	{
+		overlayManager.remove(containerHighlight);
+	}
 }
