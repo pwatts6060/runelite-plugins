@@ -40,81 +40,88 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 public class StarTierIndicatorOverlay extends Overlay
 {
 
-    public class Star
-    {
-	public final GameObject starObject;
-	public final String tier;
-	public final WorldPoint location;
-
-	Star(GameObject starObject, String tier, WorldPoint location)
+	public class Star
 	{
-	    this.starObject = starObject;
-	    this.tier = tier;
-	    this.location = location;
+		public final GameObject starObject;
+		public final String tier;
+		public final WorldPoint location;
+
+		Star(GameObject starObject, String tier, WorldPoint location)
+		{
+			this.starObject = starObject;
+			this.tier = tier;
+			this.location = location;
+		}
 	}
-    }
 
-    private final Client client;
-    private final StarTierIndicatorConfig config;
-    private Star star;
-    private Color textColor;
+	private final Client client;
+	private final StarTierIndicatorConfig config;
+	private Star star;
+	private Color textColor;
 
-    @Inject StarTierIndicatorOverlay(Client client, StarTierIndicatorConfig config)
-    {
-	this.client = client;
-	this.config = config;
-	setPosition(OverlayPosition.DYNAMIC);
-	setLayer(OverlayLayer.ABOVE_SCENE);
-	setPriority(OverlayPriority.HIGHEST);
-    }
-
-    public Star getStar()
-    {
-	return star;
-    }
-
-    public void removeStar()
-    {
-	star = null;
-    }
-
-    public void setStar(GameObject star, String tier)
-    {
-	this.star = new Star(star, tier, star.getWorldLocation());
-    }
-
-    public void update()
-    {
-	if (star == null)
-	    return;
-	if (client.getLocalPlayer().getWorldLocation().distanceTo(star.location) > 32)
-		removeStar();
-    }
-
-    public void updateConfig()
-    {
-	textColor = config.getTextColor();
-    }
-
-    @Override
-    public Dimension render(final Graphics2D graphics)
-    {
-	if (star == null)
-	    return null;
-
-	Point starLocation = star.starObject.getCanvasTextLocation(graphics, star.tier, 0);
-
-	if (starLocation != null)
+	@Inject
+	StarTierIndicatorOverlay(Client client, StarTierIndicatorConfig config)
 	{
-	    try
-	    {
-		OverlayUtil.renderTextLocation(graphics, star.starObject.getCanvasTextLocation(graphics, star.tier, 190), star.tier, textColor);
-	    }
-	    catch (Exception e)
-	    {
+		this.client = client;
+		this.config = config;
+		setPosition(OverlayPosition.DYNAMIC);
+		setLayer(OverlayLayer.ABOVE_SCENE);
+		setPriority(OverlayPriority.HIGHEST);
+	}
+
+	public Star getStar()
+	{
+		return star;
+	}
+
+	public void removeStar()
+	{
+		star = null;
+	}
+
+	public void setStar(GameObject star, String tier)
+	{
+		this.star = new Star(star, tier, star.getWorldLocation());
+	}
+
+	public void update()
+	{
+		if (star == null)
+		{
+			return;
+		}
+		if (client.getLocalPlayer().getWorldLocation().distanceTo(star.location) > 32)
+		{
+			removeStar();
+		}
+	}
+
+	public void updateConfig()
+	{
+		textColor = config.getTextColor();
+	}
+
+	@Override
+	public Dimension render(final Graphics2D graphics)
+	{
+		if (star == null)
+		{
+			return null;
+		}
+
+		Point starLocation = star.starObject.getCanvasTextLocation(graphics, star.tier, 0);
+
+		if (starLocation != null)
+		{
+			try
+			{
+				OverlayUtil.renderTextLocation(graphics, star.starObject.getCanvasTextLocation(graphics, star.tier, 190), star.tier, textColor);
+			}
+			catch (Exception e)
+			{
+				return null;
+			}
+		}
 		return null;
-	    }
 	}
-	return null;
-    }
 }
