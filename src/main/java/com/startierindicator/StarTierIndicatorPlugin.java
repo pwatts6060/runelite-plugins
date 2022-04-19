@@ -47,81 +47,97 @@ import net.runelite.api.events.GameTick;
 public class StarTierIndicatorPlugin extends Plugin
 {
 
-    private static final int[] TIER_IDS = new int[]{41229,41228,41227,41226,41225,41224,41223,41021,41020};
+	private static final int[] TIER_IDS = new int[]{41229, 41228, 41227, 41226, 41225, 41224, 41223, 41021, 41020};
 
-    @Inject
-    private StarTierIndicatorOverlay starOverlay;
+	@Inject
+	private StarTierIndicatorOverlay starOverlay;
 
-    @Inject
-    private OverlayManager overlayManager;
+	@Inject
+	private OverlayManager overlayManager;
 
-    @Inject
-    private StarTierIndicatorConfig starConfig;
+	@Inject
+	private StarTierIndicatorConfig starConfig;
 
-    @Provides StarTierIndicatorConfig
-    provideConfig(ConfigManager configManager) {return configManager.getConfig(StarTierIndicatorConfig.class);}
-
-    @Override
-    protected void startUp() throws Exception
-    {
-	overlayManager.add(starOverlay);
-	starOverlay.updateConfig();
-    }
-
-    @Override
-    protected void shutDown() throws Exception
-    {
-	starOverlay.removeStar();
-	overlayManager.remove(starOverlay);
-    }
-
-    @Subscribe
-    public void onGameObjectSpawned(GameObjectSpawned event)
-    {
-	int tier = getTier(event.getGameObject().getId());
-	if (tier != -1)
-	    starOverlay.setStar(event.getGameObject(), "T"+tier);
-    }
-
-    @Subscribe
-    public void onGameObjectDespawned(GameObjectDespawned event)
-    {
-	if (getTier(event.getGameObject().getId()) != -1)
-	    starOverlay.removeStar();
-    }
-
-    @Subscribe
-    public void onGameStateChanged(GameStateChanged state)
-    {
-	if (state.getGameState() == GameState.HOPPING || state.getGameState() == GameState.LOGGING_IN)
-	    starOverlay.removeStar();
-    }
-
-    @Subscribe
-    public void onGameTick(GameTick tick)
-    {
-	if (starOverlay.getStar() != null && getTier(starOverlay.getStar().starObject.getId()) != -1)
-	    starOverlay.update();
-	else
-	    starOverlay.removeStar();
-    }
-
-    @Subscribe
-    public void onConfigChanged(ConfigChanged event)
-    {
-	if (event.getGroup().equals("startierplugin"))
-	    starOverlay.updateConfig();
-    }
-
-    private int getTier(int id)
-    {
-	for (int i = 0; i < TIER_IDS.length; i++)
+	@Provides
+	StarTierIndicatorConfig
+	provideConfig(ConfigManager configManager)
 	{
-	    if(id == TIER_IDS[i])
-	    {
-		return i + 1;
-	    }
+		return configManager.getConfig(StarTierIndicatorConfig.class);
 	}
-	return -1;
-    }
+
+	@Override
+	protected void startUp() throws Exception
+	{
+		overlayManager.add(starOverlay);
+		starOverlay.updateConfig();
+	}
+
+	@Override
+	protected void shutDown() throws Exception
+	{
+		starOverlay.removeStar();
+		overlayManager.remove(starOverlay);
+	}
+
+	@Subscribe
+	public void onGameObjectSpawned(GameObjectSpawned event)
+	{
+		int tier = getTier(event.getGameObject().getId());
+		if (tier != -1)
+		{
+			starOverlay.setStar(event.getGameObject(), "T" + tier);
+		}
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(GameObjectDespawned event)
+	{
+		if (getTier(event.getGameObject().getId()) != -1)
+		{
+			starOverlay.removeStar();
+		}
+	}
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged state)
+	{
+		if (state.getGameState() == GameState.HOPPING || state.getGameState() == GameState.LOGGING_IN)
+		{
+			starOverlay.removeStar();
+		}
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick tick)
+	{
+		if (starOverlay.getStar() != null && getTier(starOverlay.getStar().starObject.getId()) != -1)
+		{
+			starOverlay.update();
+		}
+		else
+		{
+			starOverlay.removeStar();
+		}
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if (event.getGroup().equals("startierplugin"))
+		{
+			starOverlay.updateConfig();
+		}
+	}
+
+	private int getTier(int id)
+	{
+		for (int i = 0; i < TIER_IDS.length; i++)
+		{
+			if (id == TIER_IDS[i])
+			{
+				return i + 1;
+			}
+		}
+		return -1;
+	}
 }
