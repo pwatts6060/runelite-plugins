@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.startierindicator;
+package com.starinfo;
 
 import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
@@ -32,17 +32,37 @@ import net.runelite.client.config.ConfigItem;
 
 import java.awt.*;
 
-@ConfigGroup("startierplugin")
-public interface StarTierIndicatorConfig extends Config
+@ConfigGroup("starinfoplugin")
+public interface StarInfoConfig extends Config
 {
+
+	public static final String TEXT_COLOR_KEY = "textColor";
+	public static final String INFO_BOX_KEY = "infoBox";
+	public static final String HINT_ARROW_KEY = "hintArrow";
 
     @Alpha
     @ConfigItem(
 	    position = 1,
-	    keyName = "textColor",
+	    keyName = TEXT_COLOR_KEY,
 	    name = "Text color",
 	    description = "Sets the color of the text above a star."
     )
     default Color getTextColor() {return Color.GREEN;}
 
+
+	@ConfigItem(
+		position = 2,
+		keyName = INFO_BOX_KEY,
+		name = "Show Info Box",
+		description = "Whether to display star status info box"
+	)
+	default boolean showInfoBox() {return true;}
+
+	@ConfigItem(
+		position = 3,
+		keyName = HINT_ARROW_KEY,
+		name = "Show Hint Arrow",
+		description = "Whether to display hint arrow pointing to star"
+	)
+	default boolean showHintArrow() {return true;}
 }

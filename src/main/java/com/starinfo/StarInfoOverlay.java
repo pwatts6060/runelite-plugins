@@ -23,77 +23,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.startierindicator;
+package com.starinfo;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import javax.inject.Inject;
-import java.awt.*;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
 import net.runelite.api.Point;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-public class StarTierIndicatorOverlay extends Overlay
+public class StarInfoOverlay extends Overlay
 {
 
-	public class Star
-	{
-		public final GameObject starObject;
-		public final String tier;
-		public final WorldPoint location;
-
-		Star(GameObject starObject, String tier, WorldPoint location)
-		{
-			this.starObject = starObject;
-			this.tier = tier;
-			this.location = location;
-		}
-	}
-
-	private final Client client;
-	private final StarTierIndicatorConfig config;
-	private Star star;
+	private final StarInfoPlugin plugin;
+	private final StarInfoConfig config;
 	private Color textColor;
+	private Star lastStar = null;
+	private String lastHealthText = "";
 
 	@Inject
-	StarTierIndicatorOverlay(Client client, StarTierIndicatorConfig config)
+	StarInfoOverlay(StarInfoPlugin plugin, StarInfoConfig config)
 	{
-		this.client = client;
+		this.plugin = plugin;
 		this.config = config;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		setPriority(OverlayPriority.HIGHEST);
-	}
-
-	public Star getStar()
-	{
-		return star;
-	}
-
-	public void removeStar()
-	{
-		star = null;
-	}
-
-	public void setStar(GameObject star, String tier)
-	{
-		this.star = new Star(star, tier, star.getWorldLocation());
-	}
-
-	public void update()
-	{
-		if (star == null)
-		{
-			return;
-		}
-		if (client.getLocalPlayer().getWorldLocation().distanceTo(star.location) > 32)
-		{
-			removeStar();
-		}
 	}
 
 	public void updateConfig()
@@ -104,18 +63,34 @@ public class StarTierIndicatorOverlay extends Overlay
 	@Override
 	public Dimension render(final Graphics2D graphics)
 	{
-		if (star == null)
+		if (plugin.stars.isEmpty())
 		{
+			lastStar = null;
 			return null;
 		}
-
-		Point starLocation = star.starObject.getCanvasTextLocation(graphics, star.tier, 0);
+		Star star = plugin.stars.get(0);
+		String text = "T" + star.getTier() + " " + star.getMiners() + "M";
+		if (star.getNpc() != null)
+		{
+			if (star.getNpc().getHealthRatio() >= 0)
+			{
+				String healthText = " " + (100 * star.getNpc().getHealthRatio() / star.getNpc().getHealthScale()) + "%";
+				text += healthText;
+				lastHealthText = healthText;
+				lastStar = star;
+			}
+			else if (star.equals(lastStar) && !lastHealthText.isEmpty())
+			{
+				text += lastHealthText;
+			}
+		}
+		Point starLocation = star.getObject().getCanvasTextLocation(graphics, text, 0);
 
 		if (starLocation != null)
 		{
 			try
 			{
-				OverlayUtil.renderTextLocation(graphics, star.starObject.getCanvasTextLocation(graphics, star.tier, 190), star.tier, textColor);
+				OverlayUtil.renderTextLocation(graphics, star.getObject().getCanvasTextLocation(graphics, text, 190), text, textColor);
 			}
 			catch (Exception e)
 			{
