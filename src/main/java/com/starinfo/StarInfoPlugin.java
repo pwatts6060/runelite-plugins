@@ -27,6 +27,8 @@ package com.starinfo;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,9 +39,14 @@ import javax.inject.Inject;
 import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import net.runelite.api.MenuAction;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.NullNpcID;
 import net.runelite.api.Player;
+import net.runelite.api.Tile;
+import net.runelite.api.TileObject;
 import net.runelite.api.coords.Angle;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldArea;
@@ -48,6 +55,7 @@ import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.client.config.ConfigManager;
@@ -58,6 +66,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
+import net.runelite.client.util.Text;
 
 @PluginDescriptor(
 	name = "Star Info",
@@ -364,6 +373,66 @@ public class StarInfoPlugin extends Plugin
 				client.setHintArrow(star.getWorldPoint());
 			}
 		}
+	}
+
+	@Subscribe
+	public void onMenuEntryAdded(MenuEntryAdded event)
+	{
+		if (event.getType() != MenuAction.EXAMINE_OBJECT.getId() || !starConfig.copyToClipboard())
+		{
+			return;
+		}
+
+		final Tile tile = client.getScene().getTiles()[client.getPlane()][event.getActionParam0()][event.getActionParam1()];
+		final TileObject tileObject = findTileObject(tile, event.getIdentifier());
+
+		if (tileObject == null)
+		{
+			return;
+		}
+
+		client.createMenuEntry(-1)
+			.setOption("Copy")
+			.setTarget(event.getTarget())
+			.setParam0(event.getActionParam0())
+			.setParam1(event.getActionParam1())
+			.setIdentifier(event.getIdentifier())
+			.setType(MenuAction.RUNELITE)
+			.onClick(this::copy);
+	}
+
+	private void copy(MenuEntry menuEntry)
+	{
+		if (stars.isEmpty())
+		{
+			return;
+		}
+		Star star = stars.get(0);
+		String content = "T" + star.getTier() + " / " + star.getMiners() + " Miners / ";
+		if (star.getHealth() >= 0)
+		{
+			content += star.getHealth() + "%";
+		}
+
+		final StringSelection stringSelection = new StringSelection(Text.removeTags(content));
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Copied star information to clipboard", "");
+	}
+
+	private TileObject findTileObject(Tile tile, int id)
+	{
+		if (tile == null)
+		{
+			return null;
+		}
+		for (GameObject object : tile.getGameObjects())
+		{
+			if (object != null && object.getId() == id)
+			{
+				return object;
+			}
+		}
+		return null;
 	}
 
 	@Subscribe

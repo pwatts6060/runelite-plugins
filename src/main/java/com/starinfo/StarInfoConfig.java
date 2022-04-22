@@ -44,6 +44,7 @@ public interface StarInfoConfig extends Config
 	String SHOW_DUST = "showDust";
 	String SHOW_MINERS = "showMiners";
 	String COLOR_STAR = "colorStar";
+	String CLIPBOARD = "copyToClipboard";
 
 	@Alpha
 	@ConfigItem(
@@ -130,6 +131,17 @@ public interface StarInfoConfig extends Config
 		description = "Highlights stars green if you can mine it, and red if you can't"
 	)
 	default boolean colorStar()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 9,
+		keyName = CLIPBOARD,
+		name = "Copy to Clipboard Option",
+		description = "Allows you to right click stars and copy their information"
+	)
+	default boolean copyToClipboard()
 	{
 		return true;
 	}
