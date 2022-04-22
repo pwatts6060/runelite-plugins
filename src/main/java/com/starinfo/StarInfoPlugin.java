@@ -413,6 +413,7 @@ public class StarInfoPlugin extends Plugin
 		{
 			content += star.getHealth() + "%";
 		}
+		content += " " + DiscordTimeStamp.relativeTimeNow();
 
 		final StringSelection stringSelection = new StringSelection(Text.removeTags(content));
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
