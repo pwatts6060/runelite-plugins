@@ -168,7 +168,7 @@ public class StarInfoPlugin extends Plugin
 				return;
 			}
 		}
-		stars.add(0, new Star(event.getNpc()));
+		stars.add(0, new Star(event.getNpc(), client.getWorld()));
 		refresh();
 	}
 
@@ -213,15 +213,14 @@ public class StarInfoPlugin extends Plugin
 		}
 		if (star == null)
 		{
-			star = new Star(event.getGameObject());
+			star = new Star(event.getGameObject(), client.getWorld());
 			stars.add(0, star);
 			newStar = true;
 		}
 
 		if (newStar)
 		{
-			String world = client == null ? "?" : Integer.toString(client.getWorld());
-			String msg = "Star Found T" + tier + " / W" + world + " / " + star.getLocation();
+			String msg = "Star Found T" + tier + " / W" + star.getWorld() + " / " + star.getLocation();
 			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", msg, "");
 		}
 		refresh();
@@ -408,7 +407,7 @@ public class StarInfoPlugin extends Plugin
 			return;
 		}
 		Star star = stars.get(0);
-		String content = "T" + star.getTier() + " / " + star.getMiners() + " Miners / ";
+		String content = "W" + star.getWorld() + " T" + star.getTier() + " / " + star.getMiners() + " Miners / ";
 		if (star.getHealth() >= 0)
 		{
 			content += star.getHealth() + "%";
@@ -417,7 +416,7 @@ public class StarInfoPlugin extends Plugin
 
 		final StringSelection stringSelection = new StringSelection(Text.removeTags(content));
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
-		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Copied star information to clipboard", "");
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Copied star information to clipboard.", "");
 	}
 
 	private TileObject findTileObject(Tile tile, int id)

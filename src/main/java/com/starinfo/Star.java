@@ -24,6 +24,8 @@ public class Star
 	@Getter
 	private final WorldPoint worldPoint;
 	@Getter
+	private final int world;
+	@Getter
 	@Setter
 	private NPC npc;
 	@Getter
@@ -36,18 +38,20 @@ public class Star
 	private final String location;
 	private int health = -1;
 
-	public Star(NPC npc)
+	public Star(NPC npc, int world)
 	{
 		this.npc = npc;
 		this.worldPoint = npc.getWorldLocation();
 		this.location = Location.forLocation(worldPoint);
+		this.world = world;
 	}
 
-	public Star(GameObject gameObject)
+	public Star(GameObject gameObject, int world)
 	{
 		this.object = gameObject;
 		this.worldPoint = gameObject.getWorldLocation();
 		this.location = Location.forLocation(worldPoint);
+		this.world = world;
 	}
 
 	public int getTier()
