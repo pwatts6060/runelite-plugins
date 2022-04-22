@@ -9,8 +9,17 @@ import net.runelite.api.coords.WorldPoint;
 
 public class Star
 {
-	private static final int T1_ID = ObjectID.CRASHED_STAR_41229;
-	private static final int T9_ID = ObjectID.CRASHED_STAR;
+	private static final int[] TIER_IDS = new int[]{
+		ObjectID.CRASHED_STAR_41229,
+		ObjectID.CRASHED_STAR_41228,
+		ObjectID.CRASHED_STAR_41227,
+		ObjectID.CRASHED_STAR_41226,
+		ObjectID.CRASHED_STAR_41225,
+		ObjectID.CRASHED_STAR_41224,
+		ObjectID.CRASHED_STAR_41223,
+		ObjectID.CRASHED_STAR_41021,
+		ObjectID.CRASHED_STAR,
+	};
 
 	@Getter
 	private final WorldPoint worldPoint;
@@ -49,12 +58,15 @@ public class Star
 		return getTier(object.getId());
 	}
 
-	static int getTier(int id)
+	public static int getTier(int id)
 	{
-		if (id < T9_ID || id > T1_ID)
+		for (int i = 0; i < TIER_IDS.length; i++)
 		{
-			return -1;
+			if(id == TIER_IDS[i])
+			{
+				return i + 1;
+			}
 		}
-		return 1 + T1_ID - id;
+		return -1;
 	}
 }
