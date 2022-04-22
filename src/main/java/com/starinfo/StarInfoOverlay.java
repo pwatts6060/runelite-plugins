@@ -76,7 +76,7 @@ public class StarInfoOverlay extends Overlay
 
 		if (config.showMiners())
 		{
-			text = " " + star.getMiners() + "M";
+			text += " " + star.getMiners() + "M";
 		}
 
 		int health = getHealth(star);
