@@ -29,6 +29,7 @@ import com.google.common.base.Strings;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import javax.inject.Inject;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
@@ -106,7 +107,7 @@ public class StarInfoOverlay extends Overlay
 			}
 		}
 
-		Point starLocation = star.getObject().getCanvasTextLocation(graphics, text, 0);
+		Point starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
 
 		if (starLocation != null)
 		{
@@ -114,16 +115,20 @@ public class StarInfoOverlay extends Overlay
 			{
 				if (config.thickOutline())
 				{
-					renderThickOutlineText(graphics, star.getObject().getCanvasTextLocation(graphics, text, 190), text, textColor);
+					renderThickOutlineText(graphics, starLocation, text, textColor);
 				}
 				else
 				{
-					OverlayUtil.renderTextLocation(graphics, star.getObject().getCanvasTextLocation(graphics, text, 190), text, textColor);
+					OverlayUtil.renderTextLocation(graphics, starLocation, text, textColor);
 				}
 
 				if (config.colorStar())
 				{
-					OverlayUtil.renderPolygon(graphics, star.getObject().getConvexHull(), getStarColor());
+					Shape shape = star.getObject().getConvexHull();
+					if (shape != null)
+					{
+						OverlayUtil.renderPolygon(graphics, shape, getStarColor());
+					}
 				}
 			}
 			catch (Exception e)
