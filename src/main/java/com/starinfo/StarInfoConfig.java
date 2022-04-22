@@ -64,7 +64,7 @@ public interface StarInfoConfig extends Config
 	)
 	default boolean thickOutline()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -119,6 +119,6 @@ public interface StarInfoConfig extends Config
 	)
 	default DustConfig showDust()
 	{
-		return DustConfig.LAYER_STARDUST;
+		return DustConfig.NO_DISPLAY;
 	}
 }
