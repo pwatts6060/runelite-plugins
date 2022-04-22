@@ -43,6 +43,7 @@ public interface StarInfoConfig extends Config
 	String SHOW_PERCENT = "showPercent";
 	String SHOW_DUST = "showDust";
 	String SHOW_MINERS = "showMiners";
+	String COLOR_STAR = "colorStar";
 
 	@Alpha
 	@ConfigItem(
@@ -120,5 +121,16 @@ public interface StarInfoConfig extends Config
 	default DustConfig showDust()
 	{
 		return DustConfig.NO_DISPLAY;
+	}
+
+	@ConfigItem(
+		position = 8,
+		keyName = COLOR_STAR,
+		name = "Highlight Star",
+		description = "Highlights stars green if you can mine it, and red if you can't"
+	)
+	default boolean colorStar()
+	{
+		return true;
 	}
 }

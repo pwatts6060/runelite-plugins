@@ -31,6 +31,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
 import net.runelite.api.Point;
+import net.runelite.api.Skill;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -122,6 +123,11 @@ public class StarInfoOverlay extends Overlay
 				{
 					OverlayUtil.renderTextLocation(graphics, star.getObject().getCanvasTextLocation(graphics, text, 190), text, textColor);
 				}
+
+				if (config.colorStar())
+				{
+					OverlayUtil.renderPolygon(graphics, star.getObject().getConvexHull(), getStarColor());
+				}
 			}
 			catch (Exception e)
 			{
@@ -129,6 +135,21 @@ public class StarInfoOverlay extends Overlay
 			}
 		}
 		return null;
+	}
+
+	private Color getStarColor()
+	{
+		if (plugin.stars.isEmpty())
+		{
+			return Color.RED;
+		}
+		Star star = plugin.stars.get(0);
+		int level = plugin.client.getBoostedSkillLevel(Skill.MINING);
+		if (level < star.getTier() * 10)
+		{
+			return Color.RED;
+		}
+		return Color.GREEN;
 	}
 
 	private int getHealth(Star star)

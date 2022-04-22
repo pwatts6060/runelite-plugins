@@ -109,7 +109,7 @@ public class StarInfoPlugin extends Plugin
 	private OverlayManager overlayManager;
 
 	@Inject
-	private Client client;
+	Client client;
 
 	@Inject
 	private StarInfoConfig starConfig;
