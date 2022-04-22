@@ -212,7 +212,7 @@ public class StarInfoPlugin extends Plugin
 		if (newStar)
 		{
 			String world = client == null ? "?" : Integer.toString(client.getWorld());
-			String msg = "Star Found S" + tier + " / W" + world + " / " + star.getLocation().getX() + ", " + star.getLocation().getY();
+			String msg = "Star Found T" + tier + " / W" + world + " / " + star.getLocation().getX() + ", " + star.getLocation().getY();
 			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", msg, "");
 		}
 		refresh();
