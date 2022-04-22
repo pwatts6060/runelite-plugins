@@ -152,7 +152,7 @@ public class StarInfoPlugin extends Plugin
 		}
 		for (Star star : stars)
 		{
-			if (star.getLocation().equals(event.getNpc().getWorldLocation()))
+			if (star.getWorldPoint().equals(event.getNpc().getWorldLocation()))
 			{
 				star.setNpc(event.getNpc());
 				refresh();
@@ -173,7 +173,7 @@ public class StarInfoPlugin extends Plugin
 		}
 		for (Star star : stars)
 		{
-			if (star.getLocation().equals(event.getNpc().getWorldLocation()))
+			if (star.getWorldPoint().equals(event.getNpc().getWorldLocation()))
 			{
 				star.setNpc(null);
 				refresh();
@@ -195,7 +195,7 @@ public class StarInfoPlugin extends Plugin
 		Star star = null;
 		for (Star s : stars)
 		{
-			if (s.getLocation().equals(event.getGameObject().getWorldLocation()))
+			if (s.getWorldPoint().equals(event.getGameObject().getWorldLocation()))
 			{
 				s.setObject(event.getGameObject());
 				star = s;
@@ -212,7 +212,7 @@ public class StarInfoPlugin extends Plugin
 		if (newStar)
 		{
 			String world = client == null ? "?" : Integer.toString(client.getWorld());
-			String msg = "Star Found T" + tier + " / W" + world + " / " + star.getLocation().getX() + ", " + star.getLocation().getY();
+			String msg = "Star Found T" + tier + " / W" + world + " / " + star.getLocation();
 			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", msg, "");
 		}
 		refresh();
@@ -235,7 +235,7 @@ public class StarInfoPlugin extends Plugin
 		while (it.hasNext())
 		{
 			Star star = it.next();
-			if (event.getGameObject().equals(event.getGameObject()) || event.getGameObject().getWorldLocation().equals(star.getLocation()))
+			if (event.getGameObject().equals(event.getGameObject()) || event.getGameObject().getWorldLocation().equals(star.getWorldPoint()))
 			{
 				it.remove();
 				break;
@@ -246,8 +246,8 @@ public class StarInfoPlugin extends Plugin
 
 	void updateMiners(Star star)
 	{
-		WorldArea areaH = new WorldArea(star.getLocation().dx(-1), 4, 2);
-		WorldArea areaV = new WorldArea(star.getLocation().dy(-1), 2, 4);
+		WorldArea areaH = new WorldArea(star.getWorldPoint().dx(-1), 4, 2);
+		WorldArea areaV = new WorldArea(star.getWorldPoint().dy(-1), 2, 4);
 		int count = 0;
 		int tickCount = client.getTickCount();
 		for (Player p : client.getPlayers())
@@ -256,7 +256,7 @@ public class StarInfoPlugin extends Plugin
 			{
 				continue;
 			}
-			if (!facingObject(p.getWorldLocation(), p.getOrientation(), star.getLocation()))
+			if (!facingObject(p.getWorldLocation(), p.getOrientation(), star.getWorldPoint()))
 			{
 				continue;
 			}
@@ -319,7 +319,7 @@ public class StarInfoPlugin extends Plugin
 		while (it.hasNext())
 		{
 			Star star = it.next();
-			if (client.getLocalPlayer().getWorldLocation().distanceTo(star.getLocation()) > 90)
+			if (client.getLocalPlayer().getWorldLocation().distanceTo(star.getWorldPoint()) > 90)
 			{
 				it.remove();
 				refresh = true;
@@ -361,7 +361,7 @@ public class StarInfoPlugin extends Plugin
 			}
 			if (starConfig.showHintArrow())
 			{
-				client.setHintArrow(star.getLocation());
+				client.setHintArrow(star.getWorldPoint());
 			}
 		}
 	}

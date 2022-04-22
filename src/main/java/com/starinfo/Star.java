@@ -13,7 +13,7 @@ public class Star
 	private static final int T9_ID = ObjectID.CRASHED_STAR;
 
 	@Getter
-	private final WorldPoint location;
+	private final WorldPoint worldPoint;
 	@Getter
 	@Setter
 	private NPC npc;
@@ -23,17 +23,21 @@ public class Star
 	@Setter
 	@Getter
 	private int miners;
+	@Getter
+	private final String location;
 
 	public Star(NPC npc)
 	{
 		this.npc = npc;
-		this.location = npc.getWorldLocation();
+		this.worldPoint = npc.getWorldLocation();
+		this.location = Location.forLocation(worldPoint);
 	}
 
 	public Star(GameObject gameObject)
 	{
 		this.object = gameObject;
-		this.location = gameObject.getWorldLocation();
+		this.worldPoint = gameObject.getWorldLocation();
+		this.location = Location.forLocation(worldPoint);
 	}
 
 	public int getTier()
