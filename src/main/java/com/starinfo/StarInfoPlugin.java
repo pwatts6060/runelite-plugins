@@ -66,7 +66,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
-import net.runelite.client.util.Text;
 
 @PluginDescriptor(
 	name = "Star Info",
@@ -407,14 +406,14 @@ public class StarInfoPlugin extends Plugin
 			return;
 		}
 		Star star = stars.get(0);
-		String content = "W" + star.getWorld() + " T" + star.getTier() + " / " + star.getMiners() + " Miners / ";
+		String content = "W" + star.getWorld() + " T" + star.getTier() + " ";
 		if (star.getHealth() >= 0)
 		{
-			content += star.getHealth() + "%";
+			content += star.getHealth() + "% ";
 		}
-		content += " " + DiscordTimeStamp.relativeTimeNow();
+		content += "- " + star.getMiners() + " Miners - " + star.getLocation() + " " + DiscordTimeStamp.relativeTimeNow();
 
-		final StringSelection stringSelection = new StringSelection(Text.removeTags(content));
+		final StringSelection stringSelection = new StringSelection(content);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
 		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Copied star information to clipboard.", "");
 	}
