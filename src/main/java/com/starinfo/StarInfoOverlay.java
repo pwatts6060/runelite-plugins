@@ -163,6 +163,7 @@ public class StarInfoOverlay extends Overlay
 		graphics.drawString(text, x, y + 1);
 		graphics.drawString(text, x, y - 1);
 		graphics.drawString(text, x - 1, y + 1);
+		graphics.drawString(text, x - 1, y);
 		graphics.drawString(text, x - 1, y - 1);
 
 		graphics.setColor(ColorUtil.colorWithAlpha(color, 0xFF));
