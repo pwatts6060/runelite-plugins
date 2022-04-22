@@ -31,6 +31,6 @@ public class TierData
 
 	public static TierData get(int tier)
 	{
-		return map.getOrDefault(tier, map.get(1));
+		return map.get(tier);
 	}
 }

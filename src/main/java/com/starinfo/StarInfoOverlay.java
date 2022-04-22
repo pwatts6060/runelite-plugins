@@ -25,6 +25,7 @@
 
 package com.starinfo;
 
+import com.google.common.base.Strings;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -35,6 +36,7 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.OverlayUtil;
+import net.runelite.client.util.ColorUtil;
 
 public class StarInfoOverlay extends Overlay
 {
@@ -43,7 +45,7 @@ public class StarInfoOverlay extends Overlay
 	private final StarInfoConfig config;
 	private Color textColor;
 	private Star lastStar = null;
-	private String lastHealthText = "";
+	private int lastHealth = -1;
 
 	@Inject
 	StarInfoOverlay(StarInfoPlugin plugin, StarInfoConfig config)
@@ -69,28 +71,57 @@ public class StarInfoOverlay extends Overlay
 			return null;
 		}
 		Star star = plugin.stars.get(0);
-		String text = "T" + star.getTier() + " " + star.getMiners() + "M";
-		if (star.getNpc() != null)
+
+		String text = "T" + star.getTier();
+
+		if (config.showMiners())
 		{
-			if (star.getNpc().getHealthRatio() >= 0)
+			text = " " + star.getMiners() + "M";
+		}
+
+		int health = getHealth(star);
+
+		// Health Percent
+		if (health >= 0 && config.showPercent())
+		{
+			text += " " + health + "%";
+		}
+
+		// Stardust
+		if (!config.showDust().equals(DustConfig.NO_DISPLAY) && health >= 0)
+		{
+			TierData tierData = TierData.get(star.getTier());
+			if (tierData != null)
 			{
-				String healthText = " " + (100 * star.getNpc().getHealthRatio() / star.getNpc().getHealthScale()) + "%";
-				text += healthText;
-				lastHealthText = healthText;
-				lastStar = star;
-			}
-			else if (star.equals(lastStar) && !lastHealthText.isEmpty())
-			{
-				text += lastHealthText;
+				int layerDust = tierData.layerDust;
+				int number;
+				if (config.showDust().equals(DustConfig.TOTAL_STARDUST))
+				{
+
+					number = tierData.totalDust - (100 - health) * layerDust / 100;
+				}
+				else
+				{
+					number = health * layerDust / 100;
+				}
+				text += " " + number + " SD";
 			}
 		}
+
 		Point starLocation = star.getObject().getCanvasTextLocation(graphics, text, 0);
 
 		if (starLocation != null)
 		{
 			try
 			{
-				OverlayUtil.renderTextLocation(graphics, star.getObject().getCanvasTextLocation(graphics, text, 190), text, textColor);
+				if (config.thickOutline())
+				{
+					renderThickOutlineText(graphics, star.getObject().getCanvasTextLocation(graphics, text, 190), text, textColor);
+				}
+				else
+				{
+					OverlayUtil.renderTextLocation(graphics, star.getObject().getCanvasTextLocation(graphics, text, 190), text, textColor);
+				}
 			}
 			catch (Exception e)
 			{
@@ -98,5 +129,43 @@ public class StarInfoOverlay extends Overlay
 			}
 		}
 		return null;
+	}
+
+	private int getHealth(Star star)
+	{
+		if (star.getNpc() != null && star.getNpc().getHealthRatio() >= 0)
+		{
+			lastHealth = 100 * star.getNpc().getHealthRatio() / star.getNpc().getHealthScale();
+			lastStar = star;
+		}
+		else if (!star.equals(lastStar))
+		{
+			lastHealth = -1;
+		}
+		return lastHealth;
+	}
+
+
+	private static void renderThickOutlineText(Graphics2D graphics, Point txtLoc, String text, Color color)
+	{
+		if (Strings.isNullOrEmpty(text))
+		{
+			return;
+		}
+
+		int x = txtLoc.getX();
+		int y = txtLoc.getY();
+
+		graphics.setColor(Color.BLACK);
+		graphics.drawString(text, x + 1, y + 1);
+		graphics.drawString(text, x + 1, y);
+		graphics.drawString(text, x + 1, y - 1);
+		graphics.drawString(text, x, y + 1);
+		graphics.drawString(text, x, y - 1);
+		graphics.drawString(text, x - 1, y + 1);
+		graphics.drawString(text, x - 1, y - 1);
+
+		graphics.setColor(ColorUtil.colorWithAlpha(color, 0xFF));
+		graphics.drawString(text, x, y);
 	}
 }

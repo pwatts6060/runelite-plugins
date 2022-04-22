@@ -326,7 +326,7 @@ public class StarInfoPlugin extends Plugin
 			}
 		}
 
-		if (!stars.isEmpty())
+		if (!stars.isEmpty() && starConfig.showMiners())
 		{
 			updateMiners(stars.get(0));
 		}
@@ -375,6 +375,12 @@ public class StarInfoPlugin extends Plugin
 		}
 		switch (event.getKey())
 		{
+			case StarInfoConfig.SHOW_MINERS:
+				if (!stars.isEmpty() && starConfig.showMiners())
+				{
+					updateMiners(stars.get(0));
+				}
+				break;
 			case StarInfoConfig.TEXT_COLOR_KEY:
 				starOverlay.updateConfig();
 				break;

@@ -36,33 +36,89 @@ import java.awt.*;
 public interface StarInfoConfig extends Config
 {
 
-	public static final String TEXT_COLOR_KEY = "textColor";
-	public static final String INFO_BOX_KEY = "infoBox";
-	public static final String HINT_ARROW_KEY = "hintArrow";
+	String TEXT_COLOR_KEY = "textColor";
+	String THICK_OUTLINE = "thickOutline";
+	String INFO_BOX_KEY = "infoBox";
+	String HINT_ARROW_KEY = "hintArrow";
+	String SHOW_PERCENT = "showPercent";
+	String SHOW_DUST = "showDust";
+	String SHOW_MINERS = "showMiners";
 
-    @Alpha
-    @ConfigItem(
-	    position = 1,
-	    keyName = TEXT_COLOR_KEY,
-	    name = "Text color",
-	    description = "Sets the color of the text above a star."
-    )
-    default Color getTextColor() {return Color.GREEN;}
-
+	@Alpha
+	@ConfigItem(
+		position = 1,
+		keyName = TEXT_COLOR_KEY,
+		name = "Text color",
+		description = "Sets the color of the text above a star."
+	)
+	default Color getTextColor()
+	{
+		return Color.GREEN;
+	}
 
 	@ConfigItem(
 		position = 2,
+		keyName = THICK_OUTLINE,
+		name = "Thick Text Outline",
+		description = "Use thick text outline on star info overlay"
+	)
+	default boolean thickOutline()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 3,
 		keyName = INFO_BOX_KEY,
 		name = "Show Info Box",
 		description = "Whether to display star status info box"
 	)
-	default boolean showInfoBox() {return true;}
+	default boolean showInfoBox()
+	{
+		return true;
+	}
 
 	@ConfigItem(
-		position = 3,
+		position = 4,
 		keyName = HINT_ARROW_KEY,
 		name = "Show Hint Arrow",
 		description = "Whether to display hint arrow pointing to star"
 	)
-	default boolean showHintArrow() {return true;}
+	default boolean showHintArrow()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 5,
+		keyName = SHOW_MINERS,
+		name = "Show Miners",
+		description = "Display number of active star miners, e.g. 5M = 5 Miners"
+	)
+	default boolean showMiners()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 6,
+		keyName = SHOW_PERCENT,
+		name = "Show Layer %",
+		description = "Display the health percentage of the current layer"
+	)
+	default boolean showPercent()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 7,
+		keyName = SHOW_DUST,
+		name = "Show Dust Left",
+		description = "Display stardust left in the current layer/star"
+	)
+	default DustConfig showDust()
+	{
+		return DustConfig.LAYER_STARDUST;
+	}
 }
