@@ -34,6 +34,7 @@ public class Star
 	private int miners;
 	@Getter
 	private final String location;
+	private int health = -1;
 
 	public Star(NPC npc)
 	{
@@ -68,5 +69,17 @@ public class Star
 			}
 		}
 		return -1;
+	}
+
+	/**
+	 * @return Health Percentage 0-100 of current layer. -1 if not known.
+	 */
+	public int getHealth()
+	{
+		if (npc != null && npc.getHealthRatio() >= 0)
+		{
+			health = 100 * npc.getHealthRatio() / npc.getHealthScale();
+		}
+		return health;
 	}
 }

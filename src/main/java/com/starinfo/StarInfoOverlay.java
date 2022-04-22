@@ -45,8 +45,6 @@ public class StarInfoOverlay extends Overlay
 	private final StarInfoPlugin plugin;
 	private final StarInfoConfig config;
 	private Color textColor;
-	private Star lastStar = null;
-	private int lastHealth = -1;
 
 	@Inject
 	StarInfoOverlay(StarInfoPlugin plugin, StarInfoConfig config)
@@ -68,7 +66,6 @@ public class StarInfoOverlay extends Overlay
 	{
 		if (plugin.stars.isEmpty())
 		{
-			lastStar = null;
 			return null;
 		}
 		Star star = plugin.stars.get(0);
@@ -80,7 +77,7 @@ public class StarInfoOverlay extends Overlay
 			text += " " + star.getMiners() + "M";
 		}
 
-		int health = getHealth(star);
+		int health = star.getHealth();
 
 		// Health Percent
 		if (health >= 0 && config.showPercent())
@@ -151,21 +148,6 @@ public class StarInfoOverlay extends Overlay
 		}
 		return Color.GREEN;
 	}
-
-	private int getHealth(Star star)
-	{
-		if (star.getNpc() != null && star.getNpc().getHealthRatio() >= 0)
-		{
-			lastHealth = 100 * star.getNpc().getHealthRatio() / star.getNpc().getHealthScale();
-			lastStar = star;
-		}
-		else if (!star.equals(lastStar))
-		{
-			lastHealth = -1;
-		}
-		return lastHealth;
-	}
-
 
 	private static void renderThickOutlineText(Graphics2D graphics, Point txtLoc, String text, Color color)
 	{
