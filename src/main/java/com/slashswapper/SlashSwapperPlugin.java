@@ -5,6 +5,7 @@ import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.ScriptPreFired;
+import net.runelite.api.vars.AccountType;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -32,6 +33,12 @@ public class SlashSwapperPlugin extends Plugin
 		}
 
 		if (client.getVarbitValue(4394) == 1)
+		{
+			return;
+		}
+
+		// I cannot test for group irons, so removing entirely for them
+		if (client.getAccountType().equals(AccountType.GROUP_IRONMAN))
 		{
 			return;
 		}
