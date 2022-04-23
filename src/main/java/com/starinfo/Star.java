@@ -80,9 +80,17 @@ public class Star
 	 */
 	public int getHealth()
 	{
-		if (npc != null && npc.getHealthRatio() >= 0)
+		if (npc == null)
+		{
+			return health;
+		}
+		if (npc.getHealthRatio() >= 0)
 		{
 			health = 100 * npc.getHealthRatio() / npc.getHealthScale();
+		}
+		else if (npc.isDead())
+		{
+			health = -1;
 		}
 		return health;
 	}
