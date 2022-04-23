@@ -25,10 +25,7 @@
 
 package com.starinfo;
 
-import net.runelite.client.config.Alpha;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.*;
 
 import java.awt.*;
 
@@ -46,6 +43,7 @@ public interface StarInfoConfig extends Config
 	String COLOR_STAR = "colorStar";
 	String CLIPBOARD = "copyToClipboard";
 	String ADD_TO_CHAT = "addToChat";
+	String REMOVE_DISTANCE = "removeDistance";
 
 	@Alpha
 	@ConfigItem(
@@ -156,5 +154,20 @@ public interface StarInfoConfig extends Config
 	default boolean addToChat()
 	{
 		return true;
+	}
+
+	@Range(
+			min = 32,
+			max = 90
+	)
+	@ConfigItem(
+			position = 11,
+			keyName = REMOVE_DISTANCE,
+			name = "Remove distance",
+			description = "The tile distance above which star info is removed"
+	)
+	default int removeDistance()
+	{
+		return 32;
 	}
 }

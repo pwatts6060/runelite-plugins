@@ -27,37 +27,12 @@ package com.starinfo;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.inject.Inject;
-import net.runelite.api.AnimationID;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.NullNpcID;
-import net.runelite.api.Player;
-import net.runelite.api.Tile;
-import net.runelite.api.TileObject;
+import net.runelite.api.*;
 import net.runelite.api.coords.Angle;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.MenuEntryAdded;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.events.*;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -66,6 +41,12 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
+
+import javax.inject.Inject;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.util.List;
+import java.util.*;
 
 @PluginDescriptor(
 	name = "Star Info",
@@ -326,7 +307,7 @@ public class StarInfoPlugin extends Plugin
 		while (it.hasNext())
 		{
 			Star star = it.next();
-			if (client.getLocalPlayer().getWorldLocation().distanceTo(star.getWorldPoint()) > 90)
+			if (client.getLocalPlayer().getWorldLocation().distanceTo(star.getWorldPoint()) > starConfig.removeDistance())
 			{
 				it.remove();
 				refresh = true;
