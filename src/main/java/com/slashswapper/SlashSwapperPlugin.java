@@ -3,6 +3,7 @@ package com.slashswapper;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
+import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -31,6 +32,12 @@ public class SlashSwapperPlugin extends Plugin
 		}
 
 		if (client.getVarbitValue(4394) == 1)
+		{
+			return;
+		}
+
+		// varbit13805 == 1 not chatting in clan or has no clan
+		if (client.getVarbitValue(13805) == 1 || client.getClanChannel(ClanID.CLAN) == null)
 		{
 			return;
 		}
