@@ -1,7 +1,6 @@
 package com.slashswapper;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.events.ScriptPreFired;
@@ -49,7 +48,6 @@ public class SlashSwapperPlugin extends Plugin
 
 		int channelSelected = client.getVarcIntValue(41); // Selected channel button
 		int target = intStack[intStackCount - 4];
-		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", channelSelected + ":" + target, "");
 		if (target == 0 && channelSelected == 0)
 		{
 			if (msg.startsWith("/"))
