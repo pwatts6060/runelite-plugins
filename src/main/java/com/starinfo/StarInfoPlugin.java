@@ -217,7 +217,7 @@ public class StarInfoPlugin extends Plugin
 			newStar = true;
 		}
 
-		if (newStar)
+		if (newStar && starConfig.addToChat())
 		{
 			String msg = "Star Found T" + tier + " / W" + star.getWorld() + " / " + star.getLocation();
 			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", msg, "");

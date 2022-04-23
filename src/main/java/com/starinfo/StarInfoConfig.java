@@ -45,6 +45,7 @@ public interface StarInfoConfig extends Config
 	String SHOW_MINERS = "showMiners";
 	String COLOR_STAR = "colorStar";
 	String CLIPBOARD = "copyToClipboard";
+	String ADD_TO_CHAT = "addToChat";
 
 	@Alpha
 	@ConfigItem(
@@ -142,6 +143,17 @@ public interface StarInfoConfig extends Config
 		description = "Allows you to right click stars and copy their information"
 	)
 	default boolean copyToClipboard()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			position = 10,
+			keyName = ADD_TO_CHAT,
+			name = "Add Stars to Chat",
+			description = "Adds a message to the game chat when stars are found with their tier/world/location"
+	)
+	default boolean addToChat()
 	{
 		return true;
 	}
