@@ -1,13 +1,15 @@
 package com.slashswapper;
 
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+
+import javax.inject.Inject;
 
 @Slf4j
 @PluginDescriptor(
@@ -40,15 +42,31 @@ public class SlashSwapperPlugin extends Plugin
 		int intStackCount = client.getIntStackSize();
 
 		String msg = stringStack[stringStackCount - 1];
+		if (msg.isEmpty())
+		{
+			return;
+		}
 
 		int channelSelected = client.getVarcIntValue(41); // Selected channel button
-		if (intStack[intStackCount - 4] == 3 && channelSelected != CLAN_CHANNEL)
+		int target = intStack[intStackCount - 4];
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", channelSelected + ":" + target, "");
+		if (target == 0 && channelSelected == 0)
+		{
+			if (msg.startsWith("/"))
+			{
+				intStack[intStackCount - 4] = 3;
+				intStack[intStackCount - 3] = 0;
+				stringStack[stringStackCount - 1] = msg.substring(1);
+			}
+			return;
+		}
+		if (target == 3 && channelSelected != CLAN_CHANNEL)
 		{
 			intStack[intStackCount - 4] = 2;
 			intStack[intStackCount - 3] = -1;
 			stringStack[stringStackCount - 1] = "/" + msg;
 		}
-		else if (intStack[intStackCount - 4] == 2 && channelSelected != FRIENDS_CHANNEL)
+		else if (target == 2 && channelSelected != FRIENDS_CHANNEL)
 		{
 			intStack[intStackCount - 4] = 3;
 			intStack[intStackCount - 3] = 0;
