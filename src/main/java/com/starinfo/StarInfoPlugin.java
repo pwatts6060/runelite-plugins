@@ -46,6 +46,7 @@ import javax.inject.Inject;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
+import java.util.Queue;
 import java.util.*;
 
 @PluginDescriptor(
@@ -56,6 +57,7 @@ public class StarInfoPlugin extends Plugin
 {
 
 	private static final int NPC_ID = NullNpcID.NULL_10629;
+	private static final Queue<Star> despawnQueue = new LinkedList<>();
 
 	private static final Set<Integer> pickAnims = ImmutableSet.of(
 		AnimationID.MINING_ADAMANT_PICKAXE,
@@ -188,6 +190,7 @@ public class StarInfoPlugin extends Plugin
 			{
 				s.setObject(event.getGameObject());
 				star = s;
+				despawnQueue.remove(star);
 				break;
 			}
 		}
@@ -214,22 +217,13 @@ public class StarInfoPlugin extends Plugin
 		{
 			return;
 		}
-		if (tier > 1)
-		{
-			return;
-		}
 
-		Iterator<Star> it = stars.iterator();
-		while (it.hasNext())
-		{
-			Star star = it.next();
-			if (event.getGameObject().equals(event.getGameObject()) || event.getGameObject().getWorldLocation().equals(star.getWorldPoint()))
-			{
-				it.remove();
+		for (Star star : stars) {
+			if (event.getGameObject().equals(event.getGameObject()) || event.getGameObject().getWorldLocation().equals(star.getWorldPoint())) {
+				despawnQueue.add(star);
 				break;
 			}
 		}
-		refresh();
 	}
 
 	void updateMiners(Star star)
@@ -307,7 +301,7 @@ public class StarInfoPlugin extends Plugin
 		while (it.hasNext())
 		{
 			Star star = it.next();
-			if (client.getLocalPlayer().getWorldLocation().distanceTo(star.getWorldPoint()) > starConfig.removeDistance())
+			if (despawnQueue.contains(star) || client.getLocalPlayer().getWorldLocation().distanceTo(star.getWorldPoint()) > starConfig.removeDistance())
 			{
 				it.remove();
 				refresh = true;
