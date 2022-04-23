@@ -57,6 +57,7 @@ public class StarInfoPlugin extends Plugin
 {
 
 	private static final int NPC_ID = NullNpcID.NULL_10629;
+	private static final int MAX_PLAYER_LOAD_DIST = 13;
 	private static final Queue<Star> despawnQueue = new LinkedList<>();
 
 	private static final Set<Integer> pickAnims = ImmutableSet.of(
@@ -228,6 +229,12 @@ public class StarInfoPlugin extends Plugin
 
 	void updateMiners(Star star)
 	{
+		int distToStar = client.getLocalPlayer().getWorldLocation().distanceTo(new WorldArea(star.getWorldPoint(), 2, 2));
+		if (distToStar > MAX_PLAYER_LOAD_DIST)
+		{
+			star.setMiners(Star.UNKNOWN_MINERS);
+			return;
+		}
 		WorldArea areaH = new WorldArea(star.getWorldPoint().dx(-1), 4, 2);
 		WorldArea areaV = new WorldArea(star.getWorldPoint().dy(-1), 2, 4);
 		int count = 0;
@@ -258,7 +265,7 @@ public class StarInfoPlugin extends Plugin
 				count++;
 			}
 		}
-		star.setMiners(count);
+		star.setMiners(Integer.toString(count));
 	}
 
 	private boolean facingObject(WorldPoint p1, int orientation, WorldPoint p2)
@@ -386,7 +393,11 @@ public class StarInfoPlugin extends Plugin
 		{
 			content += star.getHealth() + "% ";
 		}
-		content += "- " + star.getMiners() + " Miners - " + star.getLocation() + " " + DiscordTimeStamp.relativeTimeNow();
+		if (!star.getMiners().equals(Star.UNKNOWN_MINERS))
+		{
+			content += "- " + star.getMiners() + " Miners - ";
+		}
+		content += star.getLocation() + " " + DiscordTimeStamp.relativeTimeNow();
 
 		final StringSelection stringSelection = new StringSelection(content);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);

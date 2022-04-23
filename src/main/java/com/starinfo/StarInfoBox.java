@@ -1,10 +1,11 @@
 package com.starinfo;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import javax.annotation.Nonnull;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.ui.overlay.infobox.InfoBox;
+
+import javax.annotation.Nonnull;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class StarInfoBox extends InfoBox
 {
@@ -19,7 +20,12 @@ public class StarInfoBox extends InfoBox
 	@Override
 	public String getText()
 	{
-		return "T" + star.getTier() + " " + star.getMiners() + "M";
+		String text = "T" + star.getTier();
+		if (!star.getMiners().equals(Star.UNKNOWN_MINERS))
+		{
+			text += " " + star.getMiners() + "M";
+		}
+		return text;
 	}
 
 	@Override

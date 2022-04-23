@@ -9,6 +9,8 @@ import net.runelite.api.coords.WorldPoint;
 
 public class Star
 {
+	public static final String UNKNOWN_MINERS = "?";
+
 	private static final int[] TIER_IDS = new int[]{
 		ObjectID.CRASHED_STAR_41229,
 		ObjectID.CRASHED_STAR_41228,
@@ -33,7 +35,7 @@ public class Star
 	private GameObject object;
 	@Setter
 	@Getter
-	private int miners;
+	private String miners;
 	@Getter
 	private final String location;
 	private int health = -1;
