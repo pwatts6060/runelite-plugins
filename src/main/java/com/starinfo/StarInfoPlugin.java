@@ -358,7 +358,7 @@ public class StarInfoPlugin extends Plugin
 	@Subscribe
 	public void onMenuEntryAdded(MenuEntryAdded event)
 	{
-		if (event.getType() != MenuAction.EXAMINE_OBJECT.getId() || !starConfig.copyToClipboard())
+		if (stars.isEmpty() || event.getType() != MenuAction.EXAMINE_OBJECT.getId() || !starConfig.copyToClipboard())
 		{
 			return;
 		}
@@ -366,7 +366,7 @@ public class StarInfoPlugin extends Plugin
 		final Tile tile = client.getScene().getTiles()[client.getPlane()][event.getActionParam0()][event.getActionParam1()];
 		final TileObject tileObject = findTileObject(tile, event.getIdentifier());
 
-		if (tileObject == null)
+		if (tileObject == null || !tile.getWorldLocation().equals(stars.get(0).getWorldPoint()) || Star.getTier(tileObject.getId()) < 0)
 		{
 			return;
 		}
