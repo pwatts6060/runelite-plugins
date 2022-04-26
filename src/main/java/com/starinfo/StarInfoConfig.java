@@ -44,6 +44,7 @@ public interface StarInfoConfig extends Config
 	String CLIPBOARD = "copyToClipboard";
 	String ADD_TO_CHAT = "addToChat";
 	String REMOVE_DISTANCE = "removeDistance";
+	String CHAT_COMMAND = "chatCommand";
 
 	@Alpha
 	@ConfigItem(
@@ -169,5 +170,16 @@ public interface StarInfoConfig extends Config
 	default int removeDistance()
 	{
 		return 32;
+	}
+
+	@ConfigItem(
+		position = 12,
+		keyName = CHAT_COMMAND,
+		name = "Share Star Command",
+		description = "Typing !star sends out star info in the chat for others to see"
+	)
+	default boolean chatCommand()
+	{
+		return false;
 	}
 }
