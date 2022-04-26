@@ -269,7 +269,15 @@ public class ProhibitedItems
 		ItemID.CRYSTAL_IMPLING_JAR,
 		ItemID.SUPPLY_CRATE,
 		ItemID.SPOILS_OF_WAR,
-		ItemID.BUTTERFLY_NET
+		ItemID.BUTTERFLY_NET,
+		ItemID.PROSPECTOR_BOOTS,
+		ItemID.PROSPECTOR_HELMET,
+		ItemID.PROSPECTOR_JACKET,
+		ItemID.PROSPECTOR_LEGS,
+		ItemID.GOLDEN_PROSPECTOR_BOOTS,
+		ItemID.GOLDEN_PROSPECTOR_HELMET,
+		ItemID.GOLDEN_PROSPECTOR_JACKET,
+		ItemID.GOLDEN_PROSPECTOR_LEGS
 	);
 	private static final Map<Integer, Boolean> cachedIds = new HashMap<>();
 	private final ItemManager itemManager;
