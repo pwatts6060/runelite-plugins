@@ -96,4 +96,9 @@ public class Star
 		}
 		return health;
 	}
+
+	public String getMessage()
+	{
+		return "Star Found W" + world  + " / T" + getTier() + " / " + location;
+	}
 }
