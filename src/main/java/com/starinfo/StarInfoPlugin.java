@@ -204,7 +204,7 @@ public class StarInfoPlugin extends Plugin
 
 		if (newStar && starConfig.addToChat())
 		{
-			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", star.getMessage(), "");
+			client.addChatMessage(ChatMessageType.CONSOLE, "", star.getMessage(), "");
 		}
 		refresh();
 	}
