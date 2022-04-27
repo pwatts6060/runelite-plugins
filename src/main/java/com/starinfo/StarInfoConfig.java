@@ -44,6 +44,7 @@ public interface StarInfoConfig extends Config
 	String CLIPBOARD = "copyToClipboard";
 	String ADD_TO_CHAT = "addToChat";
 	String REMOVE_DISTANCE = "removeDistance";
+	String ESTIMATE_TIME = "estimateTime";
 
 	@Alpha
 	@ConfigItem(
@@ -169,5 +170,16 @@ public interface StarInfoConfig extends Config
 	default int removeDistance()
 	{
 		return 32;
+	}
+
+	@ConfigItem(
+		position = 11,
+		keyName = ESTIMATE_TIME,
+		name = "Estimate Layer Time",
+		description = "Display estimated time till the current layer finishes"
+	)
+	default boolean estimateTime()
+	{
+		return false;
 	}
 }
