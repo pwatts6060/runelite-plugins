@@ -420,42 +420,6 @@ public class StarInfoPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onScriptPreFired(ScriptPreFired event)
-	{
-		if (stars.isEmpty() || !starConfig.chatCommand())
-		{
-			return;
-		}
-
-		if (event.getScriptId() != 5517)
-		{
-			return;
-		}
-
-		if (client.getVarbitValue(4394) == 1)
-		{
-			return;
-		}
-
-		final String[] stringStack = client.getStringStack();
-		int stringStackCount = client.getStringStackSize();
-
-		String msg = stringStack[stringStackCount - 1];
-		if (msg.equals("!star") || msg.equals("/!star"))
-		{
-			Star star = stars.get(0);
-			if (msg.startsWith("/"))
-			{
-				stringStack[stringStackCount - 1] = "/" + star.getMessage();
-			}
-			else
-			{
-				stringStack[stringStackCount - 1] = star.getMessage();
-			}
-		}
-	}
-
-	@Subscribe
 	public void onConfigChanged(ConfigChanged event)
 	{
 		if (!event.getGroup().equals("starinfoplugin"))
