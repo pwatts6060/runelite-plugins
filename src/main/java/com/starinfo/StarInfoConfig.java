@@ -25,9 +25,12 @@
 
 package com.starinfo;
 
-import net.runelite.client.config.*;
-
-import java.awt.*;
+import java.awt.Color;
+import net.runelite.client.config.Alpha;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
 
 @ConfigGroup("starinfoplugin")
 public interface StarInfoConfig extends Config
@@ -178,8 +181,8 @@ public interface StarInfoConfig extends Config
 		name = "Estimate Layer Time",
 		description = "Display estimated time till the current layer finishes"
 	)
-	default boolean estimateTime()
+	default EstimateConfig estimateTime()
 	{
-		return false;
+		return EstimateConfig.SECONDS;
 	}
 }

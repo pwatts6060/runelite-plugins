@@ -26,13 +26,19 @@
 package com.starinfo;
 
 import com.google.common.base.Strings;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import javax.inject.Inject;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
-import net.runelite.client.ui.overlay.*;
+import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.OverlayPriority;
+import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.util.ColorUtil;
-
-import javax.inject.Inject;
-import java.awt.*;
 
 public class StarInfoOverlay extends Overlay
 {
@@ -98,6 +104,22 @@ public class StarInfoOverlay extends Overlay
 					number = health * layerDust / 100;
 				}
 				text += " " + number + " SD";
+			}
+		}
+
+		// time estimate
+		if (!config.estimateTime().equals(EstimateConfig.NONE) && star.getEstimateTicks() >= 0)
+		{
+			int ticks = star.getEstimateTicks();
+			if (config.estimateTime().equals(EstimateConfig.TICKS))
+			{
+				text += " " + ticks;
+			}
+			else
+			{
+				int seconds = (ticks % 100) * 3 / 5;
+				int minutes = ticks / 100;
+				text += " " + minutes + ":" + String.format("%02d", seconds);
 			}
 		}
 
