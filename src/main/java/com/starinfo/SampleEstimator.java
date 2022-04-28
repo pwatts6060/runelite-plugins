@@ -27,9 +27,7 @@ public class SampleEstimator
 		{
 			totalHealthChange += healthInfo.healthChange;
 			totalTicks += healthInfo.ticksBetween;
-			System.out.println(healthInfo.healthChange + " " + healthInfo.ticksBetween);
 		}
-		System.out.println(totalHealthChange + " " + totalTicks);
 		double healthPerTick = (double) totalHealthChange / totalTicks;
 		return (int) (lastStar.getHealth() / healthPerTick);
 	}
