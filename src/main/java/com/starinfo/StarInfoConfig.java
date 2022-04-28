@@ -176,7 +176,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 11,
+		position = 12,
 		keyName = ESTIMATE_TIME,
 		name = "Estimate Layer Time",
 		description = "Display estimated time till the current layer finishes"
