@@ -1,11 +1,10 @@
 package com.starinfo;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import javax.annotation.Nonnull;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.ui.overlay.infobox.InfoBox;
-
-import javax.annotation.Nonnull;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class StarInfoBox extends InfoBox
 {

@@ -9,6 +9,6 @@ public class DiscordTimeStamp
 	public static String relativeTimeNow()
 	{
 		long number = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()).toEpochSecond();
-		return "<t:"+number+":R>";
+		return "<t:" + number + ":R>";
 	}
 }

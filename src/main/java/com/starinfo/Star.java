@@ -72,7 +72,7 @@ public class Star
 	{
 		for (int i = 0; i < TIER_IDS.length; i++)
 		{
-			if(id == TIER_IDS[i])
+			if (id == TIER_IDS[i])
 			{
 				return i + 1;
 			}
@@ -102,6 +102,6 @@ public class Star
 
 	public String getMessage()
 	{
-		return "Star Found W" + world  + " / T" + getTier() + " / " + location;
+		return "Star Found W" + world + " / T" + getTier() + " / " + location;
 	}
 }

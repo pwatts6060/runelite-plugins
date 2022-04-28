@@ -150,10 +150,10 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 10,
-			keyName = ADD_TO_CHAT,
-			name = "Add Stars to Chat",
-			description = "Adds a message to the game chat when stars are found with their tier/world/location"
+		position = 10,
+		keyName = ADD_TO_CHAT,
+		name = "Add Stars to Chat",
+		description = "Adds a message to the game chat when stars are found with their tier/world/location"
 	)
 	default boolean addToChat()
 	{
@@ -161,14 +161,14 @@ public interface StarInfoConfig extends Config
 	}
 
 	@Range(
-			min = 32,
-			max = 90
+		min = 32,
+		max = 90
 	)
 	@ConfigItem(
-			position = 11,
-			keyName = REMOVE_DISTANCE,
-			name = "Remove distance",
-			description = "The tile distance above which star info is removed"
+		position = 11,
+		keyName = REMOVE_DISTANCE,
+		name = "Remove distance",
+		description = "The tile distance above which star info is removed"
 	)
 	default int removeDistance()
 	{

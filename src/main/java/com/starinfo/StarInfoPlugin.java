@@ -83,23 +83,23 @@ public class StarInfoPlugin extends Plugin
 
 	private static final Map<Integer, Double> pickAnims = ImmutableMap.<Integer, Double>builder().
 		put(AnimationID.MINING_ADAMANT_PICKAXE, 3.0).
-		put(AnimationID.MINING_TRAILBLAZER_PICKAXE_2, 17.0/6).
-		put(AnimationID.MINING_TRAILBLAZER_PICKAXE, 17.0/6).
+		put(AnimationID.MINING_TRAILBLAZER_PICKAXE_2, 17.0 / 6).
+		put(AnimationID.MINING_TRAILBLAZER_PICKAXE, 17.0 / 6).
 		put(AnimationID.MINING_BLACK_PICKAXE, 5.0).
 		put(AnimationID.MINING_BRONZE_PICKAXE, 8.0).
 		put(AnimationID.MINING_GILDED_PICKAXE, 3.0).
 		put(AnimationID.MINING_CRYSTAL_PICKAXE, 2.75).
-		put(AnimationID.MINING_3A_PICKAXE, 17.0/6).
-		put(AnimationID.MINING_DRAGON_PICKAXE, 17.0/6).
-		put(AnimationID.MINING_DRAGON_PICKAXE_OR, 17.0/6).
-		put(AnimationID.MINING_DRAGON_PICKAXE_OR_TRAILBLAZER, 17.0/6).
-		put(AnimationID.MINING_DRAGON_PICKAXE_UPGRADED, 17.0/6).
-		put(AnimationID.MINING_INFERNAL_PICKAXE, 17.0/6).
+		put(AnimationID.MINING_3A_PICKAXE, 17.0 / 6).
+		put(AnimationID.MINING_DRAGON_PICKAXE, 17.0 / 6).
+		put(AnimationID.MINING_DRAGON_PICKAXE_OR, 17.0 / 6).
+		put(AnimationID.MINING_DRAGON_PICKAXE_OR_TRAILBLAZER, 17.0 / 6).
+		put(AnimationID.MINING_DRAGON_PICKAXE_UPGRADED, 17.0 / 6).
+		put(AnimationID.MINING_INFERNAL_PICKAXE, 17.0 / 6).
 		put(AnimationID.MINING_MITHRIL_PICKAXE, 5.0).
 		put(AnimationID.MINING_IRON_PICKAXE, 7.0).
 		put(AnimationID.MINING_RUNE_PICKAXE, 3.0).
 		put(AnimationID.MINING_STEEL_PICKAXE, 6.0).
-		put(AnimationID.MINING_TRAILBLAZER_PICKAXE_3, 17.0/6).
+		put(AnimationID.MINING_TRAILBLAZER_PICKAXE_3, 17.0 / 6).
 		build();
 
 	private static final int MINING_CACHE_TIME = 13; // count player as a miner if they have done mining anim within this many ticks ago
@@ -108,7 +108,7 @@ public class StarInfoPlugin extends Plugin
 	@Inject
 	private StarInfoOverlay starOverlay;
 
-	public List<Star> stars = new ArrayList<>();
+	public final List<Star> stars = new ArrayList<>();
 
 	SampleEstimator estimator;
 
@@ -244,8 +244,10 @@ public class StarInfoPlugin extends Plugin
 			return;
 		}
 
-		for (Star star : stars) {
-			if (event.getGameObject().equals(event.getGameObject()) || event.getGameObject().getWorldLocation().equals(star.getWorldPoint())) {
+		for (Star star : stars)
+		{
+			if (event.getGameObject().equals(event.getGameObject()) || event.getGameObject().getWorldLocation().equals(star.getWorldPoint()))
+			{
 				despawnQueue.add(star);
 				break;
 			}
