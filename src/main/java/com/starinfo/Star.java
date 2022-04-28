@@ -39,6 +39,9 @@ public class Star
 	@Getter
 	private final String location;
 	private int health = -1;
+	@Getter
+	@Setter
+	private int estimateTicks = -1;
 
 	public Star(NPC npc, int world)
 	{
