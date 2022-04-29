@@ -11,7 +11,6 @@ public class SampleEstimator
 	private int lastHealth;
 	private int lastTier;
 	private int lastHealthTick;
-	private int extraTicks;
 	private final Queue<HealthInfo> healthInfoList = new LinkedList<>();
 
 	public SampleEstimator(StarInfoPlugin plugin)
@@ -39,7 +38,6 @@ public class SampleEstimator
 			lastHealth = -2;
 			lastTier = -2;
 			lastHealthTick = -1;
-			extraTicks = 0;
 			lastStar = star;
 			healthInfoList.clear();
 			star.setEstimateTicks(-1);
@@ -54,12 +52,10 @@ public class SampleEstimator
 		{
 			if (star.getEstimateTicks() > 0)
 			{
-				extraTicks++;
-				star.setEstimateTicks(Math.max(0, star.getEstimateTicks() - extraTicks));
+				star.setEstimateTicks(Math.max(0, star.getEstimateTicks() - 1));
 			}
 			return;
 		}
-		extraTicks = 0;
 
 		int healthChange = lastHealth < 0 ? 0 : lastHealth - health;
 		int ticksBetween = lastHealthTick < 0 ? 0 : plugin.client.getTickCount() - lastHealthTick;
