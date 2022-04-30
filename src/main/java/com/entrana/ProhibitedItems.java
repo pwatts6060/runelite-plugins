@@ -14,6 +14,7 @@ import net.runelite.http.api.item.ItemStats;
 public class ProhibitedItems
 {
 	private static final Set<Integer> allowedIds = ImmutableSet.of(
+		ItemID.BOOK_OF_THE_DEAD,
 		ItemID.BOOTS_OF_LIGHTNESS,
 		ItemID.BOOTS_OF_LIGHTNESS_89,
 		ItemID.SPOTTED_CAPE,
