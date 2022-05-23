@@ -13,12 +13,14 @@ import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.MenuAction;
 import net.runelite.api.ScriptID;
 import net.runelite.api.SpriteID;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
@@ -43,7 +45,7 @@ import net.runelite.client.plugins.bank.BankSearch;
 )
 public class BankPlugin extends Plugin
 {
-	public static final String CONFIG_GROUP_NAME = "Recently Banked Items";
+	public static final String CONFIG_GROUP_NAME = "RecentlyBankedItems";
 	private static final String ON_RECENT = "Show Recent";
 	private static final String OFF_RECENT = "Hide Recent";
 	private static final int ITEMS_PER_ROW = 8;
@@ -53,6 +55,7 @@ public class BankPlugin extends Plugin
 
 	private static final List<Integer> recentIds = new LinkedList<>();
 	private static final Map<Integer, Integer> bankItemsToAmount = new HashMap<>();
+	private String lastName = "";
 
 	@Inject
 	private Client client;
@@ -82,11 +85,16 @@ public class BankPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception
 	{
-		recentIds.clear();
-		bankItemsToAmount.clear();
+		reset();
 		keyManager.unregisterKeyListener(toggleHotKeyListener);
 		clientThread.invokeLater(() -> bankSearch.reset(false));
 		log.info("Recently Banked Items stopped!");
+	}
+
+	public void reset()
+	{
+		recentIds.clear();
+		bankItemsToAmount.clear();
 	}
 
 	@Provides
@@ -124,6 +132,18 @@ public class BankPlugin extends Plugin
 		{
 		}
 	};
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event)
+	{
+		if (event.getGameState().equals(GameState.LOGGED_IN))
+		{
+			if (!lastName.equals(client.getLocalPlayer().getName()))
+			{
+				lastName = client.getLocalPlayer().getName();
+			}
+		}
+	}
 
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event)
