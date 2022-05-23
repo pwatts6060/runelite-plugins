@@ -187,7 +187,7 @@ public class BankPlugin extends Plugin
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if ((event.getMenuAction() != MenuAction.RUNELITE)
-			|| (event.getWidgetId() >> 16) != WidgetID.BANK_GROUP_ID
+			|| (event.getParam1() >> 16) != WidgetID.BANK_GROUP_ID
 			|| !(event.getMenuOption().equals(ON_RECENT)) && !(event.getMenuOption().equals(OFF_RECENT)))
 		{
 			return;
