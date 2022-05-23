@@ -30,6 +30,6 @@ public interface BankConfig extends Config
 	)
 	default Keybind toggleKeybind()
 	{
-		return new Keybind(KeyEvent.VK_R, InputEvent.ALT_DOWN_MASK);
+		return new Keybind(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK);
 	}
 }
