@@ -214,12 +214,18 @@ public class BankPlugin extends Plugin
 	private void toggleView(boolean changeConfig, boolean invokeLater)
 	{
 		if (changeConfig)
+		{
 			configManager.setConfiguration(CONFIG_GROUP_NAME, BankConfig.VIEW_TOGGLE, !config.recentViewToggled());
+		}
 
 		if (invokeLater)
+		{
 			clientThread.invokeLater(() -> bankSearch.layoutBank());
+		}
 		else
+		{
 			bankSearch.layoutBank();
+		}
 	}
 
 	@Subscribe
