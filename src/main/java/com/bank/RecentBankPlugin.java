@@ -43,7 +43,7 @@ import net.runelite.client.plugins.bank.BankSearch;
 @PluginDescriptor(
 	name = "Recently Banked Items"
 )
-public class BankPlugin extends Plugin
+public class RecentBankPlugin extends Plugin
 {
 	public static final String CONFIG_GROUP_NAME = "RecentlyBankedItems";
 	private static final String ON_RECENT = "Show Recent";
@@ -67,7 +67,7 @@ public class BankPlugin extends Plugin
 	private ConfigManager configManager;
 
 	@Inject
-	private BankConfig config;
+	private RecentBankConfig config;
 
 	@Inject
 	private BankSearch bankSearch;
@@ -98,9 +98,9 @@ public class BankPlugin extends Plugin
 	}
 
 	@Provides
-	BankConfig provideConfig(ConfigManager configManager)
+	RecentBankConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(BankConfig.class);
+		return configManager.getConfig(RecentBankConfig.class);
 	}
 
 	private final KeyListener toggleHotKeyListener = new KeyListener()
@@ -218,7 +218,7 @@ public class BankPlugin extends Plugin
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event)
 	{
-		if (BankConfig.VIEW_TOGGLE.equals(event.getKey()))
+		if (RecentBankConfig.VIEW_TOGGLE.equals(event.getKey()))
 		{
 			toggleView(false, true);
 		}
@@ -228,7 +228,7 @@ public class BankPlugin extends Plugin
 	{
 		if (changeConfig)
 		{
-			configManager.setConfiguration(CONFIG_GROUP_NAME, BankConfig.VIEW_TOGGLE, !config.recentViewToggled());
+			configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.VIEW_TOGGLE, !config.recentViewToggled());
 		}
 
 		if (invokeLater)

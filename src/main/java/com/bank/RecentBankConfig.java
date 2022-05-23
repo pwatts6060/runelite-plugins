@@ -7,8 +7,8 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Keybind;
 
-@ConfigGroup(BankPlugin.CONFIG_GROUP_NAME)
-public interface BankConfig extends Config
+@ConfigGroup(RecentBankPlugin.CONFIG_GROUP_NAME)
+public interface RecentBankConfig extends Config
 {
 	String VIEW_TOGGLE = "viewToggle";
 	String TOGGLE_KEYBIND = "toggleKeybind";
