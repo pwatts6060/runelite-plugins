@@ -2,7 +2,6 @@ package com.bank;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import javafx.scene.input.KeyCode;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
