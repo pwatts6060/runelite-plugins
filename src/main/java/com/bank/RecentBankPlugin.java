@@ -1,30 +1,9 @@
 package com.bank;
 
 import com.google.inject.Provides;
-import java.awt.event.KeyEvent;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
-import net.runelite.api.ItemContainer;
-import net.runelite.api.MenuAction;
-import net.runelite.api.ScriptID;
-import net.runelite.api.SpriteID;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.MenuEntryAdded;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.ScriptPostFired;
+import net.runelite.api.*;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -38,6 +17,10 @@ import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.bank.BankSearch;
+
+import javax.inject.Inject;
+import java.awt.event.KeyEvent;
+import java.util.*;
 
 @Slf4j
 @PluginDescriptor(
@@ -231,13 +214,27 @@ public class RecentBankPlugin extends Plugin
 			configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.VIEW_TOGGLE, !config.recentViewToggled());
 		}
 
-		if (invokeLater)
-		{
+		if (invokeLater) {
 			clientThread.invokeLater(() -> bankSearch.layoutBank());
-		}
-		else
-		{
+		} else {
 			bankSearch.layoutBank();
+		}
+
+		// set scroll bar to top if view was toggled on
+		if (config.recentViewToggled()) {
+			if (invokeLater) {
+				clientThread.invokeLater(() ->
+						client.runScript(ScriptID.UPDATE_SCROLLBAR,
+								WidgetInfo.BANK_SCROLLBAR.getId(),
+								WidgetInfo.BANK_ITEM_CONTAINER.getId(),
+								0)
+				);
+			} else {
+				client.runScript(ScriptID.UPDATE_SCROLLBAR,
+						WidgetInfo.BANK_SCROLLBAR.getId(),
+						WidgetInfo.BANK_ITEM_CONTAINER.getId(),
+						0);
+			}
 		}
 	}
 
@@ -324,13 +321,5 @@ public class RecentBankPlugin extends Plugin
 				break;
 			}
 		}
-
-		// set scroll bar to top
-		clientThread.invokeLater(() ->
-			client.runScript(ScriptID.UPDATE_SCROLLBAR,
-				WidgetInfo.BANK_SCROLLBAR.getId(),
-				WidgetInfo.BANK_ITEM_CONTAINER.getId(),
-				0)
-		);
 	}
 }
