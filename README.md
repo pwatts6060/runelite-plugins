@@ -1,2 +1,2 @@
-# Example
-An example greeter plugin
+# runelite-plugins
+A repository for all of my external Runelite plugins for OldSchool Runescape
