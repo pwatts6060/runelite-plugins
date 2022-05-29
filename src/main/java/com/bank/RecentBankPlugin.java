@@ -1,5 +1,8 @@
 package com.bank;
 
+import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -9,9 +12,10 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.config.Keybind;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ClientShutdown;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
@@ -26,8 +30,7 @@ import java.util.*;
 @PluginDescriptor(
 	name = "Recently Banked Items"
 )
-public class RecentBankPlugin extends Plugin
-{
+public class RecentBankPlugin extends Plugin {
 	public static final String CONFIG_GROUP_NAME = "RecentlyBankedItems";
 	private static final String ON_RECENT = "Show Recent";
 	private static final String OFF_RECENT = "Hide Recent";
@@ -37,8 +40,10 @@ public class RecentBankPlugin extends Plugin
 	private static final int ITEM_ROW_START = 51;
 
 	private static final List<Integer> recentIds = new LinkedList<>();
+	private static List<Integer> lockedIds = new LinkedList<>();
+	private static final String RECENT_ID_KEY = "recentlyBankedIds";
+	private static final String LOCKED_ID_KEY = "lockedIds";
 	private static final Map<Integer, Integer> bankItemsToAmount = new HashMap<>();
-	private String lastName = "";
 
 	@Inject
 	private Client client;
@@ -58,18 +63,40 @@ public class RecentBankPlugin extends Plugin
 	@Inject
 	private KeyManager keyManager;
 
+	@Inject
+	private Gson gson;
+
+	@Inject
+	private ItemManager itemManager;
+
 	@Override
-	protected void startUp() throws Exception
-	{
-		keyManager.registerKeyListener(toggleHotKeyListener);
+	protected void startUp() throws Exception {
+		keyManager.registerKeyListener(keyListener);
+		load();
 		log.info("Recently Banked Items started!");
 	}
 
+	private void load() {
+		String json = configManager.getRSProfileConfiguration(CONFIG_GROUP_NAME, RECENT_ID_KEY);
+		if (!Strings.isNullOrEmpty(json)) {
+			recentIds.clear();
+			recentIds.addAll(gson.fromJson(json, new TypeToken<List<Integer>>() {
+			}.getType()));
+		}
+
+		json = configManager.getRSProfileConfiguration(CONFIG_GROUP_NAME, LOCKED_ID_KEY);
+		if (!Strings.isNullOrEmpty(json)) {
+			lockedIds.clear();
+			lockedIds.addAll(gson.fromJson(json, new TypeToken<List<Integer>>() {
+			}.getType()));
+		}
+	}
+
 	@Override
-	protected void shutDown() throws Exception
-	{
+	protected void shutDown() throws Exception {
+		save();
 		reset();
-		keyManager.unregisterKeyListener(toggleHotKeyListener);
+		keyManager.unregisterKeyListener(keyListener);
 		clientThread.invokeLater(() -> bankSearch.reset(false));
 		log.info("Recently Banked Items stopped!");
 	}
@@ -77,6 +104,7 @@ public class RecentBankPlugin extends Plugin
 	public void reset()
 	{
 		recentIds.clear();
+		lockedIds.clear();
 		bankItemsToAmount.clear();
 	}
 
@@ -86,68 +114,81 @@ public class RecentBankPlugin extends Plugin
 		return configManager.getConfig(RecentBankConfig.class);
 	}
 
-	private final KeyListener toggleHotKeyListener = new KeyListener()
-	{
+	private final KeyListener keyListener = new KeyListener() {
 		@Override
-		public void keyTyped(KeyEvent e)
-		{
+		public void keyTyped(KeyEvent e) {
 		}
 
 		@Override
-		public void keyPressed(KeyEvent e)
-		{
-			Keybind keybind = config.toggleKeybind();
-			if (keybind.matches(e))
-			{
+		public void keyReleased(KeyEvent e) {
+			if (config.toggleKeybind().matches(e)) {
 				Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
-				if (bankContainer == null || bankContainer.isSelfHidden())
-				{
+				if (bankContainer == null || bankContainer.isSelfHidden()) {
 					return;
 				}
 
-				toggleView(true, true);
+				configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.VIEW_TOGGLE, !config.recentViewToggled());
+				e.consume();
+			}
+
+			if (config.toggleLockKeybind().matches(e)) {
+				Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+				if (bankContainer == null || bankContainer.isSelfHidden()) {
+					return;
+				}
+
+				configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.LOCK_TOGGLE, !config.lockToggled());
 				e.consume();
 			}
 		}
 
 		@Override
-		public void keyReleased(KeyEvent e)
-		{
+		public void keyPressed(KeyEvent e) {
 		}
 	};
 
+	private void toggleLock() {
+		if (config.lockToggled()) {
+			lockedIds = new ArrayList<>(recentIds);
+		}
+		clientThread.invokeLater(() -> bankSearch.layoutBank());
+	}
+
 	@Subscribe
-	public void onGameStateChanged(GameStateChanged event)
-	{
-		if (event.getGameState().equals(GameState.LOGGED_IN))
-		{
-			if (!lastName.equals(client.getLocalPlayer().getName()))
-			{
-				lastName = client.getLocalPlayer().getName();
-			}
+	public void onGameStateChanged(GameStateChanged event) {
+		if (event.getGameState().equals(GameState.LOGIN_SCREEN)) {
+			save();
 		}
 	}
 
 	@Subscribe
-	public void onItemContainerChanged(ItemContainerChanged event)
-	{
-		if (event.getContainerId() != InventoryID.BANK.getId())
-		{
+	public void onItemContainerChanged(ItemContainerChanged event) {
+		if (event.getContainerId() != InventoryID.BANK.getId()) {
 			return;
 		}
 		ItemContainer bank = event.getItemContainer();
 		boolean setRecent = !bankItemsToAmount.isEmpty();
 		boolean refresh = false;
 		Set<Integer> missing = new HashSet<>(bankItemsToAmount.keySet());
-		for (Item item : bank.getItems())
-		{
-			int id = item.getId();
+		for (Map.Entry<Integer, Integer> entry : bankItemsToAmount.entrySet()) {
+			Integer integer = entry.getKey();
+			Integer integer2 = entry.getValue();
+			System.out.println(integer + " " + integer2);
+		}
+		for (Item item : bank.getItems()) {
+			ItemComposition itemComposition = itemManager.getItemComposition(item.getId());
+			boolean isPlaceholder = itemComposition.getPlaceholderTemplateId() != -1;
+			int id = isPlaceholder ? itemComposition.getPlaceholderId() : itemComposition.getId();
+			if (id < 0) {
+				continue;
+			}
 			int amount = item.getQuantity();
+			if (isPlaceholder) {
+				amount = 0;
+			}
 			missing.remove(id);
-			if (bankItemsToAmount.getOrDefault(id, 0) != amount)
-			{
-				if (setRecent)
-				{
+			if (bankItemsToAmount.getOrDefault(id, -1) != amount) {
+				if (setRecent) {
 					recentIds.remove((Integer) id);
 					recentIds.add(0, id);
 					refresh = true;
@@ -195,60 +236,48 @@ public class RecentBankPlugin extends Plugin
 		{
 			return;
 		}
-		toggleView(true, false);
+		configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.VIEW_TOGGLE, !config.recentViewToggled());
 	}
 
 	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
-	{
-		if (RecentBankConfig.VIEW_TOGGLE.equals(event.getKey()))
-		{
-			toggleView(false, true);
+	public void onConfigChanged(ConfigChanged event) {
+		if (RecentBankConfig.VIEW_TOGGLE.equals(event.getKey())) {
+			clientThread.invokeLater(this::toggleView);
+		}
+		if (RecentBankConfig.LOCK_TOGGLE.equals(event.getKey())) {
+			toggleLock();
 		}
 	}
 
-	private void toggleView(boolean changeConfig, boolean invokeLater)
-	{
-		if (changeConfig)
-		{
-			configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.VIEW_TOGGLE, !config.recentViewToggled());
-		}
-
-		if (invokeLater) {
-			clientThread.invokeLater(() -> bankSearch.layoutBank());
-		} else {
-			bankSearch.layoutBank();
-		}
-
-		// set scroll bar to top if view was toggled on
+	public void toggleView() {
 		if (config.recentViewToggled()) {
-			if (invokeLater) {
-				clientThread.invokeLater(() ->
-						client.runScript(ScriptID.UPDATE_SCROLLBAR,
-								WidgetInfo.BANK_SCROLLBAR.getId(),
-								WidgetInfo.BANK_ITEM_CONTAINER.getId(),
-								0)
-				);
-			} else {
-				client.runScript(ScriptID.UPDATE_SCROLLBAR,
-						WidgetInfo.BANK_SCROLLBAR.getId(),
-						WidgetInfo.BANK_ITEM_CONTAINER.getId(),
-						0);
-			}
+			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "later Set varbit cur bank tab 0", "");
+			client.setVarbit(Varbits.CURRENT_BANK_TAB, 0);
+		}
+		bankSearch.layoutBank();
+		client.runScript(ScriptID.UPDATE_SCROLLBAR,
+				WidgetInfo.BANK_SCROLLBAR.getId(),
+				WidgetInfo.BANK_ITEM_CONTAINER.getId(),
+				0);
+	}
+
+	public void updateBankTitle() {
+		Widget bankTitle = client.getWidget(WidgetInfo.BANK_TITLE_BAR);
+		if (bankTitle != null && config.recentViewToggled()) {
+			bankTitle.setText("Recent Items" + (config.lockToggled() ? " (locked)" : ""));
 		}
 	}
 
 	@Subscribe
-	public void onScriptPostFired(ScriptPostFired event)
-	{
-		if (event.getScriptId() != ScriptID.BANKMAIN_BUILD || !config.recentViewToggled())
-		{
+	public void onScriptPostFired(ScriptPostFired event) {
+		if (event.getScriptId() != ScriptID.BANKMAIN_BUILD || !config.recentViewToggled()) {
 			return;
 		}
 
+		updateBankTitle();
+
 		Widget itemContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
-		if (itemContainer == null)
-		{
+		if (itemContainer == null) {
 			return;
 		}
 
@@ -280,29 +309,25 @@ public class RecentBankPlugin extends Plugin
 
 			// separator line or tab text
 			if (child.getSpriteId() == SpriteID.RESIZEABLE_MODE_SIDE_PANEL_BACKGROUND
-				|| child.getText().contains("Tab"))
-			{
+					|| child.getText().contains("Tab")) {
 				child.setHidden(true);
 			}
 		}
 
-		// hide non recent items
-		for (Widget child : containerChildren)
-		{
-			if (child.getItemId() != -1 && !child.isHidden() && !recentIds.contains(child.getItemId()))
-			{
+		List<Integer> targetIds = config.lockToggled() ? lockedIds : recentIds;
+
+		// hide non-recent items
+		for (Widget child : containerChildren) {
+			if (child.getItemId() != -1 && !child.isHidden() && !targetIds.contains(child.getItemId())) {
 				child.setHidden(true);
 				child.revalidate();
 			}
 		}
 
 		items = 0;
-		for (int itemId : recentIds)
-		{
-			for (Widget child : containerChildren)
-			{
-				if (child.isHidden() || child.getItemId() != itemId)
-				{
+		for (int itemId : targetIds) {
+			for (Widget child : containerChildren) {
+				if (child.isHidden() || child.getItemId() != itemId) {
 					continue;
 				}
 
@@ -320,6 +345,20 @@ public class RecentBankPlugin extends Plugin
 				items++;
 				break;
 			}
+		}
+	}
+
+	@Subscribe
+	public void onClientShutdown(ClientShutdown event) {
+		save();
+	}
+
+	public void save() {
+		configManager.setRSProfileConfiguration(CONFIG_GROUP_NAME, RECENT_ID_KEY, gson.toJson(recentIds));
+		if (config.lockToggled()) {
+			configManager.setRSProfileConfiguration(CONFIG_GROUP_NAME, LOCKED_ID_KEY, gson.toJson(lockedIds));
+		} else {
+			configManager.unsetRSProfileConfiguration(CONFIG_GROUP_NAME, LOCKED_ID_KEY);
 		}
 	}
 }
