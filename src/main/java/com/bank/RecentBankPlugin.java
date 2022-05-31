@@ -244,7 +244,6 @@ public class RecentBankPlugin extends Plugin {
 
 	public void toggleView() {
 		if (config.recentViewToggled()) {
-			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "later Set varbit cur bank tab 0", "");
 			client.setVarbit(Varbits.CURRENT_BANK_TAB, 0);
 		}
 		bankSearch.layoutBank();
