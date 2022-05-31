@@ -25,6 +25,7 @@ import net.runelite.client.plugins.bank.BankSearch;
 import javax.inject.Inject;
 import java.awt.event.KeyEvent;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @PluginDescriptor(
@@ -72,7 +73,10 @@ public class RecentBankPlugin extends Plugin {
 	@Override
 	protected void startUp() throws Exception {
 		keyManager.registerKeyListener(keyListener);
-		load();
+		if (configManager.getRSProfileKey() != null) {
+			load();
+			System.out.println("loaded startup" + configManager.getRSProfileKey());
+		}
 		log.info("Recently Banked Items started!");
 	}
 
@@ -156,6 +160,10 @@ public class RecentBankPlugin extends Plugin {
 	public void onGameStateChanged(GameStateChanged event) {
 		if (event.getGameState().equals(GameState.LOGIN_SCREEN)) {
 			save();
+		}
+		if (event.getGameState().equals(GameState.LOGGED_IN) && configManager.getRSProfileKey() != null) {
+			load();
+			System.out.println("loaded " + configManager.getRSProfileKey());
 		}
 	}
 
@@ -345,7 +353,8 @@ public class RecentBankPlugin extends Plugin {
 
 	@Subscribe
 	public void onClientShutdown(ClientShutdown event) {
-		save();
+		CompletableFuture<Void> future = CompletableFuture.runAsync(this::save);
+		event.waitFor(future);
 	}
 
 	public void save() {
