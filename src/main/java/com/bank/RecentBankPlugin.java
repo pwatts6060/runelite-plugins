@@ -327,8 +327,7 @@ public class RecentBankPlugin extends Plugin {
 				int adjYOffset = (items / ITEMS_PER_ROW) * ITEM_VERTICAL_SPACING;
 				int adjXOffset = (items % ITEMS_PER_ROW) * ITEM_HORIZONTAL_SPACING + ITEM_ROW_START;
 
-				if (child.getOriginalY() != adjYOffset || child.getOriginalX() != adjXOffset)
-				{
+				if (child.getOriginalY() != adjYOffset || child.getOriginalX() != adjXOffset) {
 					child.setOriginalY(adjYOffset);
 					child.setOriginalX(adjXOffset);
 					child.revalidate();
@@ -337,6 +336,13 @@ public class RecentBankPlugin extends Plugin {
 				items++;
 				break;
 			}
+		}
+
+		// Fix when someone clicks a tab and opens recent view at same time,
+		// resulting in no items shown and viewing in clicked tab
+		if (client.getVarbitValue(Varbits.CURRENT_BANK_TAB) != 0) {
+			client.setVarbit(Varbits.CURRENT_BANK_TAB, 0);
+			clientThread.invokeLater(() -> bankSearch.layoutBank());
 		}
 	}
 
