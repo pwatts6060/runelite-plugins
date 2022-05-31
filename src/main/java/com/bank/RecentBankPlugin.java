@@ -75,7 +75,6 @@ public class RecentBankPlugin extends Plugin {
 		keyManager.registerKeyListener(keyListener);
 		if (configManager.getRSProfileKey() != null) {
 			load();
-			System.out.println("loaded startup" + configManager.getRSProfileKey());
 		}
 		log.info("Recently Banked Items started!");
 	}
@@ -163,7 +162,6 @@ public class RecentBankPlugin extends Plugin {
 		}
 		if (event.getGameState().equals(GameState.LOGGED_IN) && configManager.getRSProfileKey() != null) {
 			load();
-			System.out.println("loaded " + configManager.getRSProfileKey());
 		}
 	}
 
