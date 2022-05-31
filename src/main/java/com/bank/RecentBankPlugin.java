@@ -35,16 +35,16 @@ public class RecentBankPlugin extends Plugin {
 	public static final String CONFIG_GROUP_NAME = "RecentlyBankedItems";
 	private static final String ON_RECENT = "Show Recent";
 	private static final String OFF_RECENT = "Hide Recent";
+	private static final String RECENT_ID_KEY = "recentlyBankedIds";
+	private static final String LOCKED_ID_KEY = "lockedIds";
 	private static final int ITEMS_PER_ROW = 8;
 	private static final int ITEM_VERTICAL_SPACING = 36;
 	private static final int ITEM_HORIZONTAL_SPACING = 48;
 	private static final int ITEM_ROW_START = 51;
 
-	private static final List<Integer> recentIds = new LinkedList<>();
-	private static List<Integer> lockedIds = new LinkedList<>();
-	private static final String RECENT_ID_KEY = "recentlyBankedIds";
-	private static final String LOCKED_ID_KEY = "lockedIds";
-	private static final Map<Integer, Integer> bankItemsToAmount = new HashMap<>();
+	private final List<Integer> recentIds = new LinkedList<>();
+	private final List<Integer> lockedIds = new LinkedList<>();
+	private final Map<Integer, Integer> bankItemsToAmount = new HashMap<>();
 
 	@Inject
 	private Client client;
@@ -69,6 +69,9 @@ public class RecentBankPlugin extends Plugin {
 
 	@Inject
 	private ItemManager itemManager;
+
+	@Inject
+	private BankInterface bankInterface;
 
 	@Override
 	protected void startUp() throws Exception {
@@ -101,6 +104,7 @@ public class RecentBankPlugin extends Plugin {
 		reset();
 		keyManager.unregisterKeyListener(keyListener);
 		clientThread.invokeLater(() -> bankSearch.reset(false));
+		clientThread.invokeLater(bankInterface::destroy);
 		log.info("Recently Banked Items stopped!");
 	}
 
@@ -150,7 +154,8 @@ public class RecentBankPlugin extends Plugin {
 
 	private void toggleLock() {
 		if (config.lockToggled()) {
-			lockedIds = new ArrayList<>(recentIds);
+			lockedIds.clear();
+			lockedIds.addAll(recentIds);
 		}
 		clientThread.invokeLater(() -> bankSearch.layoutBank());
 	}
@@ -251,6 +256,8 @@ public class RecentBankPlugin extends Plugin {
 	public void toggleView() {
 		if (config.recentViewToggled()) {
 			client.setVarbit(Varbits.CURRENT_BANK_TAB, 0);
+		} else {
+			bankInterface.destroy();
 		}
 		bankSearch.layoutBank();
 		client.runScript(ScriptID.UPDATE_SCROLLBAR,
@@ -273,6 +280,8 @@ public class RecentBankPlugin extends Plugin {
 		}
 
 		updateBankTitle();
+		bankInterface.destroy();
+		bankInterface.init();
 
 		Widget itemContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
 		if (itemContainer == null) {
@@ -362,5 +371,11 @@ public class RecentBankPlugin extends Plugin {
 		} else {
 			configManager.unsetRSProfileConfiguration(CONFIG_GROUP_NAME, LOCKED_ID_KEY);
 		}
+	}
+
+	public void clearButton() {
+		recentIds.clear();
+		lockedIds.clear();
+		clientThread.invokeLater(() -> bankSearch.layoutBank());
 	}
 }
