@@ -28,7 +28,7 @@ import java.util.*;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Recently Banked Items"
+		name = "Recently Banked Items"
 )
 public class RecentBankPlugin extends Plugin {
 	public static final String CONFIG_GROUP_NAME = "RecentlyBankedItems";
@@ -101,16 +101,14 @@ public class RecentBankPlugin extends Plugin {
 		log.info("Recently Banked Items stopped!");
 	}
 
-	public void reset()
-	{
+	public void reset() {
 		recentIds.clear();
 		lockedIds.clear();
 		bankItemsToAmount.clear();
 	}
 
 	@Provides
-	RecentBankConfig provideConfig(ConfigManager configManager)
-	{
+	RecentBankConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(RecentBankConfig.class);
 	}
 
@@ -186,8 +184,7 @@ public class RecentBankPlugin extends Plugin {
 				bankItemsToAmount.put(id, amount);
 			}
 		}
-		for (int id : missing)
-		{
+		for (int id : missing) {
 			bankItemsToAmount.remove(id);
 			recentIds.remove((Integer) id);
 			recentIds.add(0, id);
@@ -212,17 +209,16 @@ public class RecentBankPlugin extends Plugin {
 		}
 
 		client.createMenuEntry(1)
-			.setOption(config.recentViewToggled() ? OFF_RECENT : ON_RECENT)
-			.setTarget("")
-			.setType(MenuAction.RUNELITE)
-			.setIdentifier(event.getIdentifier())
-			.setParam0(event.getActionParam0())
-			.setParam1(event.getActionParam1());
+				.setOption(config.recentViewToggled() ? OFF_RECENT : ON_RECENT)
+				.setTarget("")
+				.setType(MenuAction.RUNELITE)
+				.setIdentifier(event.getIdentifier())
+				.setParam0(event.getActionParam0())
+				.setParam1(event.getActionParam1());
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
-	{
+	public void onMenuOptionClicked(MenuOptionClicked event) {
 		if ((event.getMenuAction() == MenuAction.RUNELITE)
 				&& (event.getParam1() >> 16) == WidgetID.BANK_GROUP_ID && (event.getMenuOption().equals(ON_RECENT) || event.getMenuOption().equals(OFF_RECENT))) {
 			configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.VIEW_TOGGLE, !config.recentViewToggled());
@@ -283,18 +279,15 @@ public class RecentBankPlugin extends Plugin {
 
 		// sort the child array as the items are not in the displayed order
 		Arrays.sort(containerChildren, Comparator.comparingInt(Widget::getOriginalY)
-			.thenComparingInt(Widget::getOriginalX));
+				.thenComparingInt(Widget::getOriginalX));
 
-		for (Widget child : containerChildren)
-		{
-			if (child.getItemId() != -1 && !child.isHidden())
-			{
+		for (Widget child : containerChildren) {
+			if (child.getItemId() != -1 && !child.isHidden()) {
 				// calculate correct item position as if this was a normal tab
 				int adjYOffset = (items / ITEMS_PER_ROW) * ITEM_VERTICAL_SPACING;
 				int adjXOffset = (items % ITEMS_PER_ROW) * ITEM_HORIZONTAL_SPACING + ITEM_ROW_START;
 
-				if (child.getOriginalY() != adjYOffset || child.getOriginalX() != adjXOffset)
-				{
+				if (child.getOriginalY() != adjYOffset || child.getOriginalX() != adjXOffset) {
 					child.setOriginalY(adjYOffset);
 					child.setOriginalX(adjXOffset);
 					child.revalidate();
