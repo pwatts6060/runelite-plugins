@@ -223,13 +223,17 @@ public class RecentBankPlugin extends Plugin {
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if ((event.getMenuAction() != MenuAction.RUNELITE)
-			|| (event.getParam1() >> 16) != WidgetID.BANK_GROUP_ID
-			|| !(event.getMenuOption().equals(ON_RECENT)) && !(event.getMenuOption().equals(OFF_RECENT)))
-		{
+		if ((event.getMenuAction() == MenuAction.RUNELITE)
+				&& (event.getParam1() >> 16) == WidgetID.BANK_GROUP_ID && (event.getMenuOption().equals(ON_RECENT) || event.getMenuOption().equals(OFF_RECENT))) {
+			configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.VIEW_TOGGLE, !config.recentViewToggled());
 			return;
 		}
-		configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.VIEW_TOGGLE, !config.recentViewToggled());
+		if (config.recentViewToggled() && (event.getParam1() >> 16) == WidgetID.BANK_GROUP_ID
+				&& (event.getMenuOption().equals("View tab")
+				|| event.getMenuOption().equals("View all items")
+				|| event.getMenuOption().equals("View tag tab"))) {
+			configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.VIEW_TOGGLE, false);
+		}
 	}
 
 	@Subscribe
