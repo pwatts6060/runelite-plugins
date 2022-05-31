@@ -121,6 +121,10 @@ public class RecentBankPlugin extends Plugin {
 
 		@Override
 		public void keyReleased(KeyEvent e) {
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
 			if (config.toggleKeybind().matches(e)) {
 				Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
 				if (bankContainer == null || bankContainer.isSelfHidden()) {
@@ -140,10 +144,6 @@ public class RecentBankPlugin extends Plugin {
 				configManager.setConfiguration(CONFIG_GROUP_NAME, RecentBankConfig.LOCK_TOGGLE, !config.lockToggled());
 				e.consume();
 			}
-		}
-
-		@Override
-		public void keyPressed(KeyEvent e) {
 		}
 	};
 
