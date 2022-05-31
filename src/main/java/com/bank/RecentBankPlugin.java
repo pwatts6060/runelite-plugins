@@ -37,6 +37,7 @@ public class RecentBankPlugin extends Plugin {
 	private static final String OFF_RECENT = "Hide Recent";
 	private static final String RECENT_ID_KEY = "recentlyBankedIds";
 	private static final String LOCKED_ID_KEY = "lockedIds";
+	private static final String AMOUNT_MAP_KEY = "idToAmount";
 	private static final int ITEMS_PER_ROW = 8;
 	private static final int ITEM_VERTICAL_SPACING = 36;
 	private static final int ITEM_HORIZONTAL_SPACING = 48;
@@ -94,6 +95,13 @@ public class RecentBankPlugin extends Plugin {
 		if (!Strings.isNullOrEmpty(json)) {
 			lockedIds.clear();
 			lockedIds.addAll(gson.fromJson(json, new TypeToken<List<Integer>>() {
+			}.getType()));
+		}
+
+		json = configManager.getRSProfileConfiguration(CONFIG_GROUP_NAME, AMOUNT_MAP_KEY);
+		if (!Strings.isNullOrEmpty(json)) {
+			bankItemsToAmount.clear();
+			bankItemsToAmount.putAll(gson.fromJson(json, new TypeToken<Map<Integer, Integer>>() {
 			}.getType()));
 		}
 	}
@@ -184,7 +192,8 @@ public class RecentBankPlugin extends Plugin {
 			if (id < 0) {
 				continue;
 			}
-			int amount = item.getQuantity();
+			boolean isPlaceholder = itemManager.getItemComposition(item.getId()).getPlaceholderTemplateId() != -1;
+			int amount = isPlaceholder ? 0 : item.getQuantity();
 			missing.remove(id);
 			if (bankItemsToAmount.getOrDefault(id, -1) != amount) {
 				if (setRecent) {
@@ -350,7 +359,7 @@ public class RecentBankPlugin extends Plugin {
 			}
 		}
 
-		// Fix when someone clicks a tab and opens recent view at same time,
+		// Fix when someone clicks a tab and opens recent view at same time	,
 		// resulting in no items shown and viewing in clicked tab
 		if (client.getVarbitValue(Varbits.CURRENT_BANK_TAB) != 0) {
 			client.setVarbit(Varbits.CURRENT_BANK_TAB, 0);
@@ -371,6 +380,7 @@ public class RecentBankPlugin extends Plugin {
 		} else {
 			configManager.unsetRSProfileConfiguration(CONFIG_GROUP_NAME, LOCKED_ID_KEY);
 		}
+		configManager.setRSProfileConfiguration(CONFIG_GROUP_NAME, AMOUNT_MAP_KEY, gson.toJson(bankItemsToAmount));
 	}
 
 	public void clearButton() {
