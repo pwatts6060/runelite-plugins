@@ -170,22 +170,12 @@ public class RecentBankPlugin extends Plugin {
 		boolean setRecent = !bankItemsToAmount.isEmpty();
 		boolean refresh = false;
 		Set<Integer> missing = new HashSet<>(bankItemsToAmount.keySet());
-		for (Map.Entry<Integer, Integer> entry : bankItemsToAmount.entrySet()) {
-			Integer integer = entry.getKey();
-			Integer integer2 = entry.getValue();
-			System.out.println(integer + " " + integer2);
-		}
 		for (Item item : bank.getItems()) {
-			ItemComposition itemComposition = itemManager.getItemComposition(item.getId());
-			boolean isPlaceholder = itemComposition.getPlaceholderTemplateId() != -1;
-			int id = isPlaceholder ? itemComposition.getPlaceholderId() : itemComposition.getId();
+			int id = getItemId(item.getId());
 			if (id < 0) {
 				continue;
 			}
 			int amount = item.getQuantity();
-			if (isPlaceholder) {
-				amount = 0;
-			}
 			missing.remove(id);
 			if (bankItemsToAmount.getOrDefault(id, -1) != amount) {
 				if (setRecent) {
@@ -203,18 +193,21 @@ public class RecentBankPlugin extends Plugin {
 			recentIds.add(0, id);
 			refresh = true;
 		}
-		if (refresh && config.recentViewToggled())
-		{
+		if (refresh && config.recentViewToggled()) {
 			bankSearch.layoutBank();
 		}
 	}
 
+	private int getItemId(int itemId) {
+		ItemComposition itemComposition = itemManager.getItemComposition(itemId);
+		boolean isPlaceholder = itemComposition.getPlaceholderTemplateId() != -1;
+		return isPlaceholder ? itemComposition.getPlaceholderId() : itemComposition.getId();
+	}
+
 	@Subscribe
-	public void onMenuEntryAdded(MenuEntryAdded event)
-	{
+	public void onMenuEntryAdded(MenuEntryAdded event) {
 		if (event.getType() != MenuAction.CC_OP.getId() || !event.getOption().equals("Show menu")
-			|| (event.getActionParam1() >> 16) != WidgetID.BANK_GROUP_ID)
-		{
+				|| (event.getActionParam1() >> 16) != WidgetID.BANK_GROUP_ID) {
 			return;
 		}
 
@@ -318,7 +311,7 @@ public class RecentBankPlugin extends Plugin {
 
 		// hide non-recent items
 		for (Widget child : containerChildren) {
-			if (child.getItemId() != -1 && !child.isHidden() && !targetIds.contains(child.getItemId())) {
+			if (child.getItemId() != -1 && !child.isHidden() && !targetIds.contains(getItemId(child.getItemId()))) {
 				child.setHidden(true);
 				child.revalidate();
 			}
@@ -327,7 +320,7 @@ public class RecentBankPlugin extends Plugin {
 		items = 0;
 		for (int itemId : targetIds) {
 			for (Widget child : containerChildren) {
-				if (child.isHidden() || child.getItemId() != itemId) {
+				if (child.isHidden() || getItemId(child.getItemId()) != itemId) {
 					continue;
 				}
 
