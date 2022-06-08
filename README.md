@@ -1,4 +1,3 @@
-# runelite-plugins
-A repository for all of my external Runelite plugins for OldSchool Runescape
+# Foundry
 
-Check the branches to find individual plugins.
+This plugin helps you out with visual cues for what to click on in the Giant's Foundry minigame.
