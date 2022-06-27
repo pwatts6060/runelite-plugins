@@ -1,13 +1,13 @@
-package com.example;
+package com.instantnotify;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class ExamplePluginTest
+public class InstantNotifyPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(ExamplePlugin.class);
+		ExternalPluginManager.loadBuiltin(InstantNotifyPlugin.class);
 		RuneLite.main(args);
 	}
 }
