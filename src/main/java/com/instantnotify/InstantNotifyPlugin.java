@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.WidgetInfo;
@@ -56,7 +57,11 @@ public class InstantNotifyPlugin extends Plugin {
 
     private void loadInv() {
         itemAmounts = new HashMap<>();
-        for (Item item : client.getItemContainer(InventoryID.INVENTORY).getItems()) {
+        ItemContainer itemContainer = client.getItemContainer(InventoryID.INVENTORY);
+        if (itemContainer == null) {
+            return;
+        }
+        for (Item item : itemContainer.getItems()) {
             if (item.getId() >= 0)
                 itemAmounts.merge(item.getId(), item.getQuantity(), Integer::sum);
         }
