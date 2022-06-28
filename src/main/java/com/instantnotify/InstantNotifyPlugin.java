@@ -134,6 +134,8 @@ public class InstantNotifyPlugin extends Plugin {
                 || menuOption.startsWith("Withdraw")
                 || menuOption.startsWith("Deposit")
                 || menuOption.equals("Eat")
+                || menuOption.equals("Scatter")
+                || menuOption.equals("Bury")
                 || menuOption.equals("Drink")) {
             lastTickDelay = -1; // Reset the current action
         }
