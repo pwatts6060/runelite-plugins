@@ -1,5 +1,6 @@
 package com.instantnotify;
 
+import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
@@ -9,7 +10,10 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.Notifier;
+import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
@@ -27,6 +31,12 @@ public class InstantNotifyPlugin extends Plugin {
 
     @Inject
     private Notifier notifier;
+
+    @Inject
+    private InstantNotifyConfig config;
+
+    @Inject
+    private ClientThread clientThread;
 
     private Map<Integer, Integer> itemAmounts;
     private Map<Integer, Integer> changedItems = new HashMap<>();
@@ -113,8 +123,7 @@ public class InstantNotifyPlugin extends Plugin {
                 int id = entry.getKey();
                 int amount = entry.getValue();
                 if (amount < 0 && newItemAmounts.getOrDefault(id, 0) < -amount) {
-                    notifier.notify("Instant Idle Notify");
-                    break;
+                    playNotification();
                 }
             }
         } else {
@@ -125,6 +134,16 @@ public class InstantNotifyPlugin extends Plugin {
         lastTick = client.getTickCount();
         itemAmounts = newItemAmounts;
         changedItems = newChangedItems;
+    }
+
+    private void playNotification() {
+        NotificationType type = config.notificationType();
+        if (type == NotificationType.RUNELITE || type == NotificationType.BOTH) {
+            notifier.notify("Instant Idle Notify");
+        }
+        if (type == NotificationType.SOUND || type == NotificationType.BOTH) {
+            clientThread.invoke(() -> client.playSoundEffect(config.soundId(), config.volume()));
+        }
     }
 
     @Subscribe
@@ -139,5 +158,20 @@ public class InstantNotifyPlugin extends Plugin {
                 || menuOption.equals("Drink")) {
             lastTickDelay = -1; // Reset the current action
         }
+    }
+
+    @Subscribe
+    protected void onConfigChanged(ConfigChanged configChanged) {
+        if (!InstantNotifyConfig.configGroup.equals(configChanged.getGroup())) {
+            return;
+        }
+        if (InstantNotifyConfig.soundId.equals(configChanged.getKey())) {
+            clientThread.invoke(() -> client.playSoundEffect(config.soundId(), config.volume()));
+        }
+    }
+
+    @Provides
+    InstantNotifyConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(InstantNotifyConfig.class);
     }
 }
