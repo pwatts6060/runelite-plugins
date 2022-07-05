@@ -17,15 +17,13 @@ import net.runelite.client.ui.overlay.WidgetItemOverlay;
 public class ContainerHighlight extends WidgetItemOverlay
 {
 	private final ItemManager itemManager;
-	private final EntranaPlugin plugin;
 	private final EntranaConfig config;
 	private final ProhibitedItems prohibitedItems;
 
 	@Inject
-	private ContainerHighlight(ItemManager itemManager, EntranaPlugin plugin, EntranaConfig config)
+	private ContainerHighlight(ItemManager itemManager, EntranaConfig config)
 	{
 		this.itemManager = itemManager;
-		this.plugin = plugin;
 		this.config = config;
 		this.prohibitedItems = new ProhibitedItems(itemManager);
 		showOnInventory();
