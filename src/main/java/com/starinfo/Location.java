@@ -33,7 +33,7 @@ public class Location
 	     */
 			put(new Point(3296, 3298), "Al Kharid mine");
 			put(new Point(3276, 3164), "Al Kharid bank");
-			put(new Point(3341, 3267), "Duel Arena");
+			put(new Point(3351, 3281), "Mage Training Arena entrance");
 			put(new Point(3424, 3160), "Nw of Uzer (Eagle's Eyrie)");
 			put(new Point(3434, 2889), "Nardah bank");
 			put(new Point(3316, 2867), "Agility Pyramid mine");
