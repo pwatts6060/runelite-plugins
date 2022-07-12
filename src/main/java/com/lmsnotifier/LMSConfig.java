@@ -7,6 +7,18 @@ import java.awt.*;
 @ConfigGroup(LMSPlugin.CONFIG_GROUP_KEY)
 public interface LMSConfig extends Config
 {
+
+	@ConfigItem(
+			keyName = "overlayKillDeaths",
+			name = "Overlay kills/deaths",
+			description = "3-0 means 3 kills and 0 deaths",
+			position = 0
+	)
+	default boolean overlayKillDeaths()
+	{
+		return true;
+	}
+
 	@ConfigItem(
 		keyName = "notifyGameStart",
 		name = "Game Start Notification",

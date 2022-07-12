@@ -58,8 +58,28 @@ class LMSOverlay extends Overlay
 			renderBots(graphics);
 		}
 
+		if (config.overlayKillDeaths())
+		{
+			renderKillDeaths(graphics);
+		}
+
 		return null;
 	}
+
+    private void renderKillDeaths(Graphics2D graphics) {
+        for (LMSPlayer lmsPlayer : plugin.localLMSPlayers) {
+            DeathTracker.KD kd = plugin.deathTracker.getKD(lmsPlayer.player.getName());
+            if (kd.kills <= 0 && kd.deaths <= 0) {
+                continue;
+            }
+            String text = kd.kills + "-" + kd.deaths;
+            Point textLocation = lmsPlayer.player.getCanvasTextLocation(graphics, text, 0);
+            if (textLocation != null)
+            {
+                OverlayUtil.renderTextLocation(graphics, new Point(textLocation.getX(), textLocation.getY() - 12), text, Color.WHITE);
+            }
+        }
+    }
 
 	private void renderBots(Graphics2D graphics) {
 		for (LMSPlayer lmsPlayer : plugin.localLMSPlayers)
