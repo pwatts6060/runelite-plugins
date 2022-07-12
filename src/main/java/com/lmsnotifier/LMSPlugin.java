@@ -2,13 +2,35 @@ package com.lmsnotifier;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.inject.Inject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.InventoryID;
+import net.runelite.api.ItemID;
+import net.runelite.api.ObjectID;
+import net.runelite.api.Player;
+import net.runelite.api.TileObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.*;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.GroundObjectDespawned;
+import net.runelite.api.events.GroundObjectSpawned;
+import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.events.WidgetClosed;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
@@ -16,9 +38,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-
-import javax.inject.Inject;
-import java.util.*;
 
 @Slf4j
 @PluginDescriptor(
@@ -172,11 +191,6 @@ public class LMSPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onGameObjectChanged(GameObjectChanged event) {
-        onTileObject(event.getPrevious(), event.getGameObject());
-    }
-
-    @Subscribe
     public void onGameObjectDespawned(GameObjectDespawned event) {
         onTileObject(event.getGameObject(), null);
     }
@@ -184,11 +198,6 @@ public class LMSPlugin extends Plugin {
     @Subscribe
     public void onGroundObjectSpawned(GroundObjectSpawned event) {
         onTileObject(null, event.getGroundObject());
-    }
-
-    @Subscribe
-    public void onGroundObjectChanged(GroundObjectChanged event) {
-        onTileObject(event.getPrevious(), event.getGroundObject());
     }
 
     @Subscribe
