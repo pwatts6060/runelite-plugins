@@ -76,7 +76,7 @@ class LMSOverlay extends Overlay
             Point textLocation = lmsPlayer.player.getCanvasTextLocation(graphics, text, 0);
             if (textLocation != null)
             {
-                OverlayUtil.renderTextLocation(graphics, new Point(textLocation.getX(), textLocation.getY() - 12), text, Color.WHITE);
+                OverlayUtil.renderTextLocation(graphics, new Point(textLocation.getX(), textLocation.getY() + 12), text, Color.WHITE);
             }
         }
     }
@@ -108,7 +108,7 @@ class LMSOverlay extends Overlay
 			Point textLocation = lmsPlayer.player.getCanvasTextLocation(graphics, text, 0);
 			if (textLocation != null)
 			{
-				OverlayUtil.renderTextLocation(graphics, new Point(textLocation.getX(), textLocation.getY() + 12), text, color);
+				OverlayUtil.renderTextLocation(graphics, new Point(textLocation.getX(), textLocation.getY() + 24), text, color);
 			}
 		}
 	}
