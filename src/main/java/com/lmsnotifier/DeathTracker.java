@@ -22,6 +22,9 @@ public class DeathTracker {
     @Inject
     private Client client;
 
+    @Inject
+    private LMSConfig config;
+
     private int lastAttackTick;
     private Player opponent;
     private Player potentialOpponent;
@@ -67,10 +70,14 @@ public class DeathTracker {
         KD kd;
         if (actor.getName().equals(opponent.getName())) {
             kd = new KD(1, 0);
-            client.addChatMessage(ChatMessageType.CONSOLE, "", "You killed " + opponent.getName(), "");
+            if (config.fightResultInChat()) {
+                client.addChatMessage(ChatMessageType.CONSOLE, "", "You killed " + opponent.getName(), "");
+            }
         } else if (actor.getName().equals(client.getLocalPlayer().getName())) {
             kd = new KD(0, 1);
-            client.addChatMessage(ChatMessageType.CONSOLE, "", "You died to " + opponent.getName(), "");
+            if (config.fightResultInChat()) {
+                client.addChatMessage(ChatMessageType.CONSOLE, "", "You died to " + opponent.getName(), "");
+            }
         } else {
             return;
         }

@@ -12,9 +12,20 @@ public interface LMSConfig extends Config
 			keyName = "overlayKillDeaths",
 			name = "Overlay kills/deaths",
 			description = "3-0 means 3 kills and 0 deaths",
-			position = 0
+			position = 1
 	)
 	default boolean overlayKillDeaths()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			keyName = "fightResultInChat",
+			name = "Chatbox fight outcome",
+			description = "Display name of opponent you defeated / got killed by",
+			position = 2
+	)
+	default boolean fightResultInChat()
 	{
 		return true;
 	}
@@ -23,7 +34,7 @@ public interface LMSConfig extends Config
 		keyName = "notifyGameStart",
 		name = "Game Start Notification",
 		description = "Notifies you when LMS starts",
-		position = 1
+		position = 3
 	)
 	default boolean notifiesGameStart()
 	{
@@ -33,7 +44,7 @@ public interface LMSConfig extends Config
 	@ConfigSection(
 		name = "Chests",
 		description = "Chest highlighting options",
-		position = 2,
+		position = 4,
 		closedByDefault = false
 	)
 	String chestList = "chestList";
@@ -93,7 +104,7 @@ public interface LMSConfig extends Config
 	@ConfigSection(
 		name = "Loot Crates",
 		description = "Loot Crate highlighting options",
-		position = 3,
+		position = 5,
 		closedByDefault = false
 	)
 	String lootCrateList = "lootCrateList";
@@ -142,7 +153,7 @@ public interface LMSConfig extends Config
 	@ConfigSection(
 		name = "Player Ranks",
 		description = "Show Lms ranks/scores of players",
-		position = 4,
+		position = 6,
 		closedByDefault = false
 	)
 	String playerRanks = "playerRanks";
@@ -198,7 +209,7 @@ public interface LMSConfig extends Config
 	@ConfigSection(
 			name = "Bot Detection",
 			description = "Options for showing potential bots",
-			position = 5,
+			position = 7,
 			closedByDefault = false
 	)
 	String botDetection = "botDetection";
