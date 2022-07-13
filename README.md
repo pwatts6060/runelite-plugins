@@ -4,3 +4,4 @@ A Runelite plugin for the Last Man Standing minigame with the following toggleab
 - Highlight chests with different highlight types and conditions to highlight.
 - Draw player's LMS Score or Rank on them
 - Detects bots
+- Tracks kills/deaths and overlays them on players
