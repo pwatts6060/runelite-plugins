@@ -131,11 +131,10 @@ public class PlayerTracker {
             case 23615: // Vesta's longsword
             case 20407: // Dragon dagger
             case 20405: // Abyssal whip
-            default:
-                return HeadIcon.MELEE;
             case 25516: // Dharok's greataxe
             case 23628: // Ghrazi rapier
-                return null; // null style is for when the bot can't detect the weapon correctly
+            default:
+                return HeadIcon.MELEE;
         }
     }
 }
