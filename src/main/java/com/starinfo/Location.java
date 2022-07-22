@@ -125,9 +125,9 @@ public class Location
 			 */
 			new Location(new Point(2329, 3163), "Lletya"),
 			new Location(new Point(2269, 3158), "Isafdar runite rocks"),
-			new Location(new Point(3274, 6055), "Priffdinas Zalcano entrance"),
+			new Location(new Point(3274, 6055), "Prifddinas Zalcano entrance"),
 			new Location(new Point(2318, 3269), "Arandar mine north of Lleyta"),
-			new Location(new Point(2173, 3409), "Mynydd nw of Priffdinas"),
+			new Location(new Point(2173, 3409), "Mynydd nw of Prifddinas"),
 			/*
 			WILDERNESS
 			 */

@@ -102,9 +102,9 @@ __TIRANNWN__
 
 - Lletya
 - Isafdar runite rocks
-- Priffdinas Zalcano entrance
+- Prifddinas Zalcano entrance
 - Arandar mine north of Lleyta
-- Mynydd nw of Priffdinas
+- Mynydd nw of Prifddinas
 
 __WILDERNESS__
 
