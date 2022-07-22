@@ -129,6 +129,9 @@ public class StarInfoPlugin extends Plugin
 	@Inject
 	private StarInfoConfig starConfig;
 
+	@Inject
+	private WorldInfo worldInfo;
+
 	@Provides
 	StarInfoConfig
 	provideConfig(ConfigManager configManager)
@@ -462,7 +465,7 @@ public class StarInfoPlugin extends Plugin
 		{
 			content += "- " + star.getMiners() + " Miners - ";
 		}
-		content += star.getLocation() + " " + DiscordTimeStamp.relativeTimeNow();
+		content += star.getLocation().getDescription() + " " + DiscordTimeStamp.relativeTimeNow();
 
 		final StringSelection stringSelection = new StringSelection(content);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);

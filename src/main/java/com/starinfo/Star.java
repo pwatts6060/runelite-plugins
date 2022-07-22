@@ -37,7 +37,7 @@ public class Star
 	@Getter
 	private String miners;
 	@Getter
-	private final String location;
+	private final Location location;
 	private int health = -1;
 	@Getter
 	@Setter
@@ -102,7 +102,7 @@ public class Star
 
 	public String getMessage()
 	{
-		return "Star Found W" + world + " T" + getTier() + " " + location;
+		return "Star Found W" + world + " T" + getTier() + " " + location.getDescription();
 	}
 
 	public void resetHealth()
