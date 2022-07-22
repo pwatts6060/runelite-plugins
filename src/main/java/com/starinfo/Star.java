@@ -104,4 +104,9 @@ public class Star
 	{
 		return "Star Found W" + world + " / T" + getTier() + " / " + location;
 	}
+
+	public void resetHealth()
+	{
+		health = 100;
+	}
 }

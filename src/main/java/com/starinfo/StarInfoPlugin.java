@@ -129,7 +129,6 @@ public class StarInfoPlugin extends Plugin
 	@Inject
 	private StarInfoConfig starConfig;
 
-
 	@Provides
 	StarInfoConfig
 	provideConfig(ConfigManager configManager)
@@ -216,6 +215,7 @@ public class StarInfoPlugin extends Plugin
 			if (s.getWorldPoint().equals(event.getGameObject().getWorldLocation()))
 			{
 				s.setObject(event.getGameObject());
+				s.resetHealth();
 				star = s;
 				despawnQueue.remove(star);
 				break;
