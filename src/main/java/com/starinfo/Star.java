@@ -102,7 +102,7 @@ public class Star
 
 	public String getMessage()
 	{
-		return "Star Found W" + world + " / T" + getTier() + " / " + location;
+		return "Star Found W" + world + " T" + getTier() + " " + location;
 	}
 
 	public void resetHealth()
