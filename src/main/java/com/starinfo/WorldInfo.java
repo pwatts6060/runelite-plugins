@@ -10,30 +10,38 @@ public class WorldInfo
 	@Inject
 	private WorldService worldService;
 
-	public String worldMsg(Star star) {
+	public void update(Star star) {
+		if (worldService.getWorlds() == null) {
+			star.setWorldInfo("");
+			return;
+		}
 		World world = worldService.getWorlds().findWorld(star.getWorld());
 		if (world == null) {
-			return "";
+			star.setWorldInfo("");
+			return;
 		}
+
 		String msg = "";
 		if (!world.getTypes().contains(WorldType.MEMBERS)) {
 			msg += " f2p";
 		}
+
 		boolean pvp = world.getTypes().contains(WorldType.PVP);
 		if (pvp) {
 			msg += " PvP";
 		}
-		if (world.getTypes().contains(WorldType.HIGH_RISK)) {
+
+		if ((pvp || star.getLocation().isWildy()) && world.getTypes().contains(WorldType.HIGH_RISK)) {
 			msg += " High Risk";
 		}
-		boolean highRisk = world.getTypes().contains(WorldType.HIGH_RISK);
 
-		int skillLevel = 0;
 		if (world.getTypes().contains(WorldType.SKILL_TOTAL)) {
-			skillLevel = Integer.parseInt(world.getActivity().split(" ")[0]);
+			msg += " " + world.getActivity();
 		}
 
-
-		return "";
+		if (!msg.isEmpty()) {
+			msg = " -" + msg;
+		}
+		star.setWorldInfo(msg);
 	}
 }

@@ -42,6 +42,9 @@ public class Star
 	@Getter
 	@Setter
 	private int estimateTicks = -1;
+	@Getter
+	@Setter
+	private String worldInfo = "";
 
 	public Star(NPC npc, int world)
 	{
@@ -102,7 +105,7 @@ public class Star
 
 	public String getMessage()
 	{
-		return "Star Found: W" + world + " T" + getTier() + " " + location.getDescription();
+		return "Star Found: W" + world + " T" + getTier() + " " + location.getDescription() + worldInfo;
 	}
 
 	public void resetHealth()

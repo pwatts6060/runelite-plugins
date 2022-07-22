@@ -179,7 +179,9 @@ public class StarInfoPlugin extends Plugin
 				return;
 			}
 		}
-		stars.add(0, new Star(event.getNpc(), client.getWorld()));
+		Star star = new Star(event.getNpc(), client.getWorld());
+		worldInfo.update(star);
+		stars.add(0, star);
 		refresh();
 	}
 
@@ -227,6 +229,7 @@ public class StarInfoPlugin extends Plugin
 		if (star == null)
 		{
 			star = new Star(event.getGameObject(), client.getWorld());
+			worldInfo.update(star);
 			stars.add(0, star);
 			newStar = true;
 		}
@@ -465,7 +468,9 @@ public class StarInfoPlugin extends Plugin
 		{
 			content += "- " + star.getMiners() + " Miners - ";
 		}
-		content += star.getLocation().getDescription() + " " + DiscordTimeStamp.relativeTimeNow();
+		content += star.getLocation().getDescription();
+		content += star.getWorldInfo();
+		content += " " + DiscordTimeStamp.relativeTimeNow();
 
 		final StringSelection stringSelection = new StringSelection(content);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
