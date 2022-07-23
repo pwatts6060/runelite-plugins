@@ -73,7 +73,7 @@ public class StarInfoOverlay extends Overlay
 
 		String text = "T" + star.getTier();
 
-		if (config.showMiners() && !star.getMiners().equals(Star.UNKNOWN_MINERS))
+		if (config.showMiners() && star.getMiners() != null && !star.getMiners().equals(Star.UNKNOWN_MINERS))
 		{
 			text += " " + star.getMiners() + "M";
 		}
