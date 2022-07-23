@@ -419,11 +419,17 @@ public class StarInfoPlugin extends Plugin
 				infoBox = new StarInfoBox(itemManager.getImage(25547), this, star);
 				infoBoxManager.addInfoBox(infoBox);
 			}
-			if (starConfig.showHintArrow())
+			if (starConfig.showHintArrow() && !nextToStar(star, client.getLocalPlayer().getWorldLocation()))
 			{
 				client.setHintArrow(star.getWorldPoint());
 			}
 		}
+	}
+
+	private boolean nextToStar(Star star, WorldPoint worldPoint) {
+		WorldArea areaH = new WorldArea(star.getWorldPoint().dx(-1), 4, 2);
+		WorldArea areaV = new WorldArea(star.getWorldPoint().dy(-1), 2, 4);
+		return worldPoint.isInArea2D(areaH, areaV);
 	}
 
 	@Subscribe
