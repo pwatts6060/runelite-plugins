@@ -20,7 +20,7 @@ public class StarInfoBox extends InfoBox
 	public String getText()
 	{
 		String text = "T" + star.getTier();
-		if (!star.getMiners().equals(Star.UNKNOWN_MINERS))
+		if (star.getMiners() != null && !star.getMiners().equals(Star.UNKNOWN_MINERS))
 		{
 			text += " " + star.getMiners() + "M";
 		}
