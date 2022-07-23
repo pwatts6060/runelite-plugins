@@ -10,7 +10,7 @@ import net.runelite.api.coords.WorldPoint;
 
 public class Location
 {
-	private static final Map<Point, Location> locations = new HashMap<Point, Location>();
+	private static final Map<Point, Location> locations = new HashMap<>();
 
 	private final Point point;
 	@Getter
