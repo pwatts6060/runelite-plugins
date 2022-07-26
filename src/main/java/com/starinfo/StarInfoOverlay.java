@@ -123,6 +123,21 @@ public class StarInfoOverlay extends Overlay
 			}
 		}
 
+		if (!config.estimateTime().equals(EstimateConfig.NONE) && star.getFullEstimateTicks() >= 0)
+		{
+			int ticks = star.getFullEstimateTicks();
+			if (config.estimateTime().equals(EstimateConfig.TICKS))
+			{
+				text += " " + ticks;
+			}
+			else
+			{
+				int seconds = (ticks % 100) * 3 / 5;
+				int minutes = ticks / 100;
+				text += " " + minutes + ":" + String.format("%02d", seconds);
+			}
+		}
+
 		Point starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
 
 		if (starLocation != null)

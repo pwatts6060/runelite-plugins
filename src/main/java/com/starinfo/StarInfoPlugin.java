@@ -26,9 +26,11 @@
 package com.starinfo;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,22 +38,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import javax.inject.Inject;
 import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_BOOTS;
+import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_HELMET;
+import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_JACKET;
+import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_LEGS;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NullNpcID;
 import net.runelite.api.Player;
+import net.runelite.api.PlayerComposition;
 import net.runelite.api.Tile;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.Angle;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
@@ -59,6 +68,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.kit.KitType;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -79,7 +89,15 @@ public class StarInfoPlugin extends Plugin
 	private static final int MAX_PLAYER_LOAD_DIST = 13;
 	private static final Queue<Star> despawnQueue = new LinkedList<>();
 
-//	private static final Set<Integer> dragonPickSpecAnims = ImmutableSet.of(6969);
+	private static final Set<Integer> dragonPickSpecAnims = ImmutableSet.of(
+		7138, // Dragon pickaxe
+		334, // Dragon pickaxe (upgraded)
+		8781, // Dragon pickaxe (or) (Trailblazer) / Infernal pickaxe (or)
+		8330, // Dragon pickaxe (or)
+		8329, // Crystal pickaxe
+		3410 // infernal pickaxe
+		// 3rd age pickaxe
+	);
 
 	private static final Map<Integer, Double> pickAnims = ImmutableMap.<Integer, Double>builder().
 		put(AnimationID.MINING_ADAMANT_PICKAXE, 3.0).
@@ -100,6 +118,12 @@ public class StarInfoPlugin extends Plugin
 		put(AnimationID.MINING_RUNE_PICKAXE, 3.0).
 		put(AnimationID.MINING_STEEL_PICKAXE, 6.0).
 		put(AnimationID.MINING_TRAILBLAZER_PICKAXE_3, 17.0 / 6).
+		put(7138, 17.0 / 6).
+		put(334, 17.0 / 6).
+		put(8781, 17.0 / 6).
+		put(8330, 17.0 / 6).
+		put(3410, 17.0 / 6).
+		put(8329, 2.75).
 		build();
 
 	private static final int MINING_CACHE_TIME = 13; // count player as a miner if they have done mining anim within this many ticks ago
@@ -110,7 +134,9 @@ public class StarInfoPlugin extends Plugin
 
 	public final List<Star> stars = new ArrayList<>();
 
-	SampleEstimator estimator;
+	SampleEstimator sampleEstimator;
+
+	InstantEstimator instantEstimator;
 
 	@Inject
 	private InfoBoxManager infoBoxManager;
@@ -144,7 +170,8 @@ public class StarInfoPlugin extends Plugin
 	{
 		overlayManager.add(starOverlay);
 		starOverlay.updateConfig();
-		estimator = new SampleEstimator(this);
+		sampleEstimator = new SampleEstimator(this);
+		instantEstimator = new InstantEstimator(this);
 	}
 
 	@Override
@@ -154,7 +181,8 @@ public class StarInfoPlugin extends Plugin
 		refresh();
 		overlayManager.remove(starOverlay);
 		infoBox = null;
-		estimator = null;
+		sampleEstimator = null;
+		instantEstimator = null;
 	}
 
 	private void clear()
@@ -272,7 +300,7 @@ public class StarInfoPlugin extends Plugin
 		WorldArea areaV = new WorldArea(star.getWorldPoint().dy(-1), 2, 4);
 		int count = 0;
 		int tickCount = client.getTickCount();
-//		List<PlayerInfo> miners = new ArrayList<>();
+		List<PlayerInfo> miners = new ArrayList<>();
 		for (Player p : client.getPlayers())
 		{
 			if (!p.getWorldLocation().isInArea2D(areaH, areaV)) // Skip players not next to the star
@@ -287,7 +315,7 @@ public class StarInfoPlugin extends Plugin
 			{
 				count++;
 				playerLastMined.put(p.getName(), tickCount);
-//				miners.add(new PlayerInfo(p.getName(), Estimator.NOT_FETCHED, -1, pickAnims.getOrDefault(p.getAnimation(), 3.0), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
+				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, pickAnims.getOrDefault(p.getAnimation(), 17.0 / 6), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
 				continue;
 			}
 			if (p.getHealthRatio() < 0 || !playerLastMined.containsKey(p.getName()))
@@ -298,41 +326,42 @@ public class StarInfoPlugin extends Plugin
 			if (ticksSinceMinedLast < MINING_CACHE_TIME)
 			{
 				count++;
-//				miners.add(new PlayerInfo(p.getName(), Estimator.NOT_FETCHED, -1, pickAnims.getOrDefault(p.getAnimation(), 3.0), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
+				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, pickAnims.getOrDefault(p.getAnimation(), 17.0 / 6), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
 			}
 		}
+		instantEstimator.refreshEstimate(star, miners);
 		star.setMiners(Integer.toString(count));
 	}
-//
-//	@Subscribe
-//	private void onAnimationChanged(AnimationChanged event)
-//	{
-//		if (dragonPickSpecAnims.contains(event.getActor().getAnimation()))
-//		{
-//			estimator.performedSpec((Player) event.getActor());
-//		}
-//	}
 
-//	private boolean hasGoldedPros(PlayerComposition playerComposition)
-//	{
-//		if (playerComposition.getEquipmentId(KitType.HEAD) == GOLDEN_PROSPECTOR_HELMET)
-//		{
-//			return true;
-//		}
-//		if (playerComposition.getEquipmentId(KitType.BOOTS) == GOLDEN_PROSPECTOR_BOOTS)
-//		{
-//			return true;
-//		}
-//		if (playerComposition.getEquipmentId(KitType.TORSO) == GOLDEN_PROSPECTOR_JACKET)
-//		{
-//			return true;
-//		}
-//		if (playerComposition.getEquipmentId(KitType.LEGS) == GOLDEN_PROSPECTOR_LEGS)
-//		{
-//			return true;
-//		}
-//		return false;
-//	}
+	@Subscribe
+	private void onAnimationChanged(AnimationChanged event)
+	{
+		if (dragonPickSpecAnims.contains(event.getActor().getAnimation()))
+		{
+			instantEstimator.performedSpec((Player) event.getActor());
+		}
+	}
+
+	private boolean hasGoldedPros(PlayerComposition playerComposition)
+	{
+		if (playerComposition.getEquipmentId(KitType.HEAD) == GOLDEN_PROSPECTOR_HELMET)
+		{
+			return true;
+		}
+		if (playerComposition.getEquipmentId(KitType.BOOTS) == GOLDEN_PROSPECTOR_BOOTS)
+		{
+			return true;
+		}
+		if (playerComposition.getEquipmentId(KitType.TORSO) == GOLDEN_PROSPECTOR_JACKET)
+		{
+			return true;
+		}
+		if (playerComposition.getEquipmentId(KitType.LEGS) == GOLDEN_PROSPECTOR_LEGS)
+		{
+			return true;
+		}
+		return false;
+	}
 
 	private boolean facingObject(WorldPoint p1, int orientation, WorldPoint p2)
 	{
@@ -388,7 +417,7 @@ public class StarInfoPlugin extends Plugin
 			{
 				updateMiners(star);
 			}
-			estimator.update(star);
+			sampleEstimator.update(star);
 		}
 
 		if (refresh)

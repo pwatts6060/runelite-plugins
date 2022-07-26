@@ -44,6 +44,9 @@ public class Star
 	private int estimateTicks = -1;
 	@Getter
 	@Setter
+	private int fullEstimateTicks = -1;
+	@Getter
+	@Setter
 	private String worldInfo = "";
 
 	public Star(NPC npc, int world)
