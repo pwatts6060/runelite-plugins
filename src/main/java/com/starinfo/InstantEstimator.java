@@ -52,6 +52,7 @@ public class InstantEstimator
 		int[] ticks = new int[startTier];
 		int totalTicks = 0;
 		int tickCount = plugin.client.getTickCount();
+		int minerCount = 0;
 		while (tier > 0) {
 			TierData tierData = TierData.get(tier);
 			if (tierData == null) {
@@ -60,7 +61,7 @@ public class InstantEstimator
 			double healthScale = tier == startTier ? (star.getHealth() / 100.0) : 1;
 			double dustLeft = tierData.layerDust * healthScale;
 			double[] dustPerTicks = new double[miners.size()];
-			int minerCount = 0;
+			minerCount = 0;
 			for (PlayerInfo miner : miners) {
 				PlayerInfo cachedMiner = playerInfo.get(miner.getUsername());
 				if (cachedMiner == null) {
@@ -105,6 +106,9 @@ public class InstantEstimator
 			totalTicks += tierTicks;
 			tier--;
 			ticks[tier] = totalTicks;
+		}
+		if (minerCount == 0) {
+			return null;
 		}
 		return ticks;
 	}
