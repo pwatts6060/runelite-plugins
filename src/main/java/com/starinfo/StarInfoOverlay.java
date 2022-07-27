@@ -171,7 +171,7 @@ public class StarInfoOverlay extends Overlay
 		}
 
 		// time estimate
-		if (!config.estimateLayerTime().equals(EstimateConfig.NONE) && star.getLayerSampleTicks() >= 0)
+		if (!config.estimateLayerTime().equals(EstimateConfig.NONE))
 		{
 			int ticks = -1;
 			if (config.useSampleLayerTime()) {
