@@ -34,11 +34,8 @@ public class InstantEstimator
 
 	public void refreshEstimate(Star star, List<PlayerInfo> miners)
 	{
-		long start = System.nanoTime();
 		int[] ticks = getTicksEstimates(star, miners);
 		star.setTierTicksEstimate(ticks);
-		long end = System.nanoTime();
-		System.out.println((end - start) / 1_000_000 + " ms");
 	}
 
 	private int[] getTicksEstimates(Star star, List<PlayerInfo> miners)
@@ -106,7 +103,6 @@ public class InstantEstimator
 			}
 			int tierTicks = (int) (dustLeft / dustPerTick);
 			totalTicks += tierTicks;
-//			System.out.println(tier + " " + dustLeft / dustPerTick);
 			tier--;
 			ticks[tier] = totalTicks;
 		}
