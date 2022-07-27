@@ -530,6 +530,10 @@ public class StarInfoPlugin extends Plugin
 		content += star.getLocation().getDescription();
 		content += star.getWorldInfo();
 		content += " " + DiscordTimeStamp.relativeTimeNow();
+		if (star.getTierTicksEstimate() != null)
+		{
+			content += " T0 estimate: " + DiscordTimeStamp.relativeTimeNowPlus(star.getTierTicksEstimate()[0]);
+		}
 
 		final StringSelection stringSelection = new StringSelection(content);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
