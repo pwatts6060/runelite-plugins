@@ -43,6 +43,7 @@ import net.runelite.client.util.ColorUtil;
 public class StarInfoOverlay extends Overlay
 {
 
+	private static final int Y_ADJUST = 12;
 	private final StarInfoPlugin plugin;
 	private final StarInfoConfig config;
 	private Color textColor;
@@ -53,8 +54,8 @@ public class StarInfoOverlay extends Overlay
 		this.plugin = plugin;
 		this.config = config;
 		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_SCENE);
-		setPriority(OverlayPriority.HIGHEST);
+		setLayer(OverlayLayer.ABOVE_WIDGETS);
+		setPriority(OverlayPriority.LOW);
 	}
 
 	public void updateConfig()
@@ -71,103 +72,182 @@ public class StarInfoOverlay extends Overlay
 		}
 		Star star = plugin.stars.get(0);
 
-		String text = "T" + star.getTier();
-
-		if (config.showMiners() && star.getMiners() != null && !star.getMiners().equals(Star.UNKNOWN_MINERS))
+		if (config.colorStar())
 		{
-			text += " " + star.getMiners() + "M";
+			Shape shape = star.getObject().getConvexHull();
+			if (shape != null)
+			{
+				OverlayUtil.renderPolygon(graphics, shape, getStarColor());
+			}
 		}
 
-		int health = star.getHealth();
+		int yOff = 0;
 
-		// Health Percent
+		// Tier and Health Percent
+		int health = star.getHealth();
+		String text = "T" + star.getTier();
 		if (health >= 0 && config.showPercent())
 		{
 			text += " " + health + "%";
 		}
-
-		// Stardust
-		if (!config.showDust().equals(DustConfig.NO_DISPLAY) && health >= 0)
-		{
-			TierData tierData = TierData.get(star.getTier());
-			if (tierData != null)
-			{
-				int layerDust = tierData.layerDust;
-				int number;
-				if (config.showDust().equals(DustConfig.TOTAL_STARDUST))
-				{
-
-					number = tierData.totalDust - (100 - health) * layerDust / 100;
-				}
-				else
-				{
-					number = health * layerDust / 100;
-				}
-				text += " " + number + " SD";
-			}
-		}
-
-		// time estimate
-		if (!config.estimateTime().equals(EstimateConfig.NONE) && star.getEstimateTicks() >= 0)
-		{
-			int ticks = star.getEstimateTicks();
-			if (config.estimateTime().equals(EstimateConfig.TICKS))
-			{
-				text += " " + ticks;
-			}
-			else
-			{
-				int seconds = (ticks % 100) * 3 / 5;
-				int minutes = ticks / 100;
-				text += " " + minutes + ":" + String.format("%02d", seconds);
-			}
-		}
-
-		if (!config.estimateTime().equals(EstimateConfig.NONE) && star.getFullEstimateTicks() >= 0)
-		{
-			int ticks = star.getFullEstimateTicks();
-			if (config.estimateTime().equals(EstimateConfig.TICKS))
-			{
-				text += " " + ticks;
-			}
-			else
-			{
-				int seconds = (ticks % 100) * 3 / 5;
-				int minutes = ticks / 100;
-				text += " " + minutes + ":" + String.format("%02d", seconds);
-			}
-		}
-
 		Point starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
-
 		if (starLocation != null)
 		{
 			try
 			{
-				if (config.thickOutline())
-				{
-					renderThickOutlineText(graphics, starLocation, text, textColor);
-				}
-				else
-				{
-					OverlayUtil.renderTextLocation(graphics, starLocation, text, textColor);
-				}
-
-				if (config.colorStar())
-				{
-					Shape shape = star.getObject().getConvexHull();
-					if (shape != null)
-					{
-						OverlayUtil.renderPolygon(graphics, shape, getStarColor());
-					}
-				}
+				overlayText(graphics, starLocation, text);
 			}
 			catch (Exception e)
 			{
 				return null;
 			}
 		}
+
+		if (config.showMiners() && star.getMiners() != null && !star.getMiners().equals(Star.UNKNOWN_MINERS))
+		{
+			if (config.compact())
+			{
+				text = star.getMiners() + "M";
+			}
+			else
+			{
+				text = "Miners: " + star.getMiners();
+			}
+			starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
+			if (starLocation != null)
+			{
+				try
+				{
+					yOff += Y_ADJUST;
+					starLocation = new Point(starLocation.getX(), starLocation.getY() + yOff);
+					overlayText(graphics, starLocation, text);
+				}
+				catch (Exception e)
+				{
+					return null;
+				}
+			}
+		}
+
+		// Stardust
+		TierData tierData = TierData.get(star.getTier());
+		if (!config.showDust().equals(DustConfig.NO_DISPLAY) && health >= 0 && tierData != null)
+		{
+			int layerDust = tierData.layerDust;
+			int number;
+			if (config.showDust().equals(DustConfig.TOTAL_STARDUST))
+			{
+
+				number = tierData.totalDust - (100 - health) * layerDust / 100;
+			}
+			else
+			{
+				number = health * layerDust / 100;
+			}
+
+			if (config.compact())
+			{
+				text = number + " SD";
+			}
+			else
+			{
+				text = "Dust: " + number;
+			}
+
+			starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
+			if (starLocation != null)
+			{
+				try
+				{
+					yOff += Y_ADJUST;
+					starLocation = new Point(starLocation.getX(), starLocation.getY() + yOff);
+					overlayText(graphics, starLocation, text);
+				}
+				catch (Exception e)
+				{
+					return null;
+				}
+			}
+		}
+
+		// time estimate
+		if (!config.estimateLayerTime().equals(EstimateConfig.NONE) && star.getLayerSampleTicks() >= 0)
+		{
+			int ticks = -1;
+			if (config.useSampleLayerTime()) {
+				ticks = star.getLayerSampleTicks();
+			} else if (star.getTierTicksEstimate() != null && star.getTier() <= star.getTierTicksEstimate().length) {
+				ticks = star.getTierTicksEstimate()[star.getTier() - 1];
+			}
+			text = config.compact() ? "" : "Layer: ";
+			if (config.estimateLayerTime().equals(EstimateConfig.TICKS))
+			{
+				text += ticks;
+			}
+			else
+			{
+				int seconds = (ticks % 100) * 3 / 5;
+				int minutes = ticks / 100;
+				text += minutes + ":" + String.format("%02d", seconds);
+			}
+			starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
+			if (starLocation != null && ticks >= 0)
+			{
+				try
+				{
+					yOff += Y_ADJUST;
+					starLocation = new Point(starLocation.getX(), starLocation.getY() + yOff);
+					overlayText(graphics, starLocation, text);
+				}
+				catch (Exception e)
+				{
+					return null;
+				}
+			}
+		}
+
+		if (!config.estimateDeathTime().equals(EstimateConfig.NONE) && star.getTierTicksEstimate() != null)
+		{
+			int ticks = star.getTierTicksEstimate()[0];
+			text = config.compact() ? "" : "Dead: ";
+			if (config.estimateDeathTime().equals(EstimateConfig.TICKS))
+			{
+				text += ticks;
+			}
+			else
+			{
+				int seconds = (ticks % 100) * 3 / 5;
+				int minutes = ticks / 100;
+				text += minutes + ":" + String.format("%02d", seconds);
+			}
+			starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
+			if (starLocation != null)
+			{
+				try
+				{
+					yOff += Y_ADJUST;
+					starLocation = new Point(starLocation.getX(), starLocation.getY() + yOff);
+					overlayText(graphics, starLocation, text);
+				}
+				catch (Exception e)
+				{
+					return null;
+				}
+			}
+		}
 		return null;
+	}
+
+	private void overlayText(Graphics2D graphics, Point starLocation, String text)
+	{
+		if (config.thickOutline())
+		{
+			renderThickOutlineText(graphics, starLocation, text, textColor);
+		}
+		else
+		{
+			OverlayUtil.renderTextLocation(graphics, starLocation, text, textColor);
+		}
 	}
 
 	private Color getStarColor()

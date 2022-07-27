@@ -41,10 +41,10 @@ public class Star
 	private int health = -1;
 	@Getter
 	@Setter
-	private int estimateTicks = -1;
+	private int layerSampleTicks = -1;
 	@Getter
 	@Setter
-	private int fullEstimateTicks = -1;
+	private int[] tierTicksEstimate;
 	@Getter
 	@Setter
 	private String worldInfo = "";

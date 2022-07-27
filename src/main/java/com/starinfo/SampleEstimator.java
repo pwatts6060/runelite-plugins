@@ -40,7 +40,7 @@ public class SampleEstimator
 			lastHealthTick = -1;
 			lastStar = star;
 			healthInfoList.clear();
-			star.setEstimateTicks(-1);
+			star.setLayerSampleTicks(-1);
 		}
 
 		int health = star.getHealth();
@@ -50,9 +50,9 @@ public class SampleEstimator
 		}
 		if (health == lastHealth)
 		{
-			if (star.getEstimateTicks() > 0)
+			if (star.getLayerSampleTicks() > 0)
 			{
-				star.setEstimateTicks(Math.max(0, star.getEstimateTicks() - 1));
+				star.setLayerSampleTicks(Math.max(0, star.getLayerSampleTicks() - 1));
 			}
 			return;
 		}
@@ -67,7 +67,7 @@ public class SampleEstimator
 
 		if (healthInfoList.size() >= 5)
 		{
-			star.setEstimateTicks(getTicksEstimate());
+			star.setLayerSampleTicks(getTicksEstimate());
 		}
 
 		lastHealth = star.getHealth();

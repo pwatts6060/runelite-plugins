@@ -30,6 +30,7 @@ import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 
 @ConfigGroup("starinfoplugin")
@@ -47,13 +48,22 @@ public interface StarInfoConfig extends Config
 	String CLIPBOARD = "copyToClipboard";
 	String ADD_TO_CHAT = "addToChat";
 	String REMOVE_DISTANCE = "removeDistance";
-	String ESTIMATE_TIME = "estimateTime";
+	String ESTIMATE_LAYER = "estimateTime";
+	String ESTIMATE_DEPLETION_TIME = "estimateFullTime";
+
+	@ConfigSection(
+		name = "Text Overlay",
+		description = "Settings for the text overlaid on stars",
+		position = 0
+	)
+	String textOverlaySection = "textOverlaySection";
 
 	@Alpha
 	@ConfigItem(
 		position = 1,
 		keyName = TEXT_COLOR_KEY,
 		name = "Text color",
+		section = textOverlaySection,
 		description = "Sets the color of the text above a star."
 	)
 	default Color getTextColor()
@@ -65,6 +75,7 @@ public interface StarInfoConfig extends Config
 		position = 2,
 		keyName = THICK_OUTLINE,
 		name = "Thick Text Outline",
+		section = textOverlaySection,
 		description = "Use thick text outline on star info overlay"
 	)
 	default boolean thickOutline()
@@ -74,6 +85,90 @@ public interface StarInfoConfig extends Config
 
 	@ConfigItem(
 		position = 3,
+		keyName = SHOW_MINERS,
+		name = "Show Miners",
+		section = textOverlaySection,
+		description = "Display number of active star miners, e.g. 5M = 5 Miners"
+	)
+	default boolean showMiners()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 4,
+		keyName = SHOW_PERCENT,
+		name = "Show Layer %",
+		section = textOverlaySection,
+		description = "Display the health percentage of the current layer"
+	)
+	default boolean showPercent()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 5,
+		keyName = SHOW_DUST,
+		name = "Show Dust Left",
+		section = textOverlaySection,
+		description = "Display stardust left in the current layer/star"
+	)
+	default DustConfig showDust()
+	{
+		return DustConfig.NO_DISPLAY;
+	}
+
+	@ConfigItem(
+		position = 6,
+		keyName = ESTIMATE_LAYER,
+		name = "Estimate Layer Time",
+		section = textOverlaySection,
+		description = "Display estimated time till the current layer finishes"
+	)
+	default EstimateConfig estimateLayerTime()
+	{
+		return EstimateConfig.NONE;
+	}
+
+	@ConfigItem(
+		position = 7,
+		keyName = "sampleLayer",
+		name = "Old layer time",
+		section = textOverlaySection,
+		description = "Sample time for star health changes for layer estimate (good if hiscores fail)"
+	)
+	default boolean useSampleLayerTime()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 8,
+		keyName = ESTIMATE_DEPLETION_TIME,
+		name = "Estimate Depletion Time",
+		section = textOverlaySection,
+		description = "Display estimated time till the star depletes"
+	)
+	default EstimateConfig estimateDeathTime()
+	{
+		return EstimateConfig.NONE;
+	}
+
+	@ConfigItem(
+		position = 9,
+		keyName = "compactText",
+		name = "Compact text",
+		section = textOverlaySection,
+		description = "Use abbreviations and less text"
+	)
+	default boolean compact()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 10,
 		keyName = INFO_BOX_KEY,
 		name = "Show Info Box",
 		description = "Whether to display star status info box"
@@ -84,7 +179,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 4,
+		position = 11,
 		keyName = HINT_ARROW_KEY,
 		name = "Show Hint Arrow",
 		description = "Whether to display hint arrow pointing to star"
@@ -95,40 +190,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 5,
-		keyName = SHOW_MINERS,
-		name = "Show Miners",
-		description = "Display number of active star miners, e.g. 5M = 5 Miners"
-	)
-	default boolean showMiners()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 6,
-		keyName = SHOW_PERCENT,
-		name = "Show Layer %",
-		description = "Display the health percentage of the current layer"
-	)
-	default boolean showPercent()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 7,
-		keyName = SHOW_DUST,
-		name = "Show Dust Left",
-		description = "Display stardust left in the current layer/star"
-	)
-	default DustConfig showDust()
-	{
-		return DustConfig.NO_DISPLAY;
-	}
-
-	@ConfigItem(
-		position = 8,
+		position = 12,
 		keyName = COLOR_STAR,
 		name = "Highlight Star",
 		description = "Highlights stars green if you can mine it, and red if you can't"
@@ -139,7 +201,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 9,
+		position = 13,
 		keyName = CLIPBOARD,
 		name = "Copy to Clipboard Option",
 		description = "Allows you to right click stars and copy their information"
@@ -150,7 +212,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 10,
+		position = 14,
 		keyName = ADD_TO_CHAT,
 		name = "Add Stars to Chat",
 		description = "Adds a message to the game chat when stars are found with their tier/world/location"
@@ -160,12 +222,23 @@ public interface StarInfoConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		position = 15,
+		keyName = "hideHealthBar",
+		name = "Hide health bar",
+		description = "Hides the health bar of the star"
+	)
+	default boolean hideHealthBar()
+	{
+		return true;
+	}
+
 	@Range(
 		min = 32,
 		max = 90
 	)
 	@ConfigItem(
-		position = 11,
+		position = 16,
 		keyName = REMOVE_DISTANCE,
 		name = "Remove distance",
 		description = "The tile distance above which star info is removed"
@@ -173,16 +246,5 @@ public interface StarInfoConfig extends Config
 	default int removeDistance()
 	{
 		return 32;
-	}
-
-	@ConfigItem(
-		position = 12,
-		keyName = ESTIMATE_TIME,
-		name = "Estimate Layer Time",
-		description = "Display estimated time till the current layer finishes"
-	)
-	default EstimateConfig estimateTime()
-	{
-		return EstimateConfig.SECONDS;
 	}
 }

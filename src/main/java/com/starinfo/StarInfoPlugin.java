@@ -51,9 +51,11 @@ import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_JACKET;
 import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_LEGS;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.NPC;
 import net.runelite.api.NullNpcID;
 import net.runelite.api.Player;
 import net.runelite.api.PlayerComposition;
+import net.runelite.api.Renderable;
 import net.runelite.api.Tile;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.Angle;
@@ -69,6 +71,7 @@ import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.kit.KitType;
+import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -129,6 +132,8 @@ public class StarInfoPlugin extends Plugin
 	private static final int MINING_CACHE_TIME = 13; // count player as a miner if they have done mining anim within this many ticks ago
 	private static final Map<String, Integer> playerLastMined = new HashMap<>();
 
+	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
+
 	@Inject
 	private StarInfoOverlay starOverlay;
 
@@ -158,6 +163,9 @@ public class StarInfoPlugin extends Plugin
 	@Inject
 	private WorldInfo worldInfo;
 
+	@Inject
+	private Hooks hooks;
+
 	@Provides
 	StarInfoConfig
 	provideConfig(ConfigManager configManager)
@@ -172,6 +180,7 @@ public class StarInfoPlugin extends Plugin
 		starOverlay.updateConfig();
 		sampleEstimator = new SampleEstimator(this);
 		instantEstimator = new InstantEstimator(this);
+		hooks.registerRenderableDrawListener(drawListener);
 	}
 
 	@Override
@@ -183,12 +192,24 @@ public class StarInfoPlugin extends Plugin
 		infoBox = null;
 		sampleEstimator = null;
 		instantEstimator = null;
+		hooks.unregisterRenderableDrawListener(drawListener);
 	}
 
 	private void clear()
 	{
 		playerLastMined.clear();
 		stars.clear();
+	}
+
+	private boolean shouldDraw(Renderable renderable, boolean b)
+	{
+		if (!(renderable instanceof NPC) || !starConfig.hideHealthBar())
+		{
+			return true;
+		}
+
+		NPC npc = (NPC) renderable;
+		return npc.getId() != NPC_ID;
 	}
 
 	@Subscribe
@@ -329,7 +350,10 @@ public class StarInfoPlugin extends Plugin
 				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, pickAnims.getOrDefault(p.getAnimation(), 17.0 / 6), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
 			}
 		}
-		instantEstimator.refreshEstimate(star, miners);
+		if (starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.estimateDeathTime() != EstimateConfig.NONE)
+		{
+			instantEstimator.refreshEstimate(star, miners);
+		}
 		star.setMiners(Integer.toString(count));
 	}
 
@@ -413,7 +437,7 @@ public class StarInfoPlugin extends Plugin
 		if (!stars.isEmpty())
 		{
 			Star star = stars.get(0);
-			if (starConfig.showMiners())
+			if (starConfig.showMiners() || starConfig.estimateLayerTime() != EstimateConfig.NONE || starConfig.estimateDeathTime() != EstimateConfig.NONE)
 			{
 				updateMiners(star);
 			}

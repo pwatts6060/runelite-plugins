@@ -35,29 +35,30 @@ public class InstantEstimator
 	public void refreshEstimate(Star star, List<PlayerInfo> miners)
 	{
 		long start = System.nanoTime();
-		int ticks = getTicksEstimate(star, miners);
-		star.setFullEstimateTicks(ticks);
+		int[] ticks = getTicksEstimates(star, miners);
+		star.setTierTicksEstimate(ticks);
 		long end = System.nanoTime();
 		System.out.println((end - start) / 1_000_000 + " ms");
 	}
 
-	private int getTicksEstimate(Star star, List<PlayerInfo> miners)
+	private int[] getTicksEstimates(Star star, List<PlayerInfo> miners)
 	{
 		miners.forEach(this::fetchRank);
 		if (star.getHealth() < 0 || miners.isEmpty()) {
-			return -1;
+			return null;
 		}
 		int startTier = star.getTier();
 		if (startTier < 0) {
-			return -1;
+			return null;
 		}
 		int tier = startTier;
-		int ticks = 0;
+		int[] ticks = new int[startTier];
+		int totalTicks = 0;
 		int tickCount = plugin.client.getTickCount();
 		while (tier > 0) {
 			TierData tierData = TierData.get(tier);
 			if (tierData == null) {
-				return -1;
+				return null;
 			}
 			double healthScale = tier == startTier ? (star.getHealth() / 100.0) : 1;
 			double dustLeft = tierData.layerDust * healthScale;
@@ -103,9 +104,11 @@ public class InstantEstimator
 			} else {
 				dustPerTick += avgDust3MinersPlus(dustPerTicks, minerCount);
 			}
-			ticks += dustLeft / dustPerTick;
+			int tierTicks = (int) (dustLeft / dustPerTick);
+			totalTicks += tierTicks;
 //			System.out.println(tier + " " + dustLeft / dustPerTick);
 			tier--;
+			ticks[tier] = totalTicks;
 		}
 		return ticks;
 	}
