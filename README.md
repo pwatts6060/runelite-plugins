@@ -15,6 +15,8 @@ Displays various info about shooting stars that you find/mine such as tier, numb
 - Add found stars to game chat
 - Hide health bar (enabled by default for readable text overlay)
 
+![img.png](img.png)
+
 ### Time Estimates
 #### Old layer time
 The original time estimate was limited to estimating the time till the next layer by sampling the last 10 health bar changes.
