@@ -48,7 +48,7 @@ public interface StarInfoConfig extends Config
 	String CLIPBOARD = "copyToClipboard";
 	String ADD_TO_CHAT = "addToChat";
 	String REMOVE_DISTANCE = "removeDistance";
-	String ESTIMATE_LAYER = "estimateTime";
+	String ESTIMATE_LAYER = "estimateLayerTime";
 	String ESTIMATE_DEPLETION_TIME = "estimateFullTime";
 
 	@ConfigSection(
