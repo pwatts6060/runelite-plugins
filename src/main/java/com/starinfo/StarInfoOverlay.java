@@ -235,6 +235,27 @@ public class StarInfoOverlay extends Overlay
 				}
 			}
 		}
+
+		double xpPerHour = plugin.getXpPerHour();
+		if (xpPerHour > 0 && config.xpPerHour())
+		{
+			text = Math.round(xpPerHour) + " xp/hr";
+			starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
+			if (starLocation != null)
+			{
+				try
+				{
+					yOff += Y_ADJUST;
+					starLocation = new Point(starLocation.getX(), starLocation.getY() + yOff);
+					overlayText(graphics, starLocation, text);
+				}
+				catch (Exception e)
+				{
+					return null;
+				}
+			}
+		}
+
 		return null;
 	}
 

@@ -40,11 +40,16 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import javax.inject.Inject;
+import lombok.Getter;
 import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_BOOTS;
 import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_HELMET;
@@ -57,6 +62,7 @@ import net.runelite.api.NullNpcID;
 import net.runelite.api.Player;
 import net.runelite.api.PlayerComposition;
 import net.runelite.api.Renderable;
+import net.runelite.api.Skill;
 import net.runelite.api.Tile;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.Angle;
@@ -143,6 +149,9 @@ public class StarInfoPlugin extends Plugin
 	SampleEstimator sampleEstimator;
 
 	InstantEstimator instantEstimator;
+
+	@Getter
+	private double xpPerHour = -1;
 
 	@Inject
 	private InfoBoxManager infoBoxManager;
@@ -459,10 +468,47 @@ public class StarInfoPlugin extends Plugin
 			sampleEstimator.update(star);
 		}
 
+		if (starConfig.xpPerHour())
+		{
+			xpPerHour = calcXpPerHour();
+		}
+
 		if (refresh)
 		{
 			refresh();
 		}
+	}
+
+	private double calcXpPerHour() {
+		Player player = client.getLocalPlayer();
+		if (player == null || stars.isEmpty()) {
+			return -1;
+		}
+
+		Star star = stars.get(0);
+		TierData tierData = TierData.get(star.getTier());
+		if (tierData == null) {
+			return -1;
+		}
+
+		int animId = player.getAnimation();
+		if (!pickAnims.containsKey(animId)) {
+			return -1;
+		}
+
+		int level = client.getBoostedSkillLevel(Skill.MINING);
+		ItemContainer equip = client.getItemContainer(InventoryID.EQUIPMENT);
+		if (equip != null) {
+			Item ringItem = equip.getItem(EquipmentInventorySlot.RING.getSlotIdx());
+			if (ringItem != null && ringItem.getId() == ItemID.CELESTIAL_RING) {
+				level += 4;
+			}
+		}
+
+		double ticks = getPickTicks(player);
+		double chance = tierData.getChance(level);
+		double xpPerTick = tierData.xp * chance / ticks;
+		return xpPerTick * 6000;
 	}
 
 	public void refresh()
