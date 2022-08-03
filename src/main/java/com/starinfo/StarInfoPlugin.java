@@ -522,7 +522,7 @@ public class StarInfoPlugin extends Plugin
 
 		Star star = stars.get(0);
 		TierData tierData = TierData.get(star.getTier());
-		if (tierData == null) {
+		if (tierData == null || !nextToStar(star, player.getWorldLocation())) {
 			return -1;
 		}
 
