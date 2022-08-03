@@ -55,6 +55,11 @@ import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_BOOTS;
 import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_HELMET;
 import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_JACKET;
 import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_LEGS;
+import static net.runelite.api.ItemID.PROSPECTOR_BOOTS;
+import static net.runelite.api.ItemID.PROSPECTOR_HELMET;
+import static net.runelite.api.ItemID.PROSPECTOR_JACKET;
+import static net.runelite.api.ItemID.PROSPECTOR_LEGS;
+import static net.runelite.api.ItemID.VARROCK_ARMOUR_4;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
@@ -411,6 +416,36 @@ public class StarInfoPlugin extends Plugin
 		return false;
 	}
 
+	private double prospectorXpMulti(PlayerComposition playerComposition)
+	{
+		double multi = 1.0;
+		if (playerComposition.getEquipmentId(KitType.HEAD) == GOLDEN_PROSPECTOR_HELMET
+			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_HELMET)
+		{
+			multi += 0.004;
+		}
+		if (playerComposition.getEquipmentId(KitType.BOOTS) == GOLDEN_PROSPECTOR_BOOTS
+			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_BOOTS)
+		{
+			multi += 0.002;
+		}
+		if (playerComposition.getEquipmentId(KitType.TORSO) == GOLDEN_PROSPECTOR_JACKET
+			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_JACKET
+			|| playerComposition.getEquipmentId(KitType.HEAD) == VARROCK_ARMOUR_4)
+		{
+			multi += 0.008;
+		}
+		if (playerComposition.getEquipmentId(KitType.LEGS) == GOLDEN_PROSPECTOR_LEGS
+			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_LEGS)
+		{
+			multi += 0.006;
+		}
+		if (multi > 1.019) { // check for full set bonus
+			multi += 0.005;
+		}
+		return multi;
+	}
+
 	private boolean facingObject(WorldPoint p1, int orientation, WorldPoint p2)
 	{
 		Direction dir = new Angle(orientation).getNearestDirection();
@@ -508,6 +543,7 @@ public class StarInfoPlugin extends Plugin
 		double ticks = getPickTicks(player);
 		double chance = tierData.getChance(level);
 		double xpPerTick = tierData.xp * chance / ticks;
+		xpPerTick *= prospectorXpMulti(player.getPlayerComposition());
 		return xpPerTick * 6000;
 	}
 
