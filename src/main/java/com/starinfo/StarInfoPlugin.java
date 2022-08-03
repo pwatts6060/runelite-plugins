@@ -45,6 +45,7 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
 import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_BOOTS;
 import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_HELMET;
 import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_JACKET;
@@ -336,7 +337,7 @@ public class StarInfoPlugin extends Plugin
 			{
 				count++;
 				playerLastMined.put(p.getName(), tickCount);
-				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, pickAnims.getOrDefault(p.getAnimation(), 17.0 / 6), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
+				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
 				continue;
 			}
 			if (p.getHealthRatio() < 0 || !playerLastMined.containsKey(p.getName()))
@@ -347,7 +348,7 @@ public class StarInfoPlugin extends Plugin
 			if (ticksSinceMinedLast < MINING_CACHE_TIME)
 			{
 				count++;
-				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, pickAnims.getOrDefault(p.getAnimation(), 17.0 / 6), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
+				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
 			}
 		}
 		if (starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.estimateDeathTime() != EstimateConfig.NONE)
@@ -355,6 +356,20 @@ public class StarInfoPlugin extends Plugin
 			instantEstimator.refreshEstimate(star, miners);
 		}
 		star.setMiners(Integer.toString(count));
+	}
+
+	private double getPickTicks(Player p)
+	{
+		int animId = p.getAnimation();
+		if (animId == AnimationID.MINING_CRYSTAL_PICKAXE) {
+			// animation id is shared for active/inactive so need to look at equipment
+			// note that they may not be wielding the pickaxe at all, in which case we can't know for sure
+			int weaponId = p.getPlayerComposition().getEquipmentId(KitType.WEAPON);
+			if (weaponId == ItemID.CRYSTAL_PICKAXE_INACTIVE) {
+				return 17.0 / 6;
+			}
+		}
+		return pickAnims.getOrDefault(p.getAnimation(), 17.0 / 6);
 	}
 
 	@Subscribe
