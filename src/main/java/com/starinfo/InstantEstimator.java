@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
+import lombok.Getter;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.client.hiscore.HiscoreClient;
@@ -23,6 +24,9 @@ public class InstantEstimator
 	private final Map<String, PlayerInfo> playerInfo = new HashMap<>();
 	private final Set<String> currentLookups = ConcurrentHashMap.newKeySet();
 	private final Map<String, Integer> playerSpecTicks = new HashMap<>();
+
+	@Getter
+	private double lastDustPerTick;
 
 	@Inject
 	private final HiscoreClient hiscoreClient = new HiscoreClient(new OkHttpClient());
@@ -101,6 +105,9 @@ public class InstantEstimator
 				}
 			} else {
 				dustPerTick += avgDust3MinersPlus(dustPerTicks, minerCount);
+			}
+			if (tier == startTier) {
+				lastDustPerTick = dustPerTick;
 			}
 			int tierTicks = (int) (dustLeft / dustPerTick);
 			totalTicks += tierTicks;

@@ -169,6 +169,18 @@ public interface StarInfoConfig extends Config
 
 	@ConfigItem(
 		position = 10,
+		keyName = "xpPerHour",
+		name = "Group Dust/tick",
+		section = textOverlaySection,
+		description = "Display how much health/dust star loses per tick on average"
+	)
+	default boolean dustPerTick()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 11,
 		keyName = "compactText",
 		name = "Compact text",
 		section = textOverlaySection,
@@ -180,7 +192,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 11,
+		position = 12,
 		keyName = INFO_BOX_KEY,
 		name = "Show Info Box",
 		description = "Whether to display star status info box"
@@ -191,7 +203,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 12,
+		position = 13,
 		keyName = HINT_ARROW_KEY,
 		name = "Show Hint Arrow",
 		description = "Whether to display hint arrow pointing to star"
@@ -202,7 +214,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 13,
+		position = 14,
 		keyName = COLOR_STAR,
 		name = "Highlight Star",
 		description = "Highlights stars green if you can mine it, and red if you can't"
@@ -213,7 +225,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 14,
+		position = 15,
 		keyName = CLIPBOARD,
 		name = "Copy to Clipboard Option",
 		description = "Allows you to right click stars and copy their information"
@@ -224,7 +236,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 15,
+		position = 16,
 		keyName = ADD_TO_CHAT,
 		name = "Add Stars to Chat",
 		description = "Adds a message to the game chat when stars are found with their tier/world/location"
@@ -235,7 +247,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 16,
+		position = 17,
 		keyName = "hideHealthBar",
 		name = "Hide health bar",
 		description = "Hides the health bar of the star"
@@ -250,7 +262,7 @@ public interface StarInfoConfig extends Config
 		max = 90
 	)
 	@ConfigItem(
-		position = 17,
+		position = 18,
 		keyName = REMOVE_DISTANCE,
 		name = "Remove distance",
 		description = "The tile distance above which star info is removed"
