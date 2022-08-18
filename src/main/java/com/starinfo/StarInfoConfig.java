@@ -169,7 +169,7 @@ public interface StarInfoConfig extends Config
 
 	@ConfigItem(
 		position = 10,
-		keyName = "xpPerHour",
+		keyName = "dustPerTick",
 		name = "Group Dust/tick",
 		section = textOverlaySection,
 		description = "Display how much health/dust star loses per tick on average"
