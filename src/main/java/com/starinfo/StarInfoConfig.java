@@ -188,7 +188,7 @@ public interface StarInfoConfig extends Config
 	)
 	default boolean compact()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
