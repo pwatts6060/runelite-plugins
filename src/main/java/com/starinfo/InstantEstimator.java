@@ -1,39 +1,46 @@
 package com.starinfo;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import lombok.Getter;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
-import net.runelite.client.hiscore.HiscoreClient;
 import net.runelite.client.hiscore.HiscoreEndpoint;
+import net.runelite.client.hiscore.HiscoreManager;
+import net.runelite.client.hiscore.HiscoreResult;
+import net.runelite.client.hiscore.HiscoreSkill;
 import net.runelite.client.util.Text;
-import okhttp3.OkHttpClient;
 
 public class InstantEstimator
 {
-	public static final long CACHE_TIME_MINUTES = 60;
-	public static final int FAILED_TO_FETCH = -2;
 	public static final int NOT_FETCHED = -1;
 
 	private final StarInfoPlugin plugin;
+	private final HiscoreManager hiscoreManager;
+	private final ScheduledExecutorService scheduledExecutorService;
+
 	private final Map<String, PlayerInfo> playerInfo = new HashMap<>();
-	private final Set<String> currentLookups = ConcurrentHashMap.newKeySet();
 	private final Map<String, Integer> playerSpecTicks = new HashMap<>();
 
 	@Getter
 	private double lastDustPerTick;
 
 	@Inject
-	private final HiscoreClient hiscoreClient = new HiscoreClient(new OkHttpClient());
-
-	public InstantEstimator(StarInfoPlugin plugin)
+	public InstantEstimator(StarInfoPlugin plugin, HiscoreManager hiscoreManager, ScheduledExecutorService scheduledExecutorService)
 	{
 		this.plugin = plugin;
+		this.hiscoreManager = hiscoreManager;
+		this.scheduledExecutorService = scheduledExecutorService;
+	}
+
+	public void reset() {
+		lastDustPerTick = 0;
+		playerInfo.clear();
+		playerSpecTicks.clear();
 	}
 
 	public void refreshEstimate(Star star, List<PlayerInfo> miners)
@@ -157,29 +164,21 @@ public class InstantEstimator
 			playerInfo.put(username, player);
 			return;
 		}
-		PlayerInfo info = playerInfo.get(username);
-		if (info != null && info.isTimedOut() || currentLookups.contains(username))
-		{
-			return;
-		}
-		currentLookups.add(username);
 		final HiscoreEndpoint endPoint = HiscoreEndpoint.NORMAL;
-		hiscoreClient.lookupAsync(Text.sanitize(username), endPoint).whenCompleteAsync(((result, ex) -> {
-			if (ex != null)
+		scheduledExecutorService.execute(() -> {
+			HiscoreResult result;
+			try
 			{
-				currentLookups.remove(username);
+				result = hiscoreManager.lookup(Text.sanitize(username), endPoint);
+			}
+			catch (IOException e)
+			{
 				return;
 			}
-			if (result == null)
-			{
-				currentLookups.remove(username);
-				player.setLevel(FAILED_TO_FETCH);
-				return;
-			}
-			player.setLevel(result.getMining().getLevel());
+
+			player.setLevel(result.getSkill(HiscoreSkill.MINING).getLevel());
 			playerInfo.put(username, player);
-			currentLookups.remove(username);
-		}));
+		});
 	}
 
 	public void performedSpec(Player player)

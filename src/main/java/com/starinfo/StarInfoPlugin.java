@@ -30,7 +30,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -153,6 +152,7 @@ public class StarInfoPlugin extends Plugin
 
 	SampleEstimator sampleEstimator;
 
+	@Inject
 	InstantEstimator instantEstimator;
 
 	@Getter
@@ -194,7 +194,7 @@ public class StarInfoPlugin extends Plugin
 		overlayManager.add(starOverlay);
 		starOverlay.updateConfig();
 		sampleEstimator = new SampleEstimator(this);
-		instantEstimator = new InstantEstimator(this);
+		instantEstimator.reset();
 		hooks.registerRenderableDrawListener(drawListener);
 	}
 
@@ -206,7 +206,6 @@ public class StarInfoPlugin extends Plugin
 		overlayManager.remove(starOverlay);
 		infoBox = null;
 		sampleEstimator = null;
-		instantEstimator = null;
 		hooks.unregisterRenderableDrawListener(drawListener);
 	}
 
@@ -351,7 +350,7 @@ public class StarInfoPlugin extends Plugin
 			{
 				count++;
 				playerLastMined.put(p.getName(), tickCount);
-				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
+				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition())));
 				continue;
 			}
 			if (p.getHealthRatio() < 0 || !playerLastMined.containsKey(p.getName()))
@@ -362,7 +361,7 @@ public class StarInfoPlugin extends Plugin
 			if (ticksSinceMinedLast < MINING_CACHE_TIME)
 			{
 				count++;
-				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition()), Instant.now()));
+				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition())));
 			}
 		}
 		if (starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.estimateDeathTime() != EstimateConfig.NONE)
