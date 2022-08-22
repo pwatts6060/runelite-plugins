@@ -39,7 +39,9 @@ public class LMSPlugin extends Plugin {
     Map<WorldPoint, TileObject> lootCrates = new HashMap<>();
     List<LMSPlayer> localLMSPlayers = new LinkedList<>();
     private boolean inLobby = false;
-    private final LMSHiscores lmsHiscores = new LMSHiscores();
+
+    @Inject
+    private LMSHiscores lmsHiscores;
 
     @Inject
     @Getter
@@ -135,12 +137,6 @@ public class LMSPlugin extends Plugin {
         List<Player> players = new ArrayList<>(client.getPlayers());
         LocalPoint localPoint = client.getLocalPlayer().getLocalLocation();
         players.sort(Comparator.comparingInt(o -> LMSUtil.distSquared(o.getLocalLocation(), localPoint)));
-        for (Player player : players) {
-            if (client.getLocalPlayer().getName().equals(player.getName())) {
-                continue;
-            }
-            lmsHiscores.fetchRank(player.getName());
-        }
         localLMSPlayers.clear();
         for (Player player : players) {
             String name = player.getName();
