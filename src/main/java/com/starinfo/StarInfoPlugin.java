@@ -626,7 +626,7 @@ public class StarInfoPlugin extends Plugin
 		content += star.getLocation().getDescription();
 		content += star.getWorldInfo();
 		content += " " + DiscordTimeStamp.relativeTimeNow();
-		if (star.getTierTicksEstimate() != null)
+		if (star.getTierTicksEstimate() != null && starConfig.addT0Estimate())
 		{
 			content += " T0 estimate: " + DiscordTimeStamp.relativeTimeNowPlus(star.getTierTicksEstimate()[0]);
 		}
