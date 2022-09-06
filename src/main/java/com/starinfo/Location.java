@@ -77,7 +77,7 @@ public class Location
 			 */
 			new Location(new Point(2602, 3086), "Yanille bank"),
 			new Location(new Point(2624, 3141), "Port Khazard mine"),
-			new Location(new Point(2608, 3233), "Ardougne Monastary"),
+			new Location(new Point(2608, 3233), "Ardougne Monastery"),
 			new Location(new Point(2705, 3333), "South of Legends' Guild"),
 			new Location(new Point(2804, 3434), "Catherby bank"),
 			new Location(new Point(2589, 3478), "Coal Trucks west of Seers'"),
