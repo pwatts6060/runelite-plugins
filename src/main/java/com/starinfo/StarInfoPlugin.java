@@ -495,10 +495,7 @@ public class StarInfoPlugin extends Plugin
 		if (!stars.isEmpty())
 		{
 			Star star = stars.get(0);
-			if (starConfig.showMiners() || starConfig.estimateLayerTime() != EstimateConfig.NONE || starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.addT0Estimate())
-			{
-				updateMiners(star);
-			}
+			updateMiners(star);
 			sampleEstimator.update(star);
 		}
 
@@ -675,12 +672,6 @@ public class StarInfoPlugin extends Plugin
 		}
 		switch (event.getKey())
 		{
-			case StarInfoConfig.SHOW_MINERS:
-				if (!stars.isEmpty() && starConfig.showMiners())
-				{
-					updateMiners(stars.get(0));
-				}
-				break;
 			case StarInfoConfig.TEXT_COLOR_KEY:
 				starOverlay.updateConfig();
 				break;
