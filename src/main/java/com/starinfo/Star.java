@@ -35,7 +35,7 @@ public class Star
 	private GameObject object;
 	@Setter
 	@Getter
-	private String miners;
+	private String miners = UNKNOWN_MINERS;
 	@Getter
 	private final Location location;
 	private int health = -1;
