@@ -364,7 +364,7 @@ public class StarInfoPlugin extends Plugin
 				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition())));
 			}
 		}
-		if (starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.estimateLayerTime() != EstimateConfig.NONE)
+		if (starConfig.addT0Estimate() || starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.estimateLayerTime() != EstimateConfig.NONE)
 		{
 			instantEstimator.refreshEstimate(star, miners);
 		}
@@ -495,7 +495,7 @@ public class StarInfoPlugin extends Plugin
 		if (!stars.isEmpty())
 		{
 			Star star = stars.get(0);
-			if (starConfig.showMiners() || starConfig.estimateLayerTime() != EstimateConfig.NONE || starConfig.estimateDeathTime() != EstimateConfig.NONE)
+			if (starConfig.showMiners() || starConfig.estimateLayerTime() != EstimateConfig.NONE || starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.addT0Estimate())
 			{
 				updateMiners(star);
 			}

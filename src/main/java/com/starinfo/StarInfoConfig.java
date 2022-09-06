@@ -46,6 +46,7 @@ public interface StarInfoConfig extends Config
 	String SHOW_MINERS = "showMiners";
 	String COLOR_STAR = "colorStar";
 	String CLIPBOARD = "copyToClipboard";
+	String T0_IN_COPY = "t0inCopy";
 	String ADD_TO_CHAT = "addToChat";
 	String REMOVE_DISTANCE = "removeDistance";
 	String ESTIMATE_LAYER = "estimateLayerTime";
@@ -237,6 +238,17 @@ public interface StarInfoConfig extends Config
 
 	@ConfigItem(
 		position = 16,
+		keyName = T0_IN_COPY,
+		name = "T0 Clipboard estimate",
+		description = "Adds time estimate till star is dead to copy option message"
+	)
+	default boolean addT0Estimate()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 17,
 		keyName = ADD_TO_CHAT,
 		name = "Add Stars to Chat",
 		description = "Adds a message to the game chat when stars are found with their tier/world/location"
@@ -247,7 +259,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 17,
+		position = 18,
 		keyName = "hideHealthBar",
 		name = "Hide health bar",
 		description = "Hides the health bar of the star"
@@ -262,7 +274,7 @@ public interface StarInfoConfig extends Config
 		max = 90
 	)
 	@ConfigItem(
-		position = 18,
+		position = 19,
 		keyName = REMOVE_DISTANCE,
 		name = "Remove distance",
 		description = "The tile distance above which star info is removed"
