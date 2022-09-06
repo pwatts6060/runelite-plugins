@@ -54,7 +54,7 @@ __KANDARIN__
 
 - Yanille bank
 - Port Khazard mine
-- Ardougne Monastary
+- Ardougne Monastery
 - South of Legends' Guild
 - Catherby bank
 - Coal Trucks west of Seers'
