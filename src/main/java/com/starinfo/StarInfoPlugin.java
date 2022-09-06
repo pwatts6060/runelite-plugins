@@ -604,10 +604,19 @@ public class StarInfoPlugin extends Plugin
 			.setParam1(event.getActionParam1())
 			.setIdentifier(event.getIdentifier())
 			.setType(MenuAction.RUNELITE)
-			.onClick(this::copy);
+			.onClick(menuEntry -> copy(menuEntry, false));
+
+		client.createMenuEntry(-2)
+			.setOption("Detailed copy")
+			.setTarget(event.getTarget())
+			.setParam0(event.getActionParam0())
+			.setParam1(event.getActionParam1())
+			.setIdentifier(event.getIdentifier())
+			.setType(MenuAction.RUNELITE)
+			.onClick(menuEntry -> copy(menuEntry, true));
 	}
 
-	private void copy(MenuEntry menuEntry)
+	private void copy(MenuEntry menuEntry, boolean detailed)
 	{
 		if (stars.isEmpty())
 		{
@@ -626,7 +635,12 @@ public class StarInfoPlugin extends Plugin
 		content += star.getLocation().getDescription();
 		content += star.getWorldInfo();
 		content += " " + DiscordTimeStamp.relativeTimeNow();
-		if (star.getTierTicksEstimate() != null && starConfig.addT0Estimate())
+		if (detailed && star.getTierTicksEstimate() != null) {
+			for (int i = star.getTierTicksEstimate().length - 1; i >= 0; i--) {
+				content += "\nT"+i+" estimate: " + DiscordTimeStamp.relativeTimeNowPlus(star.getTierTicksEstimate()[i]);
+			}
+		}
+		else if (star.getTierTicksEstimate() != null && starConfig.addT0Estimate())
 		{
 			content += " T0 estimate: " + DiscordTimeStamp.relativeTimeNowPlus(star.getTierTicksEstimate()[0]);
 		}
