@@ -158,6 +158,9 @@ public class StarInfoPlugin extends Plugin
 	@Getter
 	private double xpPerHour = -1;
 
+	@Getter
+	private double dustPerHour = -1;
+
 	@Inject
 	private InfoBoxManager infoBoxManager;
 
@@ -499,9 +502,9 @@ public class StarInfoPlugin extends Plugin
 			sampleEstimator.update(star);
 		}
 
-		if (starConfig.xpPerHour())
+		if (starConfig.xpPerHour() || starConfig.dustPerHour())
 		{
-			xpPerHour = calcXpPerHour();
+			updateXpDustPerHour();
 		}
 
 		if (refresh)
@@ -510,21 +513,27 @@ public class StarInfoPlugin extends Plugin
 		}
 	}
 
-	private double calcXpPerHour() {
+	private void updateXpDustPerHour() {
 		Player player = client.getLocalPlayer();
 		if (player == null || stars.isEmpty()) {
-			return -1;
+			dustPerHour = -1;
+			xpPerHour = -1;
+			return;
 		}
 
 		Star star = stars.get(0);
 		TierData tierData = TierData.get(star.getTier());
 		if (tierData == null || !nextToStar(star, player.getWorldLocation())) {
-			return -1;
+			dustPerHour = -1;
+			xpPerHour = -1;
+			return;
 		}
 
 		int animId = player.getAnimation();
 		if (!pickAnims.containsKey(animId)) {
-			return -1;
+			dustPerHour = -1;
+			xpPerHour = -1;
+			return;
 		}
 
 		int level = client.getBoostedSkillLevel(Skill.MINING);
@@ -538,9 +547,11 @@ public class StarInfoPlugin extends Plugin
 
 		double ticks = getPickTicks(player);
 		double chance = tierData.getChance(level);
-		double xpPerTick = tierData.xp * chance / ticks;
+		double dustPerTick = chance / ticks;
+		double xpPerTick = dustPerTick * tierData.xp;
 		xpPerTick *= prospectorXpMulti(player.getPlayerComposition());
-		return xpPerTick * 6000;
+		xpPerHour = xpPerTick * 6000;
+		dustPerHour = dustPerTick * (1 + tierData.doubleDustChance) * 6000;
 	}
 
 	public void refresh()
