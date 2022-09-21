@@ -5,47 +5,29 @@ import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.ScriptPreFired;
-import net.runelite.api.vars.AccountType;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-
 import javax.inject.Inject;
-
+import org.apache.commons.lang3.StringUtils;
 @Slf4j
 @PluginDescriptor(
-	name = "Slash Swapper"
+		name = "Slash Swapper"
 )
 public class SlashSwapperPlugin extends Plugin
 {
 	@Inject
 	private Client client;
 
-	private static final int FRIENDS_CHANNEL = 4;
-	private static final int CLAN_CHANNEL = 5;
+	private static final int GROUP_CHANNEL = 6;
+	// if a message starts with any of these strings, do nothing. the player is intentionally sending a message to a channel.
+	private static final String[] excludedStrings = {"/@p ","/@c ","/@gc "};
 
 	@Subscribe
 	public void onScriptPreFired(ScriptPreFired event)
 	{
-		if (event.getScriptId() != ScriptID.CHAT_SEND)
-		{
-			return;
-		}
-
-		if (client.getVarbitValue(4394) == 1)
-		{
-			return;
-		}
-
-		// I cannot test for group irons, so removing entirely for them
-		if (client.getAccountType().equals(AccountType.GROUP_IRONMAN))
-		{
-			return;
-		}
-
-		// varbit13805 == 1 not chatting in clan or has no clan
-		if (client.getVarbitValue(13805) == 1 || client.getClanChannel(ClanID.CLAN) == null)
-		{
+		// if the current event is not a chat being sent, (4394)?,  the player is not chatting in a clan (13805), or the player not part of a clan, do nothing.
+		if (event.getScriptId() != ScriptID.CHAT_SEND || client.getVarbitValue(4394) == 1 || client.getVarbitValue(13805) == 1 || client.getClanChannel(ClanID.CLAN) == null) {
 			return;
 		}
 
@@ -54,35 +36,61 @@ public class SlashSwapperPlugin extends Plugin
 		int stringStackCount = client.getStringStackSize();
 		int intStackCount = client.getIntStackSize();
 
-		String msg = stringStack[stringStackCount - 1];
-		if (msg.isEmpty())
-		{
+		int targetIndex = intStackCount - 4;
+		// the chat channel the game wants to send the message to by default, 0: public, 2: friends channel, 3: clan channel OR group channel (because jagex), 4: guest clan channel.
+		int target = intStack[targetIndex];
+
+		// set to determine if messages are sent to group channel, 0: send to clan, 1: send to group, -1: ignore.
+		int groupChatIndex = intStackCount - 3;
+
+		// selected channel button, 0: all, 1: game, 2: public, 3: private, 4: friends channel, 5: clan channel, 6: trade OR group channel.
+		int channelSelected = client.getVarcIntValue(41);
+
+		String message = stringStack[stringStackCount - 1];
+		String messagePrefix = stringStack[1];
+
+		if (message.isEmpty()) {
 			return;
 		}
 
-		int channelSelected = client.getVarcIntValue(41); // Selected channel button
-		int target = intStack[intStackCount - 4];
-		if (target == 0 && channelSelected == 0)
-		{
-			if (msg.startsWith("/"))
-			{
-				intStack[intStackCount - 4] = 3;
-				intStack[intStackCount - 3] = 0;
-				stringStack[stringStackCount - 1] = msg.substring(1);
-			}
+		// if the chat begins with a special character sequence, do nothing.
+		if (StringUtils.equalsAny(messagePrefix, excludedStrings)) {
 			return;
 		}
-		if (target == 3 && channelSelected != CLAN_CHANNEL)
-		{
-			intStack[intStackCount - 4] = 2;
-			intStack[intStackCount - 3] = -1;
-			stringStack[stringStackCount - 1] = "/" + msg;
+
+		// if the channel selected is group channel / trade channel, do nothing (jagex's code is already really broken for this case).
+		if (channelSelected == GROUP_CHANNEL) {
+			return;
 		}
-		else if (target == 2 && channelSelected != FRIENDS_CHANNEL)
-		{
-			intStack[intStackCount - 4] = 3;
-			intStack[intStackCount - 3] = 0;
-			stringStack[stringStackCount - 1] = msg.substring(1);
+
+		// if someone uses "/f " or "/@f " (again, jagex spaghetti).
+		if (("/" + stringStack[1]).equals(stringStack[0])) {
+			return;
+		}
+
+		// these two checks make "/" go to clan channel and "//" go to friends channel.
+		// default behavior: send to friends channel, slashswapper behavior: send to clan channel, instead.
+		if ((target == 0 || target == 2) && message.startsWith("/")) {
+			// set the target to clan channel / group channel.
+			intStack[targetIndex] = 3;
+			// set the groupChatIndicator to clan.
+			intStack[groupChatIndex] = 0;
+			// trim forward slash from message.
+			stringStack[stringStackCount - 1] = message.substring(1);
+		}
+
+		// default behavior: send to clan channel, slashswapper behavior: send to friends channel, instead.
+		else if (target == 3 && messagePrefix.equals("//@")) {
+			// if player is not in a friends channel, do nothing.
+			if (client.getFriendsChatManager() == null) {
+				return;
+			}
+			// set the target to friends channel.
+			intStack[targetIndex] = 2;
+			// set the groupChatIndicator to be ignored.
+			intStack[groupChatIndex] = -1;
+			// append "/" to the beginning of the message (jagex expects this prefix for friends channel messages).
+			stringStack[stringStackCount - 1] = "/" + message;
 		}
 	}
 }
