@@ -69,6 +69,7 @@ import net.runelite.api.Renderable;
 import net.runelite.api.Skill;
 import net.runelite.api.Tile;
 import net.runelite.api.TileObject;
+import net.runelite.api.WorldType;
 import net.runelite.api.coords.Angle;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldArea;
@@ -548,7 +549,8 @@ public class StarInfoPlugin extends Plugin
 		double ticks = getPickTicks(player);
 		double chance = tierData.getChance(level);
 		double dustPerTick = chance / ticks;
-		double xpPerTick = dustPerTick * tierData.xp;
+		double xp = client.getWorldType().contains(WorldType.MEMBERS) ? tierData.xp : tierData.xp / 2.0; // f2p is half xp
+		double xpPerTick = dustPerTick * xp;
 		xpPerTick *= prospectorXpMulti(player.getPlayerComposition());
 		xpPerHour = xpPerTick * 6000;
 		dustPerHour = dustPerTick * (1 + tierData.doubleDustChance) * 6000;
