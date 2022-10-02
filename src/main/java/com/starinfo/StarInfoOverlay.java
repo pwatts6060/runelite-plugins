@@ -84,7 +84,7 @@ public class StarInfoOverlay extends Overlay
 		int health = star.getHealth();
 		// health bar
 		Point starLocation = star.getObject().getCanvasLocation(190);
-		if (starLocation != null && !config.hideHealthBar())
+		if (starLocation != null && !config.hideHealthBar() && health > 0)
 		{
 			try
 			{
