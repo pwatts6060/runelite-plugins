@@ -14,7 +14,10 @@ Displays various info about shooting stars that you find/mine such as tier, numb
 - Estimate time to next layer.
 - Estimate time till star dies
 - Add found stars to game chat
-- Hide health bar (enabled by default for readable text overlay)
+- Hide Health Bar
+- Configure Health Bar width
+- Configure Health Bar height
+- Configure Health Bar colors
 
 ![img.png](img.png)
 
