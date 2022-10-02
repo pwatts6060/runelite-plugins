@@ -81,20 +81,41 @@ public class StarInfoOverlay extends Overlay
 			}
 		}
 
-		int yOff = 0;
+		int health = star.getHealth();
+		// health bar
+		Point starLocation = star.getObject().getCanvasLocation(190);
+		if (starLocation != null && !config.hideHealthBar())
+		{
+			try
+			{
+				starLocation = new Point(starLocation.getX() - config.healthBarWidth() / 2, starLocation.getY() - config.healthBarHeight() - 14);
+				Color prevColor = graphics.getColor();
+				graphics.setColor(config.getHpColorBack());
+				graphics.fillRect(starLocation.getX(), starLocation.getY(), config.healthBarWidth(), config.healthBarHeight());
+				graphics.setColor(config.getHpColorFore());
+				graphics.fillRect(starLocation.getX(), starLocation.getY(), health * config.healthBarWidth() / 100, config.healthBarHeight());
+				graphics.setColor(prevColor);
+			}
+			catch (Exception e)
+			{
+				return null;
+			}
+		}
 
 		// Tier and Health Percent
-		int health = star.getHealth();
+		int yOff = 0;
+
 		String text = "T" + star.getTier();
 		if (health >= 0 && config.showPercent())
 		{
 			text += " " + health + "%";
 		}
-		Point starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
+		starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
 		if (starLocation != null)
 		{
 			try
 			{
+				starLocation = new Point(starLocation.getX(), starLocation.getY() + yOff);
 				overlayText(graphics, starLocation, text);
 			}
 			catch (Exception e)

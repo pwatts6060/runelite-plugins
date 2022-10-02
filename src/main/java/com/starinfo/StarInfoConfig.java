@@ -270,15 +270,82 @@ public interface StarInfoConfig extends Config
 		return true;
 	}
 
-	@ConfigItem(
+	@ConfigSection(
+		name = "Health Bar",
+		description = "Settings for the health bar on stars",
 		position = 19,
+		closedByDefault = true
+	)
+	String healthBarSection = "healthBarSection";
+
+	@ConfigItem(
+		position = 20,
 		keyName = "hideHealthBar",
 		name = "Hide health bar",
+		section = healthBarSection,
 		description = "Hides the health bar of the star"
 	)
 	default boolean hideHealthBar()
 	{
-		return true;
+		return false;
+	}
+
+	@Range(
+		min = 1,
+		max = 40
+	)
+	@ConfigItem(
+		position = 21,
+		keyName = "healthBarHeight",
+		name = "Health bar height",
+		section = healthBarSection,
+		description = "The height of the health bar (5 default)"
+	)
+	default int healthBarHeight()
+	{
+		return 5;
+	}
+
+	@Range(
+		min = 10,
+		max = 400
+	)
+	@ConfigItem(
+		position = 22,
+		keyName = "healthBarWidth",
+		name = "Health bar width",
+		section = healthBarSection,
+		description = "The width of the health bar (50 default)"
+	)
+	default int healthBarWidth()
+	{
+		return 50;
+	}
+
+	@Alpha
+	@ConfigItem(
+		position = 23,
+		keyName = "hpColorFore",
+		name = "Hp left color",
+		section = healthBarSection,
+		description = "Sets the hp bar's hp left color"
+	)
+	default Color getHpColorFore()
+	{
+		return new Color(0,169,255, 180);
+	}
+
+	@Alpha
+	@ConfigItem(
+		position = 24,
+		keyName = "hpColorBack",
+		name = "Hp background color",
+		section = healthBarSection,
+		description = "Sets the hp bar's background color"
+	)
+	default Color getHpColorBack()
+	{
+		return new Color(0,22,33, 180);
 	}
 
 	@Range(
@@ -286,7 +353,7 @@ public interface StarInfoConfig extends Config
 		max = 90
 	)
 	@ConfigItem(
-		position = 20,
+		position = 25,
 		keyName = REMOVE_DISTANCE,
 		name = "Remove distance",
 		description = "The tile distance above which star info is removed"

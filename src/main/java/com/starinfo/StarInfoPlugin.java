@@ -221,7 +221,7 @@ public class StarInfoPlugin extends Plugin
 
 	private boolean shouldDraw(Renderable renderable, boolean b)
 	{
-		if (!(renderable instanceof NPC) || !starConfig.hideHealthBar())
+		if (!(renderable instanceof NPC))
 		{
 			return true;
 		}
