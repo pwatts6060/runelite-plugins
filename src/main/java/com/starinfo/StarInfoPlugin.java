@@ -538,8 +538,9 @@ public class StarInfoPlugin extends Plugin
 		}
 
 		int level = client.getBoostedSkillLevel(Skill.MINING);
+		boolean members = client.getWorldType().contains(WorldType.MEMBERS);
 		ItemContainer equip = client.getItemContainer(InventoryID.EQUIPMENT);
-		if (equip != null) {
+		if (members && equip != null) {
 			Item ringItem = equip.getItem(EquipmentInventorySlot.RING.getSlotIdx());
 			if (ringItem != null && ringItem.getId() == ItemID.CELESTIAL_RING) {
 				level += 4;
@@ -549,9 +550,11 @@ public class StarInfoPlugin extends Plugin
 		double ticks = getPickTicks(player);
 		double chance = tierData.getChance(level);
 		double dustPerTick = chance / ticks;
-		double xp = client.getWorldType().contains(WorldType.MEMBERS) ? tierData.xp : tierData.xp / 2.0; // f2p is half xp
+		double xp = members ? tierData.xp : tierData.xp / 2.0; // f2p is half xp
 		double xpPerTick = dustPerTick * xp;
-		xpPerTick *= prospectorXpMulti(player.getPlayerComposition());
+		if (members) {
+			xpPerTick *= prospectorXpMulti(player.getPlayerComposition());
+		}
 		xpPerHour = xpPerTick * 6000;
 		dustPerHour = dustPerTick * (1 + tierData.doubleDustChance) * 6000;
 	}

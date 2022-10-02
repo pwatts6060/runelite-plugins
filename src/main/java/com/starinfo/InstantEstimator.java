@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import lombok.Getter;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
+import net.runelite.api.WorldType;
 import net.runelite.client.hiscore.HiscoreEndpoint;
 import net.runelite.client.hiscore.HiscoreManager;
 import net.runelite.client.hiscore.HiscoreResult;
@@ -51,6 +52,7 @@ public class InstantEstimator
 
 	private int[] getTicksEstimates(Star star, List<PlayerInfo> miners)
 	{
+		boolean members = plugin.client.getWorldType().contains(WorldType.MEMBERS);
 		miners.forEach(this::fetchRank);
 		if (star.getHealth() < 0 || miners.isEmpty()) {
 			return null;
@@ -83,7 +85,7 @@ public class InstantEstimator
 					continue;
 				}
 
-				if (miner.isRing()) {
+				if (members && miner.isRing()) {
 					level += 4;
 				}
 
