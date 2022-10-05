@@ -162,6 +162,8 @@ public class StarInfoPlugin extends Plugin
 	@Getter
 	private double dustPerHour = -1;
 
+	private boolean hintArrowShown = false;
+
 	@Inject
 	private InfoBoxManager infoBoxManager;
 
@@ -501,6 +503,7 @@ public class StarInfoPlugin extends Plugin
 			Star star = stars.get(0);
 			updateMiners(star);
 			sampleEstimator.update(star);
+			refreshHintArrow();
 		}
 
 		if (starConfig.xpPerHour() || starConfig.dustPerHour())
@@ -559,6 +562,42 @@ public class StarInfoPlugin extends Plugin
 		dustPerHour = dustPerTick * (1 + tierData.doubleDustChance) * 6000;
 	}
 
+	public void toggleHintArrow(boolean show) {
+		if (show) {
+			if (!stars.isEmpty() && !hintArrowShown) {
+				Star star = stars.get(0);
+				client.setHintArrow(star.getWorldPoint());
+				hintArrowShown = true;
+			}
+		} else if (hintArrowShown) {
+			client.clearHintArrow();
+			hintArrowShown = false;
+		}
+	}
+
+	public void refreshHintArrow() {
+//		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Refresh hint arrow", "");
+		if (stars.isEmpty())
+		{
+			if (starConfig.showHintArrow())
+			{
+				toggleHintArrow(false);
+			}
+		}
+		else
+		{
+			Star star = stars.get(0);
+			if (starConfig.showHintArrow())
+			{
+				if (nextToStar(star, client.getLocalPlayer().getWorldLocation())) {
+					toggleHintArrow(false);
+				} else {
+					toggleHintArrow(true);
+				}
+			}
+		}
+	}
+
 	public void refresh()
 	{
 		if (stars.isEmpty())
@@ -566,10 +605,6 @@ public class StarInfoPlugin extends Plugin
 			if (starConfig.showInfoBox())
 			{
 				infoBoxManager.removeInfoBox(infoBox);
-			}
-			if (starConfig.showHintArrow())
-			{
-				client.clearHintArrow();
 			}
 		}
 		else
@@ -581,11 +616,8 @@ public class StarInfoPlugin extends Plugin
 				infoBox = new StarInfoBox(itemManager.getImage(25547), this, star);
 				infoBoxManager.addInfoBox(infoBox);
 			}
-			if (starConfig.showHintArrow() && !nextToStar(star, client.getLocalPlayer().getWorldLocation()))
-			{
-				client.setHintArrow(star.getWorldPoint());
-			}
 		}
+		refreshHintArrow();
 	}
 
 	private boolean nextToStar(Star star, WorldPoint worldPoint) {
@@ -709,7 +741,7 @@ public class StarInfoPlugin extends Plugin
 				}
 				else
 				{
-					client.clearHintArrow();
+					toggleHintArrow(false);
 				}
 				break;
 		}
