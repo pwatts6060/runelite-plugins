@@ -30,13 +30,18 @@ public class LootingBagOverlay extends WidgetItemOverlay
 			return;
 		}
 		graphics.setFont(FontManager.getRunescapeSmallFont());
-		renderText(graphics, widgetItem.getCanvasBounds(), plugin.getText());
+		if (config.bagValue()) {
+			renderText(graphics, widgetItem.getCanvasBounds(), 0, plugin.getValueText());
+		}
+		if (config.freeSlots()) {
+			renderText(graphics, widgetItem.getCanvasBounds(), -12, plugin.getFreeSlotsText());
+		}
 	}
 
-	private void renderText(Graphics2D graphics, Rectangle bounds, String text)
+	private void renderText(Graphics2D graphics, Rectangle bounds, int yOff, String text)
 	{
 		final TextComponent textComponent = new TextComponent();
-		textComponent.setPosition(new Point(bounds.x - 1, bounds.y + bounds.height - 1));
+		textComponent.setPosition(new Point(bounds.x - 1, bounds.y + bounds.height - 1 + yOff));
 		textComponent.setColor(config.textColor());
 		textComponent.setText(text);
 		textComponent.render(graphics);
