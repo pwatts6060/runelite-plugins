@@ -17,6 +17,8 @@ import net.runelite.client.game.ChatIconManager;
 import net.runelite.client.party.PartyService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.playerindicators.PlayerIndicatorsConfig;
+import net.runelite.client.plugins.playerindicators.PlayerIndicatorsConfig.HighlightSetting;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 
@@ -180,17 +182,17 @@ public class GuestIndicatorsPlugin extends Plugin
 
 	private GuestIndicatorsPlugin.Decorations getDecorations(Player player)
 	{
-		if (player.isFriend() && (boolean) configManager.getConfiguration(groupName, DRAW_FRIEND_NAMES, Boolean.class)
-			|| player.isFriendsChatMember() && (boolean) configManager.getConfiguration(groupName, HIGHLIGHT_FRIENDS_CHAT, Boolean.class)
+		if (player.isFriend() && !configManager.getConfiguration(groupName, DRAW_FRIEND_NAMES, HighlightSetting.class).equals(HighlightSetting.DISABLED)
+			|| player.isFriendsChatMember() && !configManager.getConfiguration(groupName, HIGHLIGHT_FRIENDS_CHAT, HighlightSetting.class).equals(HighlightSetting.DISABLED)
 			|| player.getTeam() > 0 && client.getLocalPlayer().getTeam() == player.getTeam()
-			&& (boolean) configManager.getConfiguration(groupName, HIGHLIGHT_TEAM_MEMBERS, Boolean.class)
-			|| player.isClanMember() && (boolean) configManager.getConfiguration(groupName, HIGHLIGHT_CLAN_MEMBERS, Boolean.class))
+			&& !configManager.getConfiguration(groupName, HIGHLIGHT_TEAM_MEMBERS, HighlightSetting.class).equals(HighlightSetting.DISABLED)
+			|| player.isClanMember() && !configManager.getConfiguration(groupName, HIGHLIGHT_CLAN_MEMBERS, HighlightSetting.class).equals(HighlightSetting.DISABLED))
 		{
 			return null;
 		}
 		boolean isPartyMember = partyService.isInParty() &&
 			player.getName() != null &&
-			(boolean) configManager.getConfiguration(groupName, HIGHLIGHT_PARTY_MEMBERS, Boolean.class) &&
+			!configManager.getConfiguration(groupName, HIGHLIGHT_PARTY_MEMBERS, HighlightSetting.class).equals(HighlightSetting.DISABLED) &&
 			partyService.getMemberByDisplayName(player.getName()) != null;
 		if (isPartyMember)
 		{

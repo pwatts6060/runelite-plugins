@@ -40,6 +40,8 @@ import java.util.function.BiConsumer;
 
 import static com.guestindicators.OrigConfig.*;
 import net.runelite.client.party.PartyService;
+import net.runelite.client.plugins.playerindicators.PlayerIndicatorsConfig;
+import static net.runelite.client.plugins.playerindicators.PlayerIndicatorsConfig.HighlightSetting.*;
 
 @Singleton
 public class GuestIndicatorsService
@@ -74,13 +76,13 @@ public class GuestIndicatorsService
 		{
 			if (player == null || player.getName() == null || player == localPlayer
 				|| partyService.isInParty()
-				&& (boolean) configManager.getConfiguration(groupName, HIGHLIGHT_PARTY_MEMBERS, Boolean.class)
+				&& !configManager.getConfiguration(groupName, HIGHLIGHT_PARTY_MEMBERS, PlayerIndicatorsConfig.HighlightSetting.class).equals(DISABLED)
 				&& partyService.getMemberByDisplayName(player.getName()) != null
-				|| player.isFriend() && (boolean) configManager.getConfiguration(groupName, DRAW_FRIEND_NAMES, Boolean.class)
-				|| player.isFriendsChatMember() && (boolean) configManager.getConfiguration(groupName, HIGHLIGHT_FRIENDS_CHAT, Boolean.class)
-				|| (boolean) configManager.getConfiguration(groupName, HIGHLIGHT_TEAM_MEMBERS, Boolean.class)
+				|| player.isFriend() && !configManager.getConfiguration(groupName, DRAW_FRIEND_NAMES, PlayerIndicatorsConfig.HighlightSetting.class).equals(DISABLED)
+				|| player.isFriendsChatMember() && !configManager.getConfiguration(groupName, HIGHLIGHT_FRIENDS_CHAT, PlayerIndicatorsConfig.HighlightSetting.class).equals(DISABLED)
+				|| !configManager.getConfiguration(groupName, HIGHLIGHT_TEAM_MEMBERS, PlayerIndicatorsConfig.HighlightSetting.class).equals(DISABLED)
 				&& localPlayer.getTeam() > 0 && localPlayer.getTeam() == player.getTeam()
-				|| player.isClanMember() && (boolean) configManager.getConfiguration(groupName, HIGHLIGHT_CLAN_MEMBERS, Boolean.class))
+				|| player.isClanMember() && !configManager.getConfiguration(groupName, HIGHLIGHT_CLAN_MEMBERS, PlayerIndicatorsConfig.HighlightSetting.class).equals(DISABLED))
 			{
 				continue;
 			}
