@@ -120,7 +120,6 @@ public class PeekPlugin extends Plugin
 			if (bossLair.objectId == objectId)
 			{
 				currentBoss = bossLair;
-				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "You are at " + bossLair.name(), "");
 				return;
 			}
 		}
