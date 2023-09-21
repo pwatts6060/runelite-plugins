@@ -161,6 +161,8 @@ public class StarInfoPlugin extends Plugin
 
 	private boolean hintArrowShown = false;
 
+	public int layerTimer = 0;
+
 	@Inject
 	private InfoBoxManager infoBoxManager;
 
@@ -286,6 +288,9 @@ public class StarInfoPlugin extends Plugin
 				s.setObject(event.getGameObject());
 				s.resetHealth();
 				star = s;
+				System.out.println(star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer);
+				client.addChatMessage(ChatMessageType.CONSOLE, "", star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer, "");
+				layerTimer = 0;
 				despawnQueue.remove(star);
 				break;
 			}
@@ -367,8 +372,9 @@ public class StarInfoPlugin extends Plugin
 		}
 		if (starConfig.addT0Estimate() || starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.estimateLayerTime() != EstimateConfig.NONE)
 		{
-			instantEstimator.refreshEstimate(star, miners);
+			instantEstimator.refreshEstimate(star);
 		}
+		layerTimer += 1;
 		star.setMiners(Integer.toString(count));
 	}
 
@@ -488,6 +494,9 @@ public class StarInfoPlugin extends Plugin
 			Star star = it.next();
 			if (despawnQueue.contains(star) || client.getLocalPlayer().getWorldLocation().distanceTo(star.getWorldPoint()) > starConfig.removeDistance())
 			{
+				System.out.println(star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer);
+				client.addChatMessage(ChatMessageType.CONSOLE, "", star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer, "");
+				layerTimer = 0;
 				it.remove();
 				refresh = true;
 			}

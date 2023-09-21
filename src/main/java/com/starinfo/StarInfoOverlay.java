@@ -295,26 +295,6 @@ public class StarInfoOverlay extends Overlay
 			}
 		}
 
-		double dustPerTick = plugin.instantEstimator.getLastDustPerTick();
-		if (dustPerTick > 0 && star.getTierTicksEstimate() != null && config.dustPerTick())
-		{
-			text = String.format("%.3f hp/t", dustPerTick);
-			starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
-			if (starLocation != null)
-			{
-				try
-				{
-					yOff += Y_ADJUST;
-					starLocation = new Point(starLocation.getX(), starLocation.getY() + yOff);
-					overlayText(graphics, starLocation, text);
-				}
-				catch (Exception e)
-				{
-					return null;
-				}
-			}
-		}
-
 		return null;
 	}
 

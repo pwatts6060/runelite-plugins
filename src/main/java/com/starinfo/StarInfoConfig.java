@@ -169,18 +169,6 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 11,
-		keyName = "dustPerTick",
-		name = "Health/tick",
-		section = textOverlaySection,
-		description = "Display how much health/dust star loses per tick on average"
-	)
-	default boolean dustPerTick()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		position = 12,
 		keyName = "compactText",
 		name = "Compact text",
