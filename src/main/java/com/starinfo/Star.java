@@ -41,9 +41,6 @@ public class Star
 	private int health = -1;
 	@Getter
 	@Setter
-	private int layerSampleTicks = -1;
-	@Getter
-	@Setter
 	private int[] tierTicksEstimate;
 	@Getter
 	@Setter

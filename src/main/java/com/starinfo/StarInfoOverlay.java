@@ -195,9 +195,7 @@ public class StarInfoOverlay extends Overlay
 		if (!config.estimateLayerTime().equals(EstimateConfig.NONE))
 		{
 			int ticks = -1;
-			if (config.useSampleLayerTime()) {
-				ticks = star.getLayerSampleTicks();
-			} else if (star.getTierTicksEstimate() != null && star.getTier() <= star.getTierTicksEstimate().length) {
+			if (star.getTierTicksEstimate() != null && star.getTier() <= star.getTierTicksEstimate().length) {
 				ticks = star.getTierTicksEstimate()[star.getTier() - 1];
 			}
 			text = config.compact() ? "" : "Layer: ";

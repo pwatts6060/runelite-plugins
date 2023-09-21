@@ -133,18 +133,6 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 7,
-		keyName = "sampleLayer",
-		name = "Old layer time",
-		section = textOverlaySection,
-		description = "Sample time for star health changes for layer estimate (good if hiscores fail)"
-	)
-	default boolean useSampleLayerTime()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		position = 8,
 		keyName = ESTIMATE_DEPLETION_TIME,
 		name = "Estimate Depletion Time",

@@ -150,8 +150,6 @@ public class StarInfoPlugin extends Plugin
 
 	public final List<Star> stars = new ArrayList<>();
 
-	SampleEstimator sampleEstimator;
-
 	@Inject
 	InstantEstimator instantEstimator;
 
@@ -198,7 +196,6 @@ public class StarInfoPlugin extends Plugin
 	{
 		overlayManager.add(starOverlay);
 		starOverlay.updateConfig();
-		sampleEstimator = new SampleEstimator(this);
 		instantEstimator.reset();
 		hooks.registerRenderableDrawListener(drawListener);
 	}
@@ -210,7 +207,6 @@ public class StarInfoPlugin extends Plugin
 		refresh();
 		overlayManager.remove(starOverlay);
 		infoBox = null;
-		sampleEstimator = null;
 		hooks.unregisterRenderableDrawListener(drawListener);
 	}
 
@@ -501,7 +497,6 @@ public class StarInfoPlugin extends Plugin
 		{
 			Star star = stars.get(0);
 			updateMiners(star);
-			sampleEstimator.update(star);
 			refreshHintArrow();
 		}
 
