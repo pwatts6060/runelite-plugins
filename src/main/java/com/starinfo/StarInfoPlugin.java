@@ -115,23 +115,22 @@ public class StarInfoPlugin extends Plugin
 	);
 
 	private static final Map<Integer, Double> pickAnims = ImmutableMap.<Integer, Double>builder().
-		put(AnimationID.MINING_ADAMANT_PICKAXE, 3.0).
-		put(AnimationID.MINING_TRAILBLAZER_PICKAXE_2, 17.0 / 6).
+		put(AnimationID.MINING_CRASHEDSTAR_ADAMANT, 3.0).
 		put(AnimationID.MINING_TRAILBLAZER_PICKAXE, 17.0 / 6).
-		put(AnimationID.MINING_BLACK_PICKAXE, 5.0).
-		put(AnimationID.MINING_BRONZE_PICKAXE, 8.0).
-		put(AnimationID.MINING_GILDED_PICKAXE, 3.0).
-		put(AnimationID.MINING_CRYSTAL_PICKAXE, 2.75).
-		put(AnimationID.MINING_3A_PICKAXE, 17.0 / 6).
-		put(AnimationID.MINING_DRAGON_PICKAXE, 17.0 / 6).
-		put(AnimationID.MINING_DRAGON_PICKAXE_OR, 17.0 / 6).
-		put(AnimationID.MINING_DRAGON_PICKAXE_OR_TRAILBLAZER, 17.0 / 6).
-		put(AnimationID.MINING_DRAGON_PICKAXE_UPGRADED, 17.0 / 6).
-		put(AnimationID.MINING_INFERNAL_PICKAXE, 17.0 / 6).
-		put(AnimationID.MINING_MITHRIL_PICKAXE, 5.0).
-		put(AnimationID.MINING_IRON_PICKAXE, 7.0).
-		put(AnimationID.MINING_RUNE_PICKAXE, 3.0).
-		put(AnimationID.MINING_STEEL_PICKAXE, 6.0).
+		put(AnimationID.MINING_CRASHEDSTAR_BLACK, 5.0).
+		put(AnimationID.MINING_CRASHEDSTAR_BRONZE, 8.0).
+		put(AnimationID.MINING_CRASHEDSTAR_GILDED, 3.0).
+		put(AnimationID.MINING_CRASHEDSTAR_CRYSTAL, 2.75).
+		put(AnimationID.MINING_CRASHEDSTAR_3A, 17.0 / 6).
+		put(AnimationID.MINING_CRASHEDSTAR_DRAGON, 17.0 / 6).
+		put(AnimationID.MINING_CRASHEDSTAR_DRAGON_OR, 17.0 / 6).
+		put(AnimationID.MINING_CRASHEDSTAR_DRAGON_OR_TRAILBLAZER, 17.0 / 6).
+		put(AnimationID.MINING_CRASHEDSTAR_DRAGON_UPGRADED, 17.0 / 6).
+		put(AnimationID.MINING_CRASHEDSTAR_INFERNAL, 17.0 / 6).
+		put(AnimationID.MINING_CRASHEDSTAR_MITHRIL, 5.0).
+		put(AnimationID.MINING_CRASHEDSTAR_IRON, 7.0).
+		put(AnimationID.MINING_CRASHEDSTAR_RUNE, 3.0).
+		put(AnimationID.MINING_CRASHEDSTAR_STEEL, 6.0).
 		put(AnimationID.MINING_TRAILBLAZER_PICKAXE_3, 17.0 / 6).
 		put(7138, 17.0 / 6).
 		put(334, 17.0 / 6).
