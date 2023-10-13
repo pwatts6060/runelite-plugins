@@ -139,11 +139,13 @@ public class LootPanel extends PluginPanel
 	{
 		Map<PlayerInfo, Double> playerToSplit = new HashMap<>();
 		Map<PlayerInfo, Integer> playerToTotal = new HashMap<>();
+		long total = 0;
 		for (LootEntry lootEntry : plugin.loot) {
 			if (!lootEntry.inSplit) {
 				continue;
 			}
 
+			total += lootEntry.getValue();
 			List<PlayerInfo> presentPlayers = new ArrayList<>();
 			for (PlayerInfo playerInfo : plugin.playerInfos) {
 				for (TimePeriod timePeriod : playerInfo.timePeriods) {
@@ -164,7 +166,7 @@ public class LootPanel extends PluginPanel
 		}
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("Totals\n");
+		sb.append("Totals: ").append(total).append("\n");
 		playerToTotal.forEach((p, val) -> sb.append(p.name).append(": ").append(val).append("\n"));
 		sb.append("\nSplit\n");
 		playerToSplit.forEach((p, val) -> sb.append(p.name).append(": ").append(val).append("\n"));
