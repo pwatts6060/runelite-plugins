@@ -75,7 +75,7 @@ public class LootSplitPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception
 	{
-		clientToolbar.addNavigation(navButton);
+		clientToolbar.removeNavigation(navButton);
 	}
 
 	@Subscribe
