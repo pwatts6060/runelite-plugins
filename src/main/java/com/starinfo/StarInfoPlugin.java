@@ -522,15 +522,6 @@ public class StarInfoPlugin extends Plugin
 			.setIdentifier(event.getIdentifier())
 			.setType(MenuAction.RUNELITE)
 			.onClick(menuEntry -> copy(menuEntry, false));
-
-		client.createMenuEntry(-2)
-			.setOption("Detailed copy")
-			.setTarget(event.getTarget())
-			.setParam0(event.getActionParam0())
-			.setParam1(event.getActionParam1())
-			.setIdentifier(event.getIdentifier())
-			.setType(MenuAction.RUNELITE)
-			.onClick(menuEntry -> copy(menuEntry, true));
 	}
 
 	private void copy(MenuEntry menuEntry, boolean detailed)
