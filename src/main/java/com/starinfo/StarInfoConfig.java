@@ -109,18 +109,6 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 5,
-		keyName = SHOW_DUST,
-		name = "Show Dust Left",
-		section = textOverlaySection,
-		description = "Display stardust left in the current layer/star"
-	)
-	default DustConfig showDust()
-	{
-		return DustConfig.NO_DISPLAY;
-	}
-
-	@ConfigItem(
 		position = 6,
 		keyName = ESTIMATE_LAYER,
 		name = "Estimate Layer Time",
@@ -142,30 +130,6 @@ public interface StarInfoConfig extends Config
 	default EstimateConfig estimateDeathTime()
 	{
 		return EstimateConfig.NONE;
-	}
-
-	@ConfigItem(
-		position = 9,
-		keyName = "xpPerHour",
-		name = "Layer Xp/Hr",
-		section = textOverlaySection,
-		description = "Display Xp/Hr for current layer"
-	)
-	default boolean xpPerHour()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		position = 10,
-		keyName = "dustPerHour",
-		name = "Dust/Hr",
-		section = textOverlaySection,
-		description = "Display how much Dust per Hour you mine for current layer"
-	)
-	default boolean dustPerHour()
-	{
-		return false;
 	}
 
 	@ConfigItem(

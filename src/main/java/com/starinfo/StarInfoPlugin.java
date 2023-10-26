@@ -150,11 +150,7 @@ public class StarInfoPlugin extends Plugin
 
 	public final List<Star> stars = new ArrayList<>();
 
-	@Inject
-	InstantEstimator instantEstimator;
-
-	@Getter
-	private double xpPerHour = -1;
+	InstantEstimator instantEstimator = new InstantEstimator();
 
 	@Getter
 	private double dustPerHour = -1;
@@ -198,7 +194,6 @@ public class StarInfoPlugin extends Plugin
 	{
 		overlayManager.add(starOverlay);
 		starOverlay.updateConfig();
-		instantEstimator.reset();
 		hooks.registerRenderableDrawListener(drawListener);
 	}
 
@@ -341,7 +336,6 @@ public class StarInfoPlugin extends Plugin
 		WorldArea areaV = new WorldArea(star.getWorldPoint().dy(-1), 2, 4);
 		int count = 0;
 		int tickCount = client.getTickCount();
-		List<PlayerInfo> miners = new ArrayList<>();
 		for (Player p : client.getPlayers())
 		{
 			if (!p.getWorldLocation().isInArea2D(areaH, areaV)) // Skip players not next to the star
@@ -356,7 +350,6 @@ public class StarInfoPlugin extends Plugin
 			{
 				count++;
 				playerLastMined.put(p.getName(), tickCount);
-				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition())));
 				continue;
 			}
 			if (p.getHealthRatio() < 0 || !playerLastMined.containsKey(p.getName()))
@@ -367,7 +360,6 @@ public class StarInfoPlugin extends Plugin
 			if (ticksSinceMinedLast < MINING_CACHE_TIME)
 			{
 				count++;
-				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition())));
 			}
 		}
 		if (starConfig.addT0Estimate() || starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.estimateLayerTime() != EstimateConfig.NONE)
@@ -376,80 +368,6 @@ public class StarInfoPlugin extends Plugin
 		}
 		layerTimer += 1;
 		star.setMiners(Integer.toString(count));
-	}
-
-	private double getPickTicks(Player p)
-	{
-		int animId = p.getAnimation();
-		if (animId == AnimationID.MINING_CRYSTAL_PICKAXE) {
-			// animation id is shared for active/inactive so need to look at equipment
-			// note that they may not be wielding the pickaxe at all, in which case we can't know for sure
-			int weaponId = p.getPlayerComposition().getEquipmentId(KitType.WEAPON);
-			if (weaponId == ItemID.CRYSTAL_PICKAXE_INACTIVE) {
-				return 17.0 / 6;
-			}
-		}
-		return pickAnims.getOrDefault(p.getAnimation(), 17.0 / 6);
-	}
-
-	@Subscribe
-	private void onAnimationChanged(AnimationChanged event)
-	{
-		if (dragonPickSpecAnims.contains(event.getActor().getAnimation()))
-		{
-			instantEstimator.performedSpec((Player) event.getActor());
-		}
-	}
-
-	private boolean hasGoldedPros(PlayerComposition playerComposition)
-	{
-		if (playerComposition.getEquipmentId(KitType.HEAD) == GOLDEN_PROSPECTOR_HELMET)
-		{
-			return true;
-		}
-		if (playerComposition.getEquipmentId(KitType.BOOTS) == GOLDEN_PROSPECTOR_BOOTS)
-		{
-			return true;
-		}
-		if (playerComposition.getEquipmentId(KitType.TORSO) == GOLDEN_PROSPECTOR_JACKET)
-		{
-			return true;
-		}
-		if (playerComposition.getEquipmentId(KitType.LEGS) == GOLDEN_PROSPECTOR_LEGS)
-		{
-			return true;
-		}
-		return false;
-	}
-
-	private double prospectorXpMulti(PlayerComposition playerComposition)
-	{
-		double multi = 1.0;
-		if (playerComposition.getEquipmentId(KitType.HEAD) == GOLDEN_PROSPECTOR_HELMET
-			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_HELMET)
-		{
-			multi += 0.004;
-		}
-		if (playerComposition.getEquipmentId(KitType.BOOTS) == GOLDEN_PROSPECTOR_BOOTS
-			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_BOOTS)
-		{
-			multi += 0.002;
-		}
-		if (playerComposition.getEquipmentId(KitType.TORSO) == GOLDEN_PROSPECTOR_JACKET
-			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_JACKET
-			|| playerComposition.getEquipmentId(KitType.HEAD) == VARROCK_ARMOUR_4)
-		{
-			multi += 0.008;
-		}
-		if (playerComposition.getEquipmentId(KitType.LEGS) == GOLDEN_PROSPECTOR_LEGS
-			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_LEGS)
-		{
-			multi += 0.006;
-		}
-		if (multi > 1.019) { // check for full set bonus
-			multi += 0.005;
-		}
-		return multi;
 	}
 
 	private boolean facingObject(WorldPoint p1, int orientation, WorldPoint p2)
@@ -499,6 +417,7 @@ public class StarInfoPlugin extends Plugin
 				layerTimer = 0;
 				it.remove();
 				refresh = true;
+				despawnQueue.remove(star);
 			}
 		}
 
@@ -509,60 +428,10 @@ public class StarInfoPlugin extends Plugin
 			refreshHintArrow();
 		}
 
-		if (starConfig.xpPerHour() || starConfig.dustPerHour())
-		{
-			updateXpDustPerHour();
-		}
-
 		if (refresh)
 		{
 			refresh();
 		}
-	}
-
-	private void updateXpDustPerHour() {
-		Player player = client.getLocalPlayer();
-		if (player == null || stars.isEmpty()) {
-			dustPerHour = -1;
-			xpPerHour = -1;
-			return;
-		}
-
-		Star star = stars.get(0);
-		TierData tierData = TierData.get(star.getTier());
-		if (tierData == null || !nextToStar(star, player.getWorldLocation())) {
-			dustPerHour = -1;
-			xpPerHour = -1;
-			return;
-		}
-
-		int animId = player.getAnimation();
-		if (!pickAnims.containsKey(animId)) {
-			dustPerHour = -1;
-			xpPerHour = -1;
-			return;
-		}
-
-		int level = client.getBoostedSkillLevel(Skill.MINING);
-		boolean members = client.getWorldType().contains(WorldType.MEMBERS);
-		ItemContainer equip = client.getItemContainer(InventoryID.EQUIPMENT);
-		if (members && equip != null) {
-			Item ringItem = equip.getItem(EquipmentInventorySlot.RING.getSlotIdx());
-			if (ringItem != null && ringItem.getId() == ItemID.CELESTIAL_RING) {
-				level += 4;
-			}
-		}
-
-		double ticks = getPickTicks(player);
-		double chance = tierData.getChance(level);
-		double dustPerTick = chance / ticks;
-		double xp = members ? tierData.xp : tierData.xp / 2.0; // f2p is half xp
-		double xpPerTick = dustPerTick * xp;
-		if (members) {
-			xpPerTick *= prospectorXpMulti(player.getPlayerComposition());
-		}
-		xpPerHour = xpPerTick * 6000;
-		dustPerHour = dustPerTick * (1 + tierData.doubleDustChance) * 6000;
 	}
 
 	public void toggleHintArrow(boolean show) {
