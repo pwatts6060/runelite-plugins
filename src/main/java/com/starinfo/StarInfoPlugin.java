@@ -482,6 +482,7 @@ public class StarInfoPlugin extends Plugin
 				layerTimer = 0;
 				it.remove();
 				refresh = true;
+				despawnQueue.remove(star);
 			}
 		}
 
