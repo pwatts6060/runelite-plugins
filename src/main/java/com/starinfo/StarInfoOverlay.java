@@ -150,47 +150,6 @@ public class StarInfoOverlay extends Overlay
 			}
 		}
 
-		// Stardust
-		TierData tierData = TierData.get(star.getTier());
-		if (!config.showDust().equals(DustConfig.NO_DISPLAY) && health >= 0 && tierData != null)
-		{
-			int layerDust = tierData.layerDust;
-			int number;
-			if (config.showDust().equals(DustConfig.TOTAL_STARDUST))
-			{
-
-				number = tierData.totalDust - (100 - health) * layerDust / 100;
-			}
-			else
-			{
-				number = health * layerDust / 100;
-			}
-
-			if (config.compact())
-			{
-				text = number + " SD";
-			}
-			else
-			{
-				text = "Dust: " + number;
-			}
-
-			starLocation = star.getObject().getCanvasTextLocation(graphics, text, 190);
-			if (starLocation != null)
-			{
-				try
-				{
-					yOff += Y_ADJUST;
-					starLocation = new Point(starLocation.getX(), starLocation.getY() + yOff);
-					overlayText(graphics, starLocation, text);
-				}
-				catch (Exception e)
-				{
-					return null;
-				}
-			}
-		}
-
 		// time estimate
 		if (!config.estimateLayerTime().equals(EstimateConfig.NONE))
 		{

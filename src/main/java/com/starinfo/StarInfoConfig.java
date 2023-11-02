@@ -109,18 +109,6 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 5,
-		keyName = SHOW_DUST,
-		name = "Show Dust Left",
-		section = textOverlaySection,
-		description = "Display stardust left in the current layer/star"
-	)
-	default DustConfig showDust()
-	{
-		return DustConfig.NO_DISPLAY;
-	}
-
-	@ConfigItem(
 		position = 6,
 		keyName = ESTIMATE_LAYER,
 		name = "Estimate Layer Time",
