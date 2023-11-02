@@ -337,7 +337,7 @@ public class StarInfoPlugin extends Plugin
 		WorldArea areaV = new WorldArea(star.getWorldPoint().dy(-1), 2, 4);
 		int count = 0;
 		int tickCount = client.getTickCount();
-		List<PlayerInfo> miners = new ArrayList<>();
+//		List<PlayerInfo> miners = new ArrayList<>();
 		for (Player p : client.getPlayers())
 		{
 			if (!p.getWorldLocation().isInArea2D(areaH, areaV)) // Skip players not next to the star
@@ -352,7 +352,7 @@ public class StarInfoPlugin extends Plugin
 			{
 				count++;
 				playerLastMined.put(p.getName(), tickCount);
-				miners.add(new PlayerInfo(p.getName()));
+//				miners.add(new PlayerInfo(p.getName()));
 				continue;
 			}
 			if (p.getHealthRatio() < 0 || !playerLastMined.containsKey(p.getName()))
@@ -363,7 +363,7 @@ public class StarInfoPlugin extends Plugin
 			if (ticksSinceMinedLast < MINING_CACHE_TIME)
 			{
 				count++;
-				miners.add(new PlayerInfo(p.getName()));
+//				miners.add(new PlayerInfo(p.getName()));
 			}
 		}
 		layerTimer += 1;
