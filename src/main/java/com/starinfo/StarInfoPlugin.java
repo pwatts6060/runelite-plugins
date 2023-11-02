@@ -74,7 +74,6 @@ import net.runelite.api.coords.Angle;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
@@ -150,9 +149,6 @@ public class StarInfoPlugin extends Plugin
 
 	public final List<Star> stars = new ArrayList<>();
 
-	@Inject
-	InstantEstimator instantEstimator;
-
 	@Getter
 	private double xpPerHour = -1;
 
@@ -198,7 +194,6 @@ public class StarInfoPlugin extends Plugin
 	{
 		overlayManager.add(starOverlay);
 		starOverlay.updateConfig();
-		instantEstimator.reset();
 		hooks.registerRenderableDrawListener(drawListener);
 	}
 
@@ -216,6 +211,7 @@ public class StarInfoPlugin extends Plugin
 	{
 		playerLastMined.clear();
 		stars.clear();
+		layerTimer = 0;
 	}
 
 	private boolean shouldDraw(Renderable renderable, boolean b)
@@ -288,8 +284,8 @@ public class StarInfoPlugin extends Plugin
 				s.setObject(event.getGameObject());
 				s.resetHealth();
 				star = s;
-//				System.out.println(star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer);
-//				client.addChatMessage(ChatMessageType.CONSOLE, "", star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer, "");
+				System.out.println(star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer);
+				client.addChatMessage(ChatMessageType.CONSOLE, "", star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer, "");
 				layerTimer = 0;
 				despawnQueue.remove(star);
 				break;
@@ -356,7 +352,7 @@ public class StarInfoPlugin extends Plugin
 			{
 				count++;
 				playerLastMined.put(p.getName(), tickCount);
-				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition())));
+				miners.add(new PlayerInfo(p.getName()));
 				continue;
 			}
 			if (p.getHealthRatio() < 0 || !playerLastMined.containsKey(p.getName()))
@@ -367,12 +363,8 @@ public class StarInfoPlugin extends Plugin
 			if (ticksSinceMinedLast < MINING_CACHE_TIME)
 			{
 				count++;
-				miners.add(new PlayerInfo(p.getName(), InstantEstimator.NOT_FETCHED, getPickTicks(p), hasGoldedPros(p.getPlayerComposition())));
+				miners.add(new PlayerInfo(p.getName()));
 			}
-		}
-		if (starConfig.addT0Estimate() || starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.estimateLayerTime() != EstimateConfig.NONE)
-		{
-			instantEstimator.refreshEstimate(star);
 		}
 		layerTimer += 1;
 		star.setMiners(Integer.toString(count));
@@ -390,15 +382,6 @@ public class StarInfoPlugin extends Plugin
 			}
 		}
 		return pickAnims.getOrDefault(p.getAnimation(), 17.0 / 6);
-	}
-
-	@Subscribe
-	private void onAnimationChanged(AnimationChanged event)
-	{
-		if (dragonPickSpecAnims.contains(event.getActor().getAnimation()))
-		{
-			instantEstimator.performedSpec((Player) event.getActor());
-		}
 	}
 
 	private boolean hasGoldedPros(PlayerComposition playerComposition)
@@ -494,8 +477,8 @@ public class StarInfoPlugin extends Plugin
 			Star star = it.next();
 			if (despawnQueue.contains(star) || client.getLocalPlayer().getWorldLocation().distanceTo(star.getWorldPoint()) > starConfig.removeDistance())
 			{
-//				System.out.println(star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer);
-//				client.addChatMessage(ChatMessageType.CONSOLE, "", star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer, "");
+				System.out.println(star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer);
+				client.addChatMessage(ChatMessageType.CONSOLE, "", star.getWorld() + " Star layer time T" + star.getTier() + ": " + layerTimer, "");
 				layerTimer = 0;
 				it.remove();
 				refresh = true;

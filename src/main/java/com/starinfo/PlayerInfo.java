@@ -8,7 +8,4 @@ import lombok.Data;
 public class PlayerInfo
 {
 	public String username;
-	public int level;
-	public double pickTicks;
-	public boolean ring;
 }
