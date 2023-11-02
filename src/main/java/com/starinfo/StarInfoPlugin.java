@@ -384,27 +384,6 @@ public class StarInfoPlugin extends Plugin
 		return pickAnims.getOrDefault(p.getAnimation(), 17.0 / 6);
 	}
 
-	private boolean hasGoldedPros(PlayerComposition playerComposition)
-	{
-		if (playerComposition.getEquipmentId(KitType.HEAD) == GOLDEN_PROSPECTOR_HELMET)
-		{
-			return true;
-		}
-		if (playerComposition.getEquipmentId(KitType.BOOTS) == GOLDEN_PROSPECTOR_BOOTS)
-		{
-			return true;
-		}
-		if (playerComposition.getEquipmentId(KitType.TORSO) == GOLDEN_PROSPECTOR_JACKET)
-		{
-			return true;
-		}
-		if (playerComposition.getEquipmentId(KitType.LEGS) == GOLDEN_PROSPECTOR_LEGS)
-		{
-			return true;
-		}
-		return false;
-	}
-
 	private double prospectorXpMulti(PlayerComposition playerComposition)
 	{
 		double multi = 1.0;
