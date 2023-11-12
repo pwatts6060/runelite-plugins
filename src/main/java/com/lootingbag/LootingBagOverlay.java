@@ -31,10 +31,10 @@ public class LootingBagOverlay extends WidgetItemOverlay
 		}
 		graphics.setFont(FontManager.getRunescapeSmallFont());
 		if (config.bagValue()) {
-			renderText(graphics, widgetItem.getCanvasBounds(), 0, plugin.getValueText());
+			renderText(graphics, widgetItem.getCanvasBounds(), 0, getValueText());
 		}
 		if (config.freeSlots()) {
-			renderText(graphics, widgetItem.getCanvasBounds(), -12, plugin.getFreeSlotsText());
+			renderText(graphics, widgetItem.getCanvasBounds(), -12, getFreeSlotsText());
 		}
 	}
 
@@ -45,5 +45,37 @@ public class LootingBagOverlay extends WidgetItemOverlay
 		textComponent.setColor(config.textColor());
 		textComponent.setText(text);
 		textComponent.render(graphics);
+	}
+
+	private String getFreeSlotsText()
+	{
+		LootingBag lootingBag = plugin.getLootingBag();
+		if (!lootingBag.isSynced())
+		{
+			return "Check";
+		}
+
+		return Integer.toString(lootingBag.getFreeSlots());
+	}
+
+	private String getValueText()
+	{
+		LootingBag lootingBag = plugin.getLootingBag();
+		if (!lootingBag.isSynced())
+		{
+			return "Check";
+		}
+
+		long lootingBagValue = lootingBag.getValueOfItems();
+		String text = lootingBag.isQuantityOfItemsAccurate() ? "" : ">";
+		if (lootingBagValue >= 10_000_000)
+		{
+			return text + lootingBagValue / 1_000_000 + "M";
+		}
+		if (lootingBagValue >= 100_000)
+		{
+			return text + lootingBagValue / 1000 + "k";
+		}
+		return text + lootingBagValue;
 	}
 }
