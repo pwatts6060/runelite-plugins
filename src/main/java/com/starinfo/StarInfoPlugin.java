@@ -364,8 +364,44 @@ public class StarInfoPlugin extends Plugin
 //				miners.add(new PlayerInfo(p.getName()));
 			}
 		}
+		if (starConfig.addT0Estimate() || starConfig.estimateDeathTime() != EstimateConfig.NONE || starConfig.estimateLayerTime() != EstimateConfig.NONE)
+		{
+			refreshEstimate(star);
+		}
 		layerTimer += 1;
 		star.setMiners(Integer.toString(count));
+	}
+
+	public void refreshEstimate(Star star)
+	{
+		int[] ticks = getTicksEstimates(star);
+		star.setTierTicksEstimate(ticks);
+	}
+
+	private int[] getTicksEstimates(Star star)
+	{
+		if (star.getHealth() < 0) {
+			return null;
+		}
+		int startTier = star.getTier();
+		if (startTier < 0) {
+			return null;
+		}
+		int tier = startTier;
+		int[] ticks = new int[startTier];
+		int totalTicks = 0;
+		while (tier > 0) {
+			TierData tierData = TierData.get(tier);
+			if (tierData == null) {
+				return null;
+			}
+			double healthScale = tier == startTier ? (star.getHealth() / 100.0) : 1;
+
+			totalTicks += (int) Math.ceil(healthScale * tierData.tickTime);
+			tier--;
+			ticks[tier] = totalTicks;
+		}
+		return ticks;
 	}
 
 	private double getPickTicks(Player p)
