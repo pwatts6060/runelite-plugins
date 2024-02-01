@@ -1,6 +1,9 @@
 package com.instantnotify;
 
 import com.google.inject.Provides;
+import java.util.HashMap;
+import java.util.Map;
+import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
@@ -8,7 +11,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -16,10 +19,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @PluginDescriptor(
@@ -83,7 +82,7 @@ public class InstantNotifyPlugin extends Plugin {
             return;
         }
 
-        if (client.getWidget(WidgetInfo.BANK_CONTAINER) != null) {
+        if (client.getWidget(InterfaceID.BANK) != null) {
             return;
         }
 
