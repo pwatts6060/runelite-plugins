@@ -113,6 +113,7 @@ public class InstantNotifyPlugin extends Plugin {
         });
 
         int tickDelay = client.getTickCount() - lastTick;
+		boolean notify = false;
 
         // if the same type of item exchange happened and delay is same as before
         // effectively requires at least 3 of the action to have lastTickDelay and tickDelay match
@@ -123,12 +124,16 @@ public class InstantNotifyPlugin extends Plugin {
                 int id = entry.getKey();
                 int amount = entry.getValue();
                 if (amount < 0 && newItemAmounts.getOrDefault(id, 0) < -amount) {
-                    playNotification();
+                    notify = true;
                 }
             }
         } else {
             cyclesRepeated = 0;
         }
+
+        if (notify) {
+			playNotification();
+		}
 
         lastTickDelay = tickDelay;
         lastTick = client.getTickCount();
