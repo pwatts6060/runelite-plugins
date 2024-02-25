@@ -71,6 +71,9 @@ public class LootingBagPlugin extends Plugin
 	@Getter
 	private LootingBag lootingBag;
 
+	@Inject
+	private Gson gson;
+
 	private PickupAction lastPickUpAction;
 
 	private int lastItemIdUsedOnLootingBag;
@@ -297,7 +300,7 @@ public class LootingBagPlugin extends Plugin
 			if (matchingActionIndex.isPresent())
 			{
 				List<PickupAction> subListToRemove = possibleSuppliesPickupActions.subList(0, matchingActionIndex.getAsInt() + 1);
-				log.debug("Clearing the following pickup actions: " + new Gson().toJson(subListToRemove.stream().map(action -> getItemName(action.getItemId())).collect(Collectors.toList())));
+				log.debug("Clearing the following pickup actions: " + gson.toJson(subListToRemove.stream().map(action -> getItemName(action.getItemId())).collect(Collectors.toList())));
 				subListToRemove.clear();
 			}
 		}
