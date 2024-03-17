@@ -59,6 +59,7 @@ import static net.runelite.api.ItemID.PROSPECTOR_HELMET;
 import static net.runelite.api.ItemID.PROSPECTOR_JACKET;
 import static net.runelite.api.ItemID.PROSPECTOR_LEGS;
 import static net.runelite.api.ItemID.VARROCK_ARMOUR_4;
+import static net.runelite.api.ItemID.STARDUST;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
@@ -81,6 +82,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
@@ -91,6 +93,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
+import net.runelite.client.util.ColorUtil;
 
 @PluginDescriptor(
 	name = "Star Info",
@@ -98,7 +101,7 @@ import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 )
 public class StarInfoPlugin extends Plugin
 {
-
+	private static final int VARBIT_STAR_DISCOVERY = 15351; //  Star discovery buff: Returns the amount of bonus stardust the player will receive from stars.
 	private static final int NPC_ID = NullNpcID.NULL_10629;
 	private static final int MAX_PLAYER_LOAD_DIST = 13;
 	private static final Queue<Star> despawnQueue = new LinkedList<>();
@@ -159,10 +162,14 @@ public class StarInfoPlugin extends Plugin
 
 	public int layerTimer = 0;
 
+	public int bonusCount;
+
 	@Inject
 	private InfoBoxManager infoBoxManager;
 
 	private StarInfoBox infoBox;
+	
+	private BonusCounter bonusCounter;
 
 	@Inject
 	private ItemManager itemManager;
@@ -195,6 +202,7 @@ public class StarInfoPlugin extends Plugin
 		overlayManager.add(starOverlay);
 		starOverlay.updateConfig();
 		hooks.registerRenderableDrawListener(drawListener);
+		updateBonusCounter();
 	}
 
 	@Override
@@ -204,6 +212,7 @@ public class StarInfoPlugin extends Plugin
 		refresh();
 		overlayManager.remove(starOverlay);
 		infoBox = null;
+		removeBonusCounter();
 		hooks.unregisterRenderableDrawListener(drawListener);
 	}
 
@@ -247,6 +256,24 @@ public class StarInfoPlugin extends Plugin
 		refresh();
 	}
 
+	@Subscribe
+	public void onVarbitChanged(VarbitChanged event)
+	{
+		if (event.getVarbitId() != VARBIT_STAR_DISCOVERY)
+		{
+			return;
+		}
+
+		bonusCount = event.getValue();
+
+		if (!starConfig.showStarDiscovery() || bonusCount == 0)
+		{
+			removeBonusCounter();
+			return;
+		}
+
+		updateBonusCounter();
+	}
 
 	@Subscribe
 	public void onNpcDespawned(NpcDespawned event)
@@ -618,6 +645,36 @@ public class StarInfoPlugin extends Plugin
 		refreshHintArrow();
 	}
 
+	private void updateBonusCounter()
+	{
+		String tooltip = ColorUtil.wrapWithColorTag("Star Discovery", new Color(255, 119, 0)) + "</br>"
+				+ ColorUtil.wrapWithColorTag("Bonus stardust: ", Color.YELLOW) + bonusCount;
+
+		if (bonusCounter != null)
+		{
+			bonusCounter.setCount(bonusCount);
+			bonusCounter.setTooltip(tooltip);
+			return;
+		}
+
+		removeBonusCounter();
+
+		if (bonusCount == 0)
+		{
+			return;
+		}
+
+		bonusCounter = new BonusCounter(itemManager.getImage(STARDUST, 175, false), this, bonusCount);
+		bonusCounter.setTooltip(tooltip);
+		infoBoxManager.addInfoBox(bonusCounter);
+	}
+
+	private void removeBonusCounter()
+	{
+		infoBoxManager.removeInfoBox(bonusCounter);
+		bonusCounter = null;
+	}
+
 	private boolean nextToStar(Star star, WorldPoint worldPoint) {
 		WorldArea areaH = new WorldArea(star.getWorldPoint().dx(-1), 4, 2);
 		WorldArea areaV = new WorldArea(star.getWorldPoint().dy(-1), 2, 4);
@@ -730,6 +787,16 @@ public class StarInfoPlugin extends Plugin
 				{
 					infoBoxManager.removeInfoBox(infoBox);
 					infoBox = null;
+				}
+				break;
+			case StarInfoConfig.BONUS_INFO_BOX_KEY:
+				if (starConfig.showStarDiscovery())
+				{
+					updateBonusCounter();
+				}
+				else
+				{
+					removeBonusCounter();
 				}
 				break;
 			case StarInfoConfig.HINT_ARROW_KEY:
