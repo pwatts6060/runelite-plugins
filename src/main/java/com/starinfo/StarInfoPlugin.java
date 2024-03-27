@@ -28,8 +28,10 @@ package com.starinfo;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
+import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -84,6 +86,7 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.kit.KitType;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -171,6 +174,8 @@ public class StarInfoPlugin extends Plugin
 	
 	private BonusCounter bonusCounter;
 
+	private BufferedImage BONUS_IMAGE;
+
 	@Inject
 	private ItemManager itemManager;
 
@@ -179,6 +184,9 @@ public class StarInfoPlugin extends Plugin
 
 	@Inject
 	Client client;
+
+	@Inject
+	ClientThread clientThread;
 
 	@Inject
 	private StarInfoConfig starConfig;
@@ -202,7 +210,22 @@ public class StarInfoPlugin extends Plugin
 		overlayManager.add(starOverlay);
 		starOverlay.updateConfig();
 		hooks.registerRenderableDrawListener(drawListener);
-		updateBonusCounter();
+		BONUS_IMAGE = itemManager.getImage(STARDUST, 175, false);
+
+		clientThread.invoke(() ->
+		{
+			if (client.getGameState() != GameState.LOGGED_IN)
+			{
+				return;
+			}
+
+			bonusCount = client.getVarbitValue(VARBIT_STAR_DISCOVERY);
+
+			if (starConfig.showStarDiscovery())
+			{
+				updateBonusCounter();
+			}
+		});
 	}
 
 	@Override
@@ -664,13 +687,18 @@ public class StarInfoPlugin extends Plugin
 			return;
 		}
 
-		bonusCounter = new BonusCounter(itemManager.getImage(STARDUST, 175, false), this, bonusCount);
+		bonusCounter = new BonusCounter(BONUS_IMAGE, this, bonusCount);
 		bonusCounter.setTooltip(tooltip);
 		infoBoxManager.addInfoBox(bonusCounter);
 	}
 
 	private void removeBonusCounter()
 	{
+		if (bonusCounter == null)
+		{
+			return;
+		}
+
 		infoBoxManager.removeInfoBox(bonusCounter);
 		bonusCounter = null;
 	}
