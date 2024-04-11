@@ -9,6 +9,7 @@ import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ObjectID;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameObjectDespawned;
@@ -31,6 +32,7 @@ public class RoguesPlugin extends Plugin
 	public static final int RESPAWN_TIME = 22;
 	public static final WorldPoint EASTERN_CHEST_POINT = new WorldPoint(3297, 3940, 0);
 	private static final int LOOT_ANIM = 536;
+	private static final WorldArea chestArea = new WorldArea(3280, 3938, 18, 9, 0);
 
 	public Map<WorldPoint, Integer> respawnMap = null;
 
@@ -67,6 +69,10 @@ public class RoguesPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
+		if (!client.getLocalPlayer().getWorldLocation().isInArea(chestArea))
+		{
+			return;
+		}
 		int curTick = client.getTickCount();
 		for (Map.Entry<WorldPoint, Integer> entry : respawnMap.entrySet())
 		{
@@ -97,7 +103,8 @@ public class RoguesPlugin extends Plugin
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
-		if (gameStateChanged.getGameState() == GameState.LOADING && respawnMap != null) {
+		if (gameStateChanged.getGameState() == GameState.LOADING && respawnMap != null)
+		{
 			respawnMap.clear();
 		}
 	}
@@ -112,9 +119,11 @@ public class RoguesPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onAnimationChanged(AnimationChanged event) {
+	public void onAnimationChanged(AnimationChanged event)
+	{
 		Actor actor = event.getActor();
-		if (actor.getAnimation() != LOOT_ANIM) {
+		if (actor.getAnimation() != LOOT_ANIM)
+		{
 			return;
 		}
 		WorldPoint chestLoc = null;
@@ -123,13 +132,15 @@ public class RoguesPlugin extends Plugin
 		{
 			WorldPoint worldPoint = entry.getKey();
 
-			if (actor.getWorldLocation().distanceTo2D(worldPoint) <= 1) {
+			if (actor.getWorldLocation().distanceTo2D(worldPoint) <= 1)
+			{
 				chestLoc = worldPoint;
 				break;
 			}
 		}
 
-		if (chestLoc != null) {
+		if (chestLoc != null)
+		{
 			respawnMap.put(chestLoc, client.getTickCount() + RESPAWN_TIME);
 		}
 	}
@@ -138,10 +149,5 @@ public class RoguesPlugin extends Plugin
 	RoguesConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(RoguesConfig.class);
-	}
-
-	public static int pointHash(WorldPoint worldPoint)
-	{
-		return worldPoint.getX() << 16 + worldPoint.getY() << 2 + worldPoint.getPlane();
 	}
 }
