@@ -81,6 +81,8 @@ Alt+right click on the overlay to reset to default size
     - Fixed minor bug that caused the metronome to reset to default size on startup
 - **V1.4.5.2**
     - Fixed bug where Default Box Size setting was not set correctly on startup
+- **V1.4.5.3**
+    - Change tile layer to ABOVE_SCENE to make compatible with Improved Tile Indicators "Draw Tile below Player" setting
 
 
 # Feedback

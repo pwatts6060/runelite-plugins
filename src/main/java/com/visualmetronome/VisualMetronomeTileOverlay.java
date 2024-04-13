@@ -35,7 +35,7 @@ public class VisualMetronomeTileOverlay extends Overlay
         this.config = config;
         this.plugin = plugin;
         setPosition(OverlayPosition.DYNAMIC);
-        setLayer(OverlayLayer.UNDER_WIDGETS);
+        setLayer(OverlayLayer.ABOVE_SCENE);
         setPriority(OverlayPriority.MED);
 
     }
