@@ -83,7 +83,8 @@ Alt+right click on the overlay to reset to default size
     - Fixed bug where Default Box Size setting was not set correctly on startup
 - **V1.4.5.3**
     - Change tile layer to ABOVE_SCENE to make compatible with Improved Tile Indicators "Draw Tile below Player" setting
-
+- **V1.4.5.4**
+    - Fixed bug from V1.4.5.3 where "Show Tick Number Above Player" was showing under prayers
 
 # Feedback
 I'm open to all feedback on bugs or features you want to see in this plugin. Give feedback here on this github page or message me on discord, vincent58. 

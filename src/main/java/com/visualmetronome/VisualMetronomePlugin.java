@@ -32,6 +32,9 @@ public class VisualMetronomePlugin extends Plugin implements KeyListener
     private VisualMetronomeTileOverlay tileOverlay;
 
     @Inject
+    private VisualMetronomeNumberOverlay numberOverlay;
+
+    @Inject
     private FullResizableVisualMetronomeOverlay overlay;
 
     @Inject
@@ -125,6 +128,7 @@ public class VisualMetronomePlugin extends Plugin implements KeyListener
         overlay.setPreferredSize(DEFAULT_SIZE);
         overlayManager.add(overlay);
         overlayManager.add(tileOverlay);
+        overlayManager.add(numberOverlay);
         keyManager.registerKeyListener(this);
     }
 
@@ -133,6 +137,7 @@ public class VisualMetronomePlugin extends Plugin implements KeyListener
     {
         overlayManager.remove(overlay);
         overlayManager.remove(tileOverlay);
+        overlayManager.remove(numberOverlay);
         tickCounter = 0;
         currentColorIndex = 0;
         currentColor = config.getTickColor();

@@ -2,9 +2,7 @@ package com.visualmetronome;
 
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
-import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
@@ -14,7 +12,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.awt.Font;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPriority;
@@ -37,7 +34,6 @@ public class VisualMetronomeTileOverlay extends Overlay
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
         setPriority(OverlayPriority.MED);
-
     }
 
     @Override
@@ -65,30 +61,6 @@ public class VisualMetronomeTileOverlay extends Overlay
             else
             {
                 renderTile(graphics, playerPosLocal, plugin.currentColor, config.currentTileFillColor(), config.currentTileBorderWidth());
-            }
-        }
-
-        if (config.showPlayerTick())
-        {
-            if (config.fontType() == FontTypes.REGULAR)
-            {
-                graphics.setFont(new Font(FontManager.getRunescapeFont().getName(), Font.PLAIN, config.fontSize()));
-            }
-            else
-            {
-                graphics.setFont(new Font(config.fontType().toString(), Font.PLAIN, config.fontSize()));
-            }
-
-            final int height = client.getLocalPlayer().getLogicalHeight()+20;
-            final LocalPoint localLocation = client.getLocalPlayer().getLocalLocation();
-            final Point playerPoint = Perspective.localToCanvas(client, localLocation, client.getPlane(), height);
-            if (config.tickCount() == 1)
-            {
-                OverlayUtil.renderTextLocation(graphics, playerPoint, String.valueOf(plugin.currentColorIndex), config.NumberColor());
-            }
-            else
-            {
-                OverlayUtil.renderTextLocation(graphics, playerPoint, String.valueOf(plugin.tickCounter), config.NumberColor());
             }
         }
 
