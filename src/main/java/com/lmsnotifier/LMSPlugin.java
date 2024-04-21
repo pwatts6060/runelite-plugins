@@ -259,7 +259,7 @@ public class LMSPlugin extends Plugin {
 
     @Subscribe
     public void onWidgetClosed(WidgetClosed ev) {
-        if (ev.getGroupId() == InterfaceID.LMS_KDA) {
+        if (ev.getGroupId() == InterfaceID.LMS_INGAME) {
             inGame = false;
             chests.clear();
             lootCrates.clear();
@@ -272,7 +272,7 @@ public class LMSPlugin extends Plugin {
 
     @Subscribe
     public void onWidgetLoaded(WidgetLoaded widgetLoaded) {
-        if (widgetLoaded.getGroupId() == InterfaceID.LMS_KDA) {
+        if (widgetLoaded.getGroupId() == InterfaceID.LMS_INGAME) {
             inGame = true;
             if (config.getSweatDisplay()) {
                 menuManager.get().addPlayerMenuItem(MARK);
