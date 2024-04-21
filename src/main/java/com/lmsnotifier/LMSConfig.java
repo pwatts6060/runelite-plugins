@@ -250,4 +250,27 @@ public interface LMSConfig extends Config
 	{
 		return false;
 	}
+
+
+	@ConfigItem(
+			keyName = "showLobbySummary",
+			name = "Show Lobby Summary",
+			description = "Categorizes players in the lobby based on rank, combat level, and marked sweats",
+			position = 8
+	)
+	default boolean getLobbySummary()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "showSweats",
+			name = "Show Sweats",
+			description = "Shows sweaty players you've previously marked",
+			position = 9
+	)
+	default boolean getSweatDisplay()
+	{
+		return false;
+	}
 }

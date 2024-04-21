@@ -33,6 +33,10 @@ class LMSOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		if (plugin.preLobby) {
+			renderLobby(graphics);
+			return null;
+		}
 		if (!plugin.inGame)
 		{
 			return null;
@@ -58,6 +62,11 @@ class LMSOverlay extends Overlay
 			renderBots(graphics);
 		}
 
+		if (config.getSweatDisplay())
+		{
+			renderSweats(graphics);
+		}
+
 		if (config.overlayKillDeaths())
 		{
 			renderKillDeaths(graphics);
@@ -66,7 +75,47 @@ class LMSOverlay extends Overlay
 		return null;
 	}
 
-    private void renderKillDeaths(Graphics2D graphics) {
+	private void renderSweats(Graphics2D graphics) {
+		for (LMSPlayer lmsPlayer : plugin.localLMSPlayers)
+		{
+			if (!plugin.sweatTracker.isSweat(lmsPlayer.player)) {
+				continue;
+			}
+
+			Point textLocation = lmsPlayer.player.getCanvasTextLocation(graphics, "Sweat", 0);
+			if (textLocation != null)
+			{
+				OverlayUtil.renderTextLocation(graphics, new Point(textLocation.getX(), textLocation.getY() + 36), "Sweat", Color.ORANGE);
+			}
+		}
+	}
+
+	private void renderLobby(Graphics2D graphics) {
+		if (!config.rankVisual().equals(RankVisual.NONE))
+		{
+			renderRanks(graphics);
+		}
+
+		if (config.overlayKillDeaths())
+		{
+			renderKillDeaths(graphics);
+		}
+
+		for (LMSPlayer lmsPlayer : plugin.localLMSPlayers) {
+			DeathTracker.KD kd = plugin.deathTracker.getKD(lmsPlayer.player.getName());
+			if (kd.kills <= 0 && kd.deaths <= 0) {
+				continue;
+			}
+			String text = kd.kills + "-" + kd.deaths;
+			Point textLocation = lmsPlayer.player.getCanvasTextLocation(graphics, text, 0);
+			if (textLocation != null)
+			{
+				OverlayUtil.renderTextLocation(graphics, new Point(textLocation.getX(), textLocation.getY() + 12), text, Color.WHITE);
+			}
+		}
+	}
+
+	private void renderKillDeaths(Graphics2D graphics) {
         for (LMSPlayer lmsPlayer : plugin.localLMSPlayers) {
             DeathTracker.KD kd = plugin.deathTracker.getKD(lmsPlayer.player.getName());
             if (kd.kills <= 0 && kd.deaths <= 0) {
