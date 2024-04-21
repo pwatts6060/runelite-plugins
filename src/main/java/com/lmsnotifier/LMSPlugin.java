@@ -10,7 +10,6 @@ import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.InterfaceID;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
@@ -260,7 +259,7 @@ public class LMSPlugin extends Plugin {
 
     @Subscribe
     public void onWidgetClosed(WidgetClosed ev) {
-        if (ev.getGroupId() == WidgetInfo.LMS_KDA.getGroupId()) {
+        if (ev.getGroupId() == InterfaceID.LMS_KDA) {
             inGame = false;
             chests.clear();
             lootCrates.clear();
@@ -273,7 +272,7 @@ public class LMSPlugin extends Plugin {
 
     @Subscribe
     public void onWidgetLoaded(WidgetLoaded widgetLoaded) {
-        if (widgetLoaded.getGroupId() == WidgetInfo.LMS_KDA.getGroupId()) {
+        if (widgetLoaded.getGroupId() == InterfaceID.LMS_KDA) {
             inGame = true;
             if (config.getSweatDisplay()) {
                 menuManager.get().addPlayerMenuItem(MARK);
