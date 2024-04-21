@@ -234,7 +234,7 @@ public class LMSPlugin extends Plugin {
     }
 
     private void refreshNearbyPlayerRanks() {
-        if (!preLobby && !inGame || config.rankVisual().equals(RankVisual.NONE)) {
+        if (!preLobby && !inLobby && !inGame || config.rankVisual().equals(RankVisual.NONE)) {
             localLMSPlayers.clear();
             return;
         }
