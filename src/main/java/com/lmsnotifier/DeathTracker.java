@@ -25,6 +25,9 @@ public class DeathTracker {
     @Inject
     private LMSConfig config;
 
+    @Inject
+    private Gson gson;
+
     private int lastAttackTick;
     private Player opponent;
     private Player potentialOpponent;
@@ -92,14 +95,14 @@ public class DeathTracker {
         }
         try {
             String json = new String(Files.readAllBytes(SAVE_FILE.toPath()));
-            deathMap.putAll(new Gson().fromJson(json, new TypeToken<Map<String, KD>>() {}.getType()));
+            deathMap.putAll(gson.fromJson(json, new TypeToken<Map<String, KD>>() {}.getType()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void save() {
-        String json = new Gson().toJson(deathMap);
+        String json = gson.toJson(deathMap);
         try {
             Files.write(SAVE_FILE.toPath(), json.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
