@@ -243,7 +243,7 @@ public class LMSPlugin extends Plugin {
         players.sort(Comparator.comparingInt(o -> LMSUtil.distSquared(o.getLocalLocation(), localPoint)));
         localLMSPlayers.clear();
         for (Player player : players) {
-            if (preLobby && player.getWorldLocation().distanceTo(lmsCompetitiveLobby) != 0) {
+            if ((preLobby || inLobby) && player.getWorldLocation().distanceTo(lmsCompetitiveLobby) != 0) {
                 continue;
             }
             String name = player.getName();
