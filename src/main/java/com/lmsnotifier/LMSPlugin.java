@@ -290,7 +290,11 @@ public class LMSPlugin extends Plugin {
             case NEVER:
                 return false;
             case HAS_KEY:
-                return client.getItemContainer(InventoryID.INVENTORY).contains(ItemID.BLOODY_KEY) || client.getItemContainer(InventoryID.INVENTORY).contains(ItemID.BLOODIER_KEY);
+                ItemContainer inv = client.getItemContainer(InventoryID.INVENTORY);
+                if (inv == null) {
+                    return false;
+                }
+                return inv.contains(ItemID.BLOODY_KEY) || inv.contains(ItemID.BLOODIER_KEY);
             case ALWAYS:
             default:
                 return true;
