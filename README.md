@@ -5,3 +5,7 @@ A Runelite plugin for the Last Man Standing minigame with the following toggleab
 - Draw player's LMS Score or Rank on them
 - Detects bots
 - Tracks kills/deaths and overlays them on players
+- Mark Sweaty players to avoid by right clicking them and using the "Mark" option
+- See summary of ranks/combat levels/sweats in lobby summary
+- Shows item upgrades on the floor
+- Automatically marks known terminator bots as sweats
