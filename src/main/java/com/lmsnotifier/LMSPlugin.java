@@ -250,7 +250,7 @@ public class LMSPlugin extends Plugin {
             if (client.getLocalPlayer().getName().equals(name)) {
                 continue;
             }
-            LMSRank lmsRank = lmsHiscores.getRankFor(name);
+            LMSRank lmsRank = lmsHiscores.getRankFor(name, sweatTracker);
             if (lmsRank != null) {
                 localLMSPlayers.add(new LMSPlayer(player, lmsRank));
             }

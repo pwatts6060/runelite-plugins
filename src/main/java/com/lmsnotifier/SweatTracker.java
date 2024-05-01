@@ -4,6 +4,8 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.client.RuneLite;
+import net.runelite.client.hiscore.HiscoreResult;
+import net.runelite.client.hiscore.HiscoreSkill;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
@@ -26,7 +28,11 @@ public class SweatTracker {
     public boolean isSweat(Player p) {
         if (p.getName() == null)
             return false;
-        return usernames.contains(Text.sanitize(p.getName().toLowerCase()));
+        return isSweat(p.getName());
+    }
+
+    public boolean isSweat(String name) {
+        return usernames.contains(Text.sanitize(name.toLowerCase()));
     }
 
     public void markPlayer(String name) {
@@ -38,6 +44,55 @@ public class SweatTracker {
             client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", name + " marked as sweat for Last Man Standing.", "");
         }
         requiresSave = true;
+    }
+
+
+    public int botCriteriaCount(HiscoreResult r) {
+        int criteriaMet = 0;
+		/*
+		Range 1
+		Construction 16
+		Herblore 52
+		Crafting 43
+		Fletching 60
+		Hunter 1
+		Mining 18 or 41
+		Smithing 39
+		Fishing 24
+		Farming 9
+		total level 750-760
+		 */
+        if (r.getSkill(HiscoreSkill.RANGED).getLevel() == 1) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.CONSTRUCTION).getLevel() == 16) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.HERBLORE).getLevel() == 52) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.CRAFTING).getLevel() == 43) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.FLETCHING).getLevel() == 60) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.HUNTER).getLevel() == 1) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.MINING).getLevel() == 18 || r.getSkill(HiscoreSkill.MINING).getLevel() == 41) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.SMITHING).getLevel() == 39) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.FISHING).getLevel() == 24) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.FARMING).getLevel() == 9) {
+            criteriaMet++;
+        }
+        return criteriaMet;
     }
 
     public void load() {

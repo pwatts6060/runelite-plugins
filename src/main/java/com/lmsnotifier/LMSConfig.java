@@ -273,4 +273,26 @@ public interface LMSConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+			keyName = "autoMarkSweats",
+			name = "Auto Mark Sweats",
+			description = "Automatically marks terminator bots based on stats as sweats",
+			position = 10
+	)
+	default boolean autoMarkSweats()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			keyName = "showUpgrades",
+			name = "Show Upgrades",
+			description = "Adds info box and directions to upgrades on the floor in game chat",
+			position = 11
+	)
+	default boolean showUpgrades()
+	{
+		return true;
+	}
 }
