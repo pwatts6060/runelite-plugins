@@ -2,6 +2,7 @@ package com.lmsnotifier;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
+import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -16,10 +17,13 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ClientShutdown;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.infobox.InfoBox;
+import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
@@ -81,7 +85,31 @@ public class LMSPlugin extends Plugin {
     BotIdentification botIdentification;
 
     @Inject
+    ItemUpgrade itemUpgrade;
+
+    @Inject
+    private ItemManager itemManager;
+
+    @Inject
+    public InfoBoxManager infoBoxManager;
+
+    @Inject
     private Provider<MenuManager> menuManager;
+
+    public final List<FloorItem> floorItems = new ArrayList<>();
+
+    @Data
+    public static final class FloorItem {
+
+        TileItem tileItem;
+        Tile tile;
+        InfoBox infoBox;
+
+        public FloorItem(TileItem tileItem, Tile tile) {
+            this.tileItem = tileItem;
+            this.tile = tile;
+        }
+    }
 
     @Override
     protected void startUp() throws Exception {
@@ -99,7 +127,7 @@ public class LMSPlugin extends Plugin {
         overlayManager.remove(overlay2d);
         deathTracker.save();
         sweatTracker.save();
-
+        itemUpgrade.reset();
         if (client != null)
         {
             menuManager.get().removePlayerMenuItem(MARK);
@@ -112,6 +140,45 @@ public class LMSPlugin extends Plugin {
         event.waitFor(future);
         CompletableFuture<Void> future2 = CompletableFuture.runAsync(sweatTracker::save);
         event.waitFor(future2);
+    }
+
+    @Subscribe
+    public void onItemDespawned(ItemDespawned event) {
+        itemUpgrade.despawn(event);
+    }
+
+    @Subscribe
+    public void onItemSpawned(ItemSpawned event) {
+        if (!inGame || client.getLocalPlayer().getWorldLocation().getRegionID() == FEROX_REGION_ID) {
+            return;
+        }
+
+        if (!itemUpgrade.notifyItem(event, client.getItemContainer(InventoryID.INVENTORY), client.getItemContainer(InventoryID.EQUIPMENT))) {
+            return;
+        }
+
+        WorldPoint itemLoc = event.getTile().getWorldLocation();
+        WorldPoint playerLoc = client.getLocalPlayer().getWorldLocation();
+
+        int dist = playerLoc.distanceTo2D(itemLoc);
+        if (dist == 0) {
+            itemUpgrade.droppedItem(event.getItem().getId());
+            // likely spawned from full inv when opening chest
+            return;
+        }
+
+        LMSPlugin.FloorItem floorItem = new LMSPlugin.FloorItem(event.getItem(), event.getTile());
+        floorItems.add(floorItem);
+        addInfoBox(floorItem);
+    }
+
+    private void addInfoBox(FloorItem floorItem) {
+        if (!config.showUpgrades()) {
+            return;
+        }
+
+        floorItem.infoBox = new FloorInfoBox(itemManager.getImage(floorItem.getTileItem().getId()), this, client, floorItem);
+        infoBoxManager.addInfoBox(floorItem.getInfoBox());
     }
 
     @Subscribe
@@ -181,6 +248,10 @@ public class LMSPlugin extends Plugin {
             {
                 menuManager.get().addPlayerMenuItem(MARK);
             }
+
+            if (!config.showUpgrades()) {
+                itemUpgrade.reset();
+            }
         }
     }
 
@@ -218,6 +289,10 @@ public class LMSPlugin extends Plugin {
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked event)
     {
+        if (event.getMenuOption().equals("Drop")) {
+            itemUpgrade.droppedItem(event.getItemId());
+        }
+
         if (event.getMenuAction() == MenuAction.RUNELITE_PLAYER && event.getMenuOption().equals(MARK))
         {
             Player player = event.getMenuEntry().getPlayer();
@@ -264,6 +339,7 @@ public class LMSPlugin extends Plugin {
             chests.clear();
             lootCrates.clear();
             botIdentification.reset();
+            itemUpgrade.reset();
             if (config.getSweatDisplay()) {
                 menuManager.get().removePlayerMenuItem(MARK);
             }
