@@ -137,7 +137,14 @@ public class Location
 			new Location(new Point(3057, 3887), "Lava maze runite mine (lvl 46 Wildy)", true),
 			new Location(new Point(3049, 3940), "Pirates' Hideout (lvl 53 Wildy)", true),
 			new Location(new Point(3091, 3962), "Mage Arena bank (lvl 56 Wildy)", true),
-			new Location(new Point(3188, 3932), "Wilderness Resource Area", true)
+			new Location(new Point(3188, 3932), "Wilderness Resource Area", true),
+
+			/*
+			VARLAMORE
+			 */
+			new Location(new Point(1742, 2954), "Varlamore South East mine"),
+			new Location(new Point(1771, 3102), "Varlamore colosseum entrance bank"),
+			new Location(new Point(1486, 3089), "Mine north-west of hunter guild")
 		);
 
 		for (Location location : locationList) {
