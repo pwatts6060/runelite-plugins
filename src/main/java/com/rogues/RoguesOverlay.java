@@ -46,7 +46,7 @@ public class RoguesOverlay extends Overlay
 			int ticks = 1 + respawnTick - client.getTickCount();
 
 			Color color = ticks <= 0 ? ColorScheme.PROGRESS_COMPLETE_COLOR : ColorScheme.PROGRESS_ERROR_COLOR;
-			LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
+			LocalPoint lp = LocalPoint.fromWorld(client.getTopLevelWorldView(), worldPoint);
 			if (lp == null)
 			{
 				continue;
