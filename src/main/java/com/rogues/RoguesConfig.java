@@ -29,16 +29,6 @@ public interface RoguesConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "ignoreEastChest",
-		name = "Ignore East Chest",
-		description = "Whether to ignore the Eastern chest"
-	)
-	default boolean ignoreEastChest()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "soundId",
 		name = "Respawn Sound",
 		description = "The sound id to play when a chest respawns"

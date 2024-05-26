@@ -29,8 +29,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 public class RoguesPlugin extends Plugin
 {
 	public static final int LOOTABLE_ID = ObjectID.CHEST_26757;
-	public static final int RESPAWN_TIME = 22;
-	public static final WorldPoint EASTERN_CHEST_POINT = new WorldPoint(3297, 3940, 0);
+	public static final int RESPAWN_TIME = 34;
 	private static final int LOOT_ANIM = 536;
 	private static final WorldArea chestArea = new WorldArea(3280, 3938, 18, 9, 0);
 
@@ -76,11 +75,6 @@ public class RoguesPlugin extends Plugin
 		int curTick = client.getTickCount();
 		for (Map.Entry<WorldPoint, Integer> entry : respawnMap.entrySet())
 		{
-			WorldPoint worldPoint = entry.getKey();
-			if (config.ignoreEastChest() && worldPoint.equals(EASTERN_CHEST_POINT))
-			{
-				continue;
-			}
 			int respawnTick = entry.getValue();
 			if (curTick == respawnTick)
 			{

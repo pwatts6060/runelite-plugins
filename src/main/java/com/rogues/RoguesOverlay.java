@@ -43,11 +43,6 @@ public class RoguesOverlay extends Overlay
 			WorldPoint worldPoint = entry.getKey();
 			Integer respawnTick = entry.getValue();
 
-			if (config.ignoreEastChest() && worldPoint.equals(RoguesPlugin.EASTERN_CHEST_POINT))
-			{
-				continue;
-			}
-
 			int ticks = 1 + respawnTick - client.getTickCount();
 
 			Color color = ticks <= 0 ? ColorScheme.PROGRESS_COMPLETE_COLOR : ColorScheme.PROGRESS_ERROR_COLOR;
