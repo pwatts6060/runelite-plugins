@@ -66,7 +66,7 @@ public class EntOverlay3D extends Overlay
 			if (!hidden) {
 				if (ent.perfect) {
 					OverlayUtil.renderActorOverlay(graphics, ent.npc, "", Color.RED);
-				} else if (config.highlightPriority() && highestPriority == ent.trimType.priority) {
+				} else if (config.highlightPriority() && ent.trimType != null && ent.trimType.priority == highestPriority) {
 					Shape shape = ent.npc.getConvexHull();
 					OverlayUtil.renderPolygon(graphics, shape, config.priorityColor());
 					OverlayUtil.renderActorOverlay(graphics, ent.npc, "", config.priorityColor());
