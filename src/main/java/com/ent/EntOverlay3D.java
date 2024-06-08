@@ -52,7 +52,15 @@ public class EntOverlay3D extends Overlay
 			}
 
 			if (!text.isEmpty() && (config.displayTextOnHiddenEnts() || !hidden)) {
-				OverlayUtil.renderTextLocation(graphics, ent.npc.getCanvasTextLocation(graphics, text, 0), text, config.textColor());
+				Color color;
+				if (ent.perfect) {
+					color = Color.RED;
+				} else if (config.highlightPriority() && highestPriority == ent.trimType.priority) {
+					color = config.priorityColor();
+				} else {
+					color = Color.GREEN;
+				}
+				OverlayUtil.renderTextLocation(graphics, ent.npc.getCanvasTextLocation(graphics, text, 0), text, color);
 			}
 
 			if (!hidden) {

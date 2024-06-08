@@ -75,17 +75,6 @@ public interface EntConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "textColor",
-		name = "Text Color",
-		description = "Color of the trim option / total trim text about ents",
-		position = 6
-	)
-	default Color textColor()
-	{
-		return Color.WHITE;
-	}
-
-	@ConfigItem(
 		keyName = "displayTextOnHiddenEnts",
 		name = "Display Text on Hidden Ents",
 		description = "Whether to keep the text display above hidden ents",
