@@ -280,7 +280,7 @@ public class EntPlugin extends Plugin
 			if (ent.perfect && config.hidePerfect()) {
 				return true;
 			}
-			if (config.hideNonPriority() && (ent.perfect || ent.trimType.priority != highestPriority)) {
+			if (config.hideNonPriority() && (ent.perfect || ent.trimType != null && ent.trimType.priority != highestPriority)) {
 				return true;
 			}
 		}

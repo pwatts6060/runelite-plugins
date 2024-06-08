@@ -32,7 +32,7 @@ public class EntOverlay3D extends Overlay
 	{
 		int highestPriority = 0;
 		for (Ent ent : plugin.entStats.ents.values()) {
-			if (!ent.perfect && ent.trimType.priority > highestPriority) {
+			if (!ent.perfect && ent.trimType != null && ent.trimType.priority > highestPriority) {
 				highestPriority = ent.trimType.priority;
 			}
 		}
