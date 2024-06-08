@@ -55,7 +55,7 @@ public class EntOverlay3D extends Overlay
 				Color color;
 				if (ent.perfect) {
 					color = Color.RED;
-				} else if (config.highlightPriority() && highestPriority == ent.trimType.priority) {
+				} else if (config.highlightPriority() && ent.trimType != null && ent.trimType.priority == highestPriority) {
 					color = config.priorityColor();
 				} else {
 					color = Color.GREEN;
