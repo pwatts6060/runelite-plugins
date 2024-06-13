@@ -305,7 +305,15 @@ public class EntPlugin extends Plugin
 			return;
 		}
 
-		discordEntStats(entStats.getPerfectCutCount());
+		if (!entStats.eligible) {
+			/*
+			preference for waiting for the game chat message.
+			Only use anim + perfect npc id count if there won't be a game chat message.
+			With a very late final cut close to despawn time it's possible to get the anim before the game chat msg
+			which detects 4/5 but is actually 5/5.
+			*/
+			discordEntStats(entStats.getPerfectCutCount());
+		}
 	}
 
 	@Subscribe
