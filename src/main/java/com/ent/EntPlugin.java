@@ -305,7 +305,7 @@ public class EntPlugin extends Plugin
 			return;
 		}
 
-		discordEntStats(-1);
+		discordEntStats(entStats.getPerfectCutCount());
 	}
 
 	@Subscribe
@@ -320,8 +320,7 @@ public class EntPlugin extends Plugin
 		if (matcher.find()) {
 			int count = Integer.parseInt(matcher.group());
 			discordEntStats(count);
-		}
-		if (msg.equalsIgnoreCase(LOGGED_OFF_ENT_MSG)) {
+		} else if (msg.equalsIgnoreCase(LOGGED_OFF_ENT_MSG)) {
 			discordEntStats(entStats.getPerfectCutCount());
 		}
 	}
