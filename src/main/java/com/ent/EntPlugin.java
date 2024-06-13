@@ -48,8 +48,8 @@ public class EntPlugin extends Plugin
 	private static final String TIME_TO_GO_MSG = "Almost time to go!";
 	private static final String PERFECT_MSG = "My cut is perfect, leave it alone!";
 	private static final int TTG_DESPAWN_TIME = 45; // 45 ticks
-	private static final Pattern pattern = Pattern.compile("Well done, you've given \\d entlings haircuts!");
-	private static final String LOGGED_OFF_ENT_MSG = "As you were not present when the entlings appeared you are not eligible for rewards.";
+	private static final Pattern pattern = Pattern.compile("Well done, you've given (\\d) entlings haircuts!");
+//	private static final String LOGGED_OFF_ENT_MSG = "As you were not present when the entlings appeared you are not eligible for rewards.";
 
 	public EntStats entStats = new EntStats();
 	private double lastEntUniqueId;
@@ -318,10 +318,12 @@ public class EntPlugin extends Plugin
 
 		Matcher matcher = pattern.matcher(msg);
 		if (matcher.find()) {
-			int count = Integer.parseInt(matcher.group());
-			discordEntStats(count);
-		} else if (msg.equalsIgnoreCase(LOGGED_OFF_ENT_MSG)) {
-			discordEntStats(entStats.getPerfectCutCount());
+			try {
+				int count = Integer.parseInt(matcher.group(1));
+				discordEntStats(count);
+			} catch (NumberFormatException exception) {
+				exception.printStackTrace();
+			}
 		}
 	}
 
