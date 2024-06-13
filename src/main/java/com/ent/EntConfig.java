@@ -4,6 +4,7 @@ import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 
 @ConfigGroup("ent-trimmer")
 public interface EntConfig extends Config
@@ -81,6 +82,38 @@ public interface EntConfig extends Config
 		position = 7
 	)
 	default boolean displayTextOnHiddenEnts()
+	{
+		return false;
+	}
+
+	@ConfigSection(
+		name = "Advanced",
+		description = "Advanced settings that can be safely ignored",
+		position = 8,
+		closedByDefault = true
+	)
+	String advanced = "Advanced";
+
+	@ConfigItem(
+		keyName = "discordWebhook",
+		name = "Discord webhook url",
+		description = "Webhook to post ent statistics too",
+		section = advanced,
+		position = 9
+	)
+	default String discordWebhookUrl()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "includeScreenshot",
+		name = "Include Screenshot",
+		description = "Whether to post an ingame screenshot for webhook posts",
+		section = advanced,
+		position = 10
+	)
+	default boolean includeScreenshot()
 	{
 		return false;
 	}

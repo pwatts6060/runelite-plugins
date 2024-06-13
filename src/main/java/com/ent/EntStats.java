@@ -7,13 +7,13 @@ import net.runelite.api.Player;
 
 public class EntStats
 {
-
 	public boolean eligible = false;
 	Map<NPC, Ent> ents;
 	boolean ttg = false;
 	int ticksAlive = -1;
 	int despawnTime = -1;
 	Map<Player, Ent> playerEntMap;
+	double uniqueId;
 
 	public EntStats()
 	{
@@ -31,11 +31,16 @@ public class EntStats
 		eligible = false;
 	}
 
+	public int getPerfectCutCount() {
+		return (int) ents.values().stream().filter(ent -> ent.perfect).count();
+	}
+
 	public void add(NPC npc)
 	{
 		if (ents.isEmpty())
 		{
 			ticksAlive = 0;
+			uniqueId = Math.random() * Integer.MAX_VALUE;
 		}
 		ents.put(npc, new Ent(npc));
 	}

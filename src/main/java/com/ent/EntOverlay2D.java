@@ -32,7 +32,7 @@ public class EntOverlay2D extends OverlayPanel
 		}
 
 		panelComponent.getChildren().add(TitleComponent.builder().text("Ent Trimmer").build());
-		long perfectCuts = plugin.entStats.ents.values().stream().filter(ent -> ent.perfect).count();
+		long perfectCuts = plugin.entStats.getPerfectCutCount();
 		panelComponent.getChildren().add(
 			LineComponent.builder().left("Perfectly Cut: ").right(perfectCuts + "/5").build()
 		);
