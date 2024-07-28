@@ -110,7 +110,10 @@ public class DiscordWebhook
 	private static byte[] convertImageToByteArray(BufferedImage bufferedImage) throws IOException
 	{
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+		synchronized (ImageIO.class)
+		{
+			ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+		}
 		return byteArrayOutputStream.toByteArray();
 	}
 
