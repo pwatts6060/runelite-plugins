@@ -95,6 +95,7 @@ public class TickHelperPlugin extends Plugin
 			int id2 = prevMenuEntry.getItemId();
 			// will assume player has only 1 of the item and they have pestle and mortar
 			if (itemsMatch(id1, id2, ItemID.KNIFE, ItemID.TEAK_LOGS)
+				|| itemsMatch(id1, id2, ItemID.KNIFE, ItemID.MAHOGANY_LOGS)
 				|| itemsMatch(id1, id2, ItemID.GUAM_LEAF, ItemID.SWAMP_TAR)
 				|| itemsMatch(id1, id2, ItemID.TARROMIN, ItemID.SWAMP_TAR)
 				|| itemsMatch(id1, id2, ItemID.IRIT_LEAF, ItemID.SWAMP_TAR)
