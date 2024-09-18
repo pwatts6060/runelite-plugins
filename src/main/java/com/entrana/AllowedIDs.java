@@ -192,7 +192,8 @@ public class AllowedIDs {
             ItemID.ROCKSHELL_BOOTS,
             ItemID.BOOTS_OF_STONE,
             ItemID.WIZARD_BOOTS,
-            ItemID.FIGHTING_BOOTS
+            ItemID.FIGHTING_BOOTS,
+			ItemID.TWITCHERS_GLOVES
     );
 
     public static boolean contains(int id) {
