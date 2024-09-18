@@ -3,6 +3,9 @@
 This plugin was initially created to aid tick manipulation techniques with chinchompa hunting. 
 However, it can be used for other activities that involve setting up 3-tick actions or celastrus 4-tick actions.
 
+Additional features:
+- Counts down after lighting logs. Enables lighting fires on the run for example: https://youtu.be/PNKQbuQsiLE?si=Br-TMVtPCoSPMnOl&t=241
+
 Features can be preferably requested in a GitHub Issue or dmed to me on discord "thegoldfish".
 
 When the action timer above your player's head shows "1" is the moment you will perform an action. 
