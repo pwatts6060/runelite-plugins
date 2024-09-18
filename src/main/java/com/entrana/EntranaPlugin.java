@@ -20,6 +20,8 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class EntranaPlugin extends Plugin
 {
+	private static final int BALLOON_TRANSPORT_ID = 469;
+
 	@Inject
 	private Client client;
 
@@ -48,7 +50,7 @@ public class EntranaPlugin extends Plugin
 		{
 			return;
 		}
-		if (!entranaDock.contains2D(player.getWorldLocation()))
+		if (!entranaDock.contains2D(player.getWorldLocation()) && client.getWidget(BALLOON_TRANSPORT_ID, 0) == null)
 		{
 			overlayManager.remove(containerHighlight);
 			return;
