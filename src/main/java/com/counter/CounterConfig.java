@@ -1,5 +1,6 @@
 package com.counter;
 
+import java.awt.event.KeyEvent;
 import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -13,7 +14,7 @@ import java.awt.Color;
 public interface CounterConfig extends Config
 {
 	@ConfigItem(
-			position = 1,
+			position = 0,
 			keyName = "enableCounter",
 			name = "Counter",
 			description = "Enable counter"
@@ -21,6 +22,16 @@ public interface CounterConfig extends Config
 	default boolean enableCounter()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		position = 1,
+		keyName = "incrementCounterHotKey",
+		name = "Increment Counter Hotkey",
+		description = "Hotkey to increment the count"
+	)
+	default Keybind incrementCounterHotKey() {
+		return new Keybind(KeyEvent.VK_BACK_QUOTE, 0);
 	}
 
 	@ConfigItem(
@@ -54,11 +65,11 @@ public interface CounterConfig extends Config
 	)
 	@ConfigItem(
 			position = 4,
-			keyName = "tickCount",
-			name = "Tick Count",
-			description = "The tick on which the color changes"
+			keyName = "resetNumber",
+			name = "Reset number",
+			description = "The number after which the count resets to 0"
 	)
-	default int tickCount()
+	default int resetNumber()
 	{
 		return 1;
 	}
@@ -73,13 +84,13 @@ public interface CounterConfig extends Config
 	@ConfigItem(
 			position = 1,
 			keyName = "showCount",
-			name = "Show Counter Tick Number",
+			name = "Show Counter Number",
 			description = "Shows current number on the counter",
 			section = NumberSettings
 	)
 	default boolean showCount()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -360,8 +371,8 @@ public interface CounterConfig extends Config
 	@ConfigItem(
 			position = 1,
 			keyName = "tickResetHotkey",
-			name = "Tick Cycle Reset Hotkey",
-			description = "Hotkey to reset the tick cycle back to 0",
+			name = "Counter Reset Hotkey",
+			description = "Hotkey to reset the counter back to 0",
 			section = HotkeySettings
 	)
 	default Keybind tickResetHotkey() {

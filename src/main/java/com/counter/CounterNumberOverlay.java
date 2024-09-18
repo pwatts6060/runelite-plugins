@@ -13,7 +13,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Font;
 import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPriority;
 
 
 public class CounterNumberOverlay extends Overlay
@@ -53,13 +52,13 @@ public class CounterNumberOverlay extends Overlay
             final int height = client.getLocalPlayer().getLogicalHeight()+20;
             final LocalPoint localLocation = client.getLocalPlayer().getLocalLocation();
             final Point playerPoint = Perspective.localToCanvas(client, localLocation, client.getTopLevelWorldView().getPlane(), height);
-            if (config.tickCount() == 1)
+            if (config.resetNumber() == 1)
             {
                 OverlayUtil.renderTextLocation(graphics, playerPoint, String.valueOf(plugin.currentColorIndex), config.NumberColor());
             }
             else
             {
-                OverlayUtil.renderTextLocation(graphics, playerPoint, String.valueOf(plugin.tickCounter), config.NumberColor());
+                OverlayUtil.renderTextLocation(graphics, playerPoint, String.valueOf(plugin.counter), config.NumberColor());
             }
         }
 
