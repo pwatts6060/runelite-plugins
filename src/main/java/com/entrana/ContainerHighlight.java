@@ -7,9 +7,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.WidgetItemOverlay;
 
@@ -33,12 +33,11 @@ public class ContainerHighlight extends WidgetItemOverlay
 	@Override
 	public void renderItemOverlay(Graphics2D graphics, int itemId, WidgetItem itemWidget)
 	{
-		int groupId = WidgetInfo.TO_GROUP(itemWidget.getWidget().getId());
-		if (!prohibitedItems.isProhibited(itemId) || (groupId != WidgetID.EQUIPMENT_GROUP_ID
-			&& groupId != WidgetID.INVENTORY_GROUP_ID
-			&& groupId != WidgetID.DEPOSIT_BOX_GROUP_ID))
+		int interfaceId = WidgetUtil.componentToInterface(itemWidget.getWidget().getId());
+		if (!prohibitedItems.isProhibited(itemId) || (interfaceId != InterfaceID.EQUIPMENT
+			&& interfaceId != InterfaceID.INVENTORY
+			&& interfaceId != InterfaceID.DEPOSIT_BOX))
 		{
-			System.out.println(WidgetInfo.TO_GROUP(itemWidget.getWidget().getId()));
 			return;
 		}
 		final Rectangle bounds = itemWidget.getCanvasBounds();
