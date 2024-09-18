@@ -1,4 +1,4 @@
-package com.visualmetronome;
+package com.counter;
 
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
@@ -17,15 +17,15 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPriority;
 
 
-public class VisualMetronomeTileOverlay extends Overlay
+public class CounterTileOverlay extends Overlay
 {
 
     private final Client client;
-    private final VisualMetronomeConfig config;
-    private final VisualMetronomePlugin plugin;
+    private final CounterConfig config;
+    private final CounterPlugin plugin;
 
     @Inject
-    public VisualMetronomeTileOverlay(Client client, VisualMetronomeConfig config, VisualMetronomePlugin plugin)
+    public CounterTileOverlay(Client client, CounterConfig config, CounterPlugin plugin)
     {
         super(plugin);
         this.client = client;
@@ -33,7 +33,7 @@ public class VisualMetronomeTileOverlay extends Overlay
         this.plugin = plugin;
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
-        setPriority(OverlayPriority.MED);
+        setPriority(0.5f);
     }
 
     @Override

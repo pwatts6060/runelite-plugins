@@ -1,4 +1,4 @@
-package com.visualmetronome;
+package com.counter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

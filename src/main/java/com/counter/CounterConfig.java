@@ -1,4 +1,4 @@
-package com.visualmetronome;
+package com.counter;
 
 import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
@@ -9,16 +9,16 @@ import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Keybind;
 import java.awt.Color;
 
-@ConfigGroup("visualmetronome")
-public interface VisualMetronomeConfig extends Config
+@ConfigGroup("counter")
+public interface CounterConfig extends Config
 {
 	@ConfigItem(
 			position = 1,
-			keyName = "enableMetronome",
-			name = "Visual Metronome",
-			description = "Enable visual metronome"
+			keyName = "enableCounter",
+			name = "Counter",
+			description = "Enable counter"
 	)
-	default boolean enableMetronome()
+	default boolean enableCounter()
 	{
 		return true;
 	}
@@ -27,7 +27,7 @@ public interface VisualMetronomeConfig extends Config
 			position = 2,
 			keyName = "highlightCurrentTile",
 			name = "Enable True Tile Overlay",
-			description = "Highlights true player tile using the metronome colors (replacement for tile indicator plugin setting)"
+			description = "Highlights true player tile using the counter colors (replacement for tile indicator plugin setting)"
 	)
 	default boolean highlightCurrentTile()
 	{
@@ -64,32 +64,32 @@ public interface VisualMetronomeConfig extends Config
 	}
 
 	@ConfigSection(
-			name = "Tick Number Settings",
-			description = "Change Tick Number settings",
+			name = "Number Settings",
+			description = "Change Number settings",
 			position = 5
 	)
-	String TickNumberSettings = "Tick Number Settings";
+	String NumberSettings = "Number Settings";
 
 	@ConfigItem(
 			position = 1,
-			keyName = "showTick",
-			name = "Show Metronome Tick Number",
-			description = "Shows current tick number on the metronome",
-			section = TickNumberSettings
+			keyName = "showCount",
+			name = "Show Counter Tick Number",
+			description = "Shows current number on the counter",
+			section = NumberSettings
 	)
-	default boolean showTick()
+	default boolean showCount()
 	{
 		return false;
 	}
 
 	@ConfigItem(
 			position = 2,
-			keyName = "showPlayerTick",
-			name = "Show Tick Number Above Player",
-			description = "Shows current tick number above the player",
-			section = TickNumberSettings
+			keyName = "showPlayerCount",
+			name = "Show Number Above Player",
+			description = "Shows number above the player",
+			section = NumberSettings
 	)
-	default boolean showPlayerTick()
+	default boolean showPlayerNumber()
 	{
 		return false;
 	}
@@ -97,9 +97,9 @@ public interface VisualMetronomeConfig extends Config
 	@ConfigItem(
 			position = 3,
 			keyName = "disableFontScaling",
-			name = "Disable Font Size Scaling (Metronome Tick Only)",
-			description = "Disables font size scaling for metronome tick number",
-			section = TickNumberSettings
+			name = "Disable Font Size Scaling (counter number Only)",
+			description = "Disables font size scaling for counter number",
+			section = NumberSettings
 	)
 	default boolean disableFontScaling()
 	{
@@ -113,9 +113,9 @@ public interface VisualMetronomeConfig extends Config
 	@ConfigItem(
 			position = 4,
 			keyName = "fontSize",
-			name = "Font Size (Overhead Tick Only)",
-			description = "Change the font size of the overhead Tick Number",
-			section = TickNumberSettings
+			name = "Font Size (Overhead Number Only)",
+			description = "Change the font size of the overhead number",
+			section = NumberSettings
 	)
 	default int fontSize()
 	{
@@ -125,9 +125,9 @@ public interface VisualMetronomeConfig extends Config
 	@ConfigItem(
 			position = 5,
 			keyName = "countColor",
-			name = "Tick Number Color",
-			description = "Configures the color of tick number",
-			section = TickNumberSettings
+			name = "Number Color",
+			description = "Configures the color of number",
+			section = NumberSettings
 	)
 	default Color NumberColor()
 	{
@@ -138,8 +138,8 @@ public interface VisualMetronomeConfig extends Config
 			position = 6,
 			keyName = "fontType",
 			name = "Font Type",
-			description = "Change the font of the Tick Number",
-			section = TickNumberSettings
+			description = "Change the font of the number",
+			section = NumberSettings
 	)
 	default FontTypes fontType() { return FontTypes.REGULAR; }
 
@@ -178,8 +178,8 @@ public interface VisualMetronomeConfig extends Config
 	@ConfigItem(
 			position = 3,
 			keyName = "changeFillColor",
-			name = "Enable Tile Fill Color Metronome",
-			description = "Makes the tile fill color change with the metronome",
+			name = "Enable Tile Fill Color",
+			description = "Makes the tile fill color change with the counter",
 			section = TileSettings
 	)
 	default boolean changeFillColor()
@@ -194,8 +194,8 @@ public interface VisualMetronomeConfig extends Config
 	@ConfigItem(
 			position = 4,
 			keyName = "changeFillColorOpacity",
-			name = "Fill Color Metronome Opacity",
-			description = "Opacity of the tile fill metronome color if the option above is enabled. Otherwise, the opacity is determined by the True Tile Fill Color setting",
+			name = "Fill Color Opacity",
+			description = "Opacity of the tile fill counter color if the option above is enabled. Otherwise, the opacity is determined by the True Tile Fill Color setting",
 			section = TileSettings
 	)
 	default int changeFillColorOpacity()

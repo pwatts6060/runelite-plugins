@@ -1,13 +1,13 @@
-package com.visualmetronome;
+package com.counter;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class VisualMetronomePluginTest
+public class CounterPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(VisualMetronomePlugin.class);
+		ExternalPluginManager.loadBuiltin(CounterPlugin.class);
 		RuneLite.main(args);
 	}
 }

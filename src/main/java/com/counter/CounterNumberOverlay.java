@@ -1,4 +1,4 @@
-package com.visualmetronome;
+package com.counter;
 
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
@@ -16,15 +16,15 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPriority;
 
 
-public class VisualMetronomeNumberOverlay extends Overlay
+public class CounterNumberOverlay extends Overlay
 {
 
     private final Client client;
-    private final VisualMetronomeConfig config;
-    private final VisualMetronomePlugin plugin;
+    private final CounterConfig config;
+    private final CounterPlugin plugin;
 
     @Inject
-    public VisualMetronomeNumberOverlay(Client client, VisualMetronomeConfig config, VisualMetronomePlugin plugin)
+    public CounterNumberOverlay(Client client, CounterConfig config, CounterPlugin plugin)
     {
         super(plugin);
         this.client = client;
@@ -32,14 +32,14 @@ public class VisualMetronomeNumberOverlay extends Overlay
         this.plugin = plugin;
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.UNDER_WIDGETS);
-        setPriority(OverlayPriority.MED);
+        setPriority(0.5f);
 
     }
 
     @Override
     public Dimension render(Graphics2D graphics)
     {
-        if (config.showPlayerTick())
+        if (config.showPlayerNumber())
         {
             if (config.fontType() == FontTypes.REGULAR)
             {
@@ -52,7 +52,7 @@ public class VisualMetronomeNumberOverlay extends Overlay
 
             final int height = client.getLocalPlayer().getLogicalHeight()+20;
             final LocalPoint localLocation = client.getLocalPlayer().getLocalLocation();
-            final Point playerPoint = Perspective.localToCanvas(client, localLocation, client.getPlane(), height);
+            final Point playerPoint = Perspective.localToCanvas(client, localLocation, client.getTopLevelWorldView().getPlane(), height);
             if (config.tickCount() == 1)
             {
                 OverlayUtil.renderTextLocation(graphics, playerPoint, String.valueOf(plugin.currentColorIndex), config.NumberColor());

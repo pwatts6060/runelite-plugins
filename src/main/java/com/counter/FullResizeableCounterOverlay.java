@@ -1,4 +1,4 @@
-package com.visualmetronome;
+package com.counter;
 
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
@@ -10,17 +10,17 @@ import javax.inject.Inject;
 import net.runelite.api.Point;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-public class FullResizableVisualMetronomeOverlay extends Overlay
+public class FullResizeableCounterOverlay extends Overlay
 {
 
-    private final VisualMetronomeConfig config;
-    private final VisualMetronomePlugin plugin;
+    private final CounterConfig config;
+    private final CounterPlugin plugin;
 
     private static int TITLE_PADDING = 10;
     private static final int MINIMUM_SIZE = 16; // too small and resizing becomes impossible, requiring a reset
 
     @Inject
-    public FullResizableVisualMetronomeOverlay(VisualMetronomeConfig config, VisualMetronomePlugin plugin)
+    public FullResizeableCounterOverlay(CounterConfig config, CounterPlugin plugin)
     {
         super(plugin);
         this.config = config;
@@ -42,13 +42,13 @@ public class FullResizableVisualMetronomeOverlay extends Overlay
             setPreferredSize(preferredSize);
         }
 
-        if (config.enableMetronome())
+        if (config.enableCounter())
         {
             graphics.setColor(plugin.currentColor);
             graphics.fillRect(0, 0, preferredSize.width, preferredSize.height);
             TITLE_PADDING = (Math.min(preferredSize.width, preferredSize.height) / 2 - 4); // scales tick number position with box size
 
-            if (config.showTick())
+            if (config.showCount())
             {
                 if (config.disableFontScaling())
                 {
