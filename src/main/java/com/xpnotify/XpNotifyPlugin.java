@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 )
 public class XpNotifyPlugin extends Plugin {
     private final Set<String> filteredSkills = new HashSet<>();
-    private static final int[] previous_exp = new int[Skill.values().length - 1];
+	private static final int[] previous_exp = new int[Skill.values().length];
 
     @Inject
     private Client client;
