@@ -1,6 +1,7 @@
 package com.tickhelper;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
+import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -17,6 +19,7 @@ import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
+import net.runelite.api.Skill;
 import net.runelite.api.Tile;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -24,7 +27,9 @@ import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.StatChanged;
 import net.runelite.api.widgets.ComponentID;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -46,10 +51,42 @@ public class TickHelperPlugin extends Plugin
 	@Inject
 	private OverlayManager overlayManager;
 
+	@Inject
+	private ClientThread clientThread;
+
+	private static final int[] previous_exp = new int[Skill.values().length];
+
+	@Getter
+	private int actionTimer;
+
+	private int lightLogTime; // Ticks since player attempted to light log
+
+	@Getter
+	private int blockTimer;
+
+	private int prevItemId;
+
+	private WorldPoint lastTickLocalPlayerLocation;
+
+	private HunterTrap dismantlingTrap;
+
+	@Getter
+	private final Map<WorldPoint, HunterTrap> traps = new HashMap<>();
+
 	@Override
 	protected void startUp() throws Exception
 	{
 		overlayManager.add(overlay);
+
+		if (client.getGameState() == GameState.LOGGED_IN) {
+			clientThread.invokeLater(() ->
+			{
+				int[] xps = client.getSkillExperiences();
+				System.arraycopy(xps, 0, previous_exp, 0, previous_exp.length);
+			});
+		} else {
+			Arrays.fill(previous_exp, 0);
+		}
 	}
 
 	@Override
@@ -58,21 +95,6 @@ public class TickHelperPlugin extends Plugin
 		overlayManager.remove(overlay);
 		traps.clear();
 	}
-
-	@Getter
-	private int actionTimer;
-
-	@Getter
-	private int blockTimer;
-
-	private MenuEntry prevMenuEntry;
-
-	private WorldPoint lastTickLocalPlayerLocation;
-
-	private HunterTrap dismantlingTrap;
-
-	@Getter
-	private final Map<WorldPoint, HunterTrap> traps = new HashMap<>();
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked e) {
@@ -92,7 +114,8 @@ public class TickHelperPlugin extends Plugin
 			if (item == null) {
 				return;
 			}
-			int id2 = prevMenuEntry.getItemId();
+
+			int id2 = prevItemId;
 			// will assume player has only 1 of the item and they have pestle and mortar
 			if (itemsMatch(id1, id2, ItemID.KNIFE, ItemID.TEAK_LOGS)
 				|| itemsMatch(id1, id2, ItemID.KNIFE, ItemID.MAHOGANY_LOGS)
@@ -102,8 +125,21 @@ public class TickHelperPlugin extends Plugin
 				|| itemsMatch(id1, id2, ItemID.HARRALANDER, ItemID.SWAMP_TAR)
 				|| itemsMatch(id1, id2, ItemID.MARRENTILL, ItemID.SWAMP_TAR)) {
 				actionTimer = 3;
+			} else if (itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.REDWOOD_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.MAGIC_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.YEW_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.MAPLE_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.WILLOW_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.OAK_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.ACHEY_TREE_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.BLISTERWOOD_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.TEAK_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.MAHOGANY_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.ARCTIC_PINE_LOGS)) {
+				lightLogTime = 6;
 			}
-		} else if (e.getMenuAction().equals(MenuAction.CC_OP)) {
+		} else if (e.getMenuAction().equals(MenuAction.CC_OP)) {;
 			if (e.getItemId() == ItemID.BOX_TRAP && e.getMenuOption().equals("Lay")) {
 				if (actionTimer == 0 && blockTimer <= 0) {
 					actionTimer = 5;
@@ -119,7 +155,7 @@ public class TickHelperPlugin extends Plugin
 				blockTimer = 4;
 			}
 		}*/
-		prevMenuEntry = e.getMenuEntry();
+		prevItemId = e.getItemId();
 	}
 
 	@Subscribe
@@ -162,6 +198,9 @@ public class TickHelperPlugin extends Plugin
 		}
 		if (blockTimer > 0) {
 			--blockTimer;
+		}
+		if (lightLogTime > 0) {
+			--lightLogTime;
 		}
 		/* NOTE: code copied form HunterPlugin for purpose of tracking box traps */
 
@@ -230,6 +269,25 @@ public class TickHelperPlugin extends Plugin
 		}
 
 		lastTickLocalPlayerLocation = client.getLocalPlayer().getWorldLocation();
+	}
+
+	private void onXpDrop(XpDrop xpDrop) {
+		if (xpDrop.skill.equals(Skill.FIREMAKING) && lightLogTime > 0) {
+			lightLogTime = 0;
+			actionTimer = 4;
+		}
+	}
+
+	@Subscribe
+	protected void onStatChanged(StatChanged event) {
+		int currentXp = event.getXp();
+		int previousXp = previous_exp[event.getSkill().ordinal()];
+		if (previousXp > 0 && currentXp - previousXp > 0) {
+            XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, false);
+            onXpDrop(xpDrop);
+		}
+
+		previous_exp[event.getSkill().ordinal()] = event.getXp();
 	}
 
 	/**
