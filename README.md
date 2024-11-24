@@ -7,7 +7,7 @@
 - Item quantities on the ground are only accurate up to 65534. 
 Picking up an item with quantity >= 65535 will show the bag value is at least the value it 
 thinks by showing a > symbol.
-- Works with wilderness agility dispenser
+- Works with wilderness agility dispenser and telegrab
 - May also track items in the following scenario:
     - You click on an item to take it
     - The item despawns by disappearance or someone else takes it
