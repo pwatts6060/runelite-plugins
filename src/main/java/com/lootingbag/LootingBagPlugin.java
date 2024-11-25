@@ -8,27 +8,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
-import net.runelite.api.ItemComposition;
-import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
-import net.runelite.api.MenuAction;
-import net.runelite.api.VarClientInt;
-import net.runelite.api.VarClientStr;
+import net.runelite.api.*;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.ItemDespawned;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.VarClientIntChanged;
-import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
@@ -48,6 +38,11 @@ public class LootingBagPlugin extends Plugin
 	public static final int LOOTING_BAG_CONTAINER = 516;
 
 	private static final int LOOTING_BAG_SUPPLIES_SETTING_VARBIT_ID = 15310;
+
+	private static final int TELE_GRAB_PROJECTILE_ID = 143;
+
+	private static final Pattern WILDY_DISPENSER_REGEX = Pattern.compile("You have been awarded <[A-Za-z0-9=\\/]+>([\\d]+) x ([ a-zA-Z(4)]+)<[A-Za-z0-9=\\/]+> and <[A-Za-z0-9=\\/]+>([\\d]+) x ([ a-zA-Z]+)<[A-Za-z0-9=\\/]+> from the Agility dispenser.");
+	private static final Pattern WILDY_DISPENSER_EXTRA_REGEX = Pattern.compile("You have been awarded <[A-Za-z0-9=\\/]+>([\\d]+) x ([ a-zA-Z(4)]+)<[A-Za-z0-9=\\/]+> and <[A-Za-z0-9=\\/]+>([\\d]+) x ([ a-zA-Z]+)<[A-Za-z0-9=\\/]+>, and an extra <[A-Za-z0-9=\\/]+>[ a-zA-Z(4)]+<[A-Za-z0-9=\\/]+> from the Agility dispenser.");
 
 	private static final Map<String, Integer> AmountTextToInt = ImmutableMap.of(
 		"One", 1,
@@ -71,10 +66,15 @@ public class LootingBagPlugin extends Plugin
 	@Getter
 	private LootingBag lootingBag;
 
+	@Getter
+	private WildernessAgilityItems wildyItems;
+
 	@Inject
 	private Gson gson;
 
 	private PickupAction lastPickUpAction;
+	private int telegrabPickUpCycle = -1;
+	private WorldPoint telegrabEndTile;
 
 	private int lastItemIdUsedOnLootingBag;
 
@@ -98,6 +98,7 @@ public class LootingBagPlugin extends Plugin
 	protected void startUp()
 	{
 		lootingBag = new LootingBag(client, itemManager);
+		wildyItems = new WildernessAgilityItems(itemManager);
 		overlayManager.add(overlay);
 		possibleSuppliesPickupActions = new ArrayList<>();
 	}
@@ -199,12 +200,47 @@ public class LootingBagPlugin extends Plugin
 			return;
 		}
 
-		// Take an item off the ground
-		if (event.getMenuAction() == MenuAction.GROUND_ITEM_THIRD_OPTION
-				&& event.getMenuOption().equals("Take")) {
+		// Telegrab item
+		boolean isTelegrab = false;
+		if (event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GROUND_ITEM ) {
+			List<String> widgetGroundItem = Arrays.asList(event.getMenuTarget().split(" -> "));
+			isTelegrab = widgetGroundItem.get(0).contains("Telekinetic Grab");
+			WorldPoint point = WorldPoint.fromScene(client, event.getParam0(), event.getParam1(), client.getPlane());
+			// get end tile based click, telegrab check in projectileMoved
+			telegrabEndTile = point;
+		}
+
+		boolean isTakeItemOffGround = event.getMenuAction() == MenuAction.GROUND_ITEM_THIRD_OPTION
+				&& event.getMenuOption().equals("Take");
+
+		// Take an item off the ground, or telegrab
+		if (isTakeItemOffGround || isTelegrab) {
 			WorldPoint point = WorldPoint.fromScene(client, event.getParam0(), event.getParam1(), client.getPlane());
 			lastPickUpAction = new PickupAction(event.getId(), point);
 		}
+	}
+
+	@Subscribe
+	public void onProjectileMoved(ProjectileMoved event) {
+		Player player = client.getLocalPlayer();
+		if (player == null) {
+			return;
+		}
+		boolean isTelegrab = event.getProjectile().getId() == TELE_GRAB_PROJECTILE_ID;
+		LocalPoint playerLocalPoint = player.getLocalLocation();
+		int wv = playerLocalPoint.getWorldView();
+		WorldView worldView = client.getWorldView(wv);
+		LocalPoint telegrabStartLocation = new LocalPoint(event.getProjectile().getX1(), event.getProjectile().getY1(), worldView);
+
+		WorldPoint playerWorldPoint = WorldPoint.fromLocal(client, playerLocalPoint);
+		WorldPoint telegrabWorldPoint = WorldPoint.fromLocal(client, telegrabStartLocation);
+
+		// not player's telegrab (telegrab start tile can be off by 5 if user is running/dragged around corners from what I can tell)
+		if (!(isTelegrab && telegrabWorldPoint.distanceTo(playerWorldPoint) <= 5)) {
+			return;
+		}
+
+		telegrabPickUpCycle = event.getProjectile().getEndCycle();
 	}
 
 	@Subscribe
@@ -224,7 +260,14 @@ public class LootingBagPlugin extends Plugin
 		WorldPoint groundItemLocation = event.getTile().getWorldLocation();
 
 		// Check that the item despawned on the same tile the player is on
-		if (!playerLocation.equals(groundItemLocation)) {
+		// Check that the item despawned on the same tile of telegrab target and same cycle telegrab 1ends
+		boolean playerPickUp = groundItemLocation.equals(playerLocation);
+		boolean telegrabOnItemTile = groundItemLocation.equals(telegrabEndTile);
+		// can be off by one tick depending on user running/dragged
+		boolean telegrabEndsOnCycle = Math.abs(telegrabPickUpCycle - client.getGameCycle()) <= 1;
+		boolean telegrabPickUp = telegrabOnItemTile && telegrabEndsOnCycle;
+
+		if (!(playerPickUp || telegrabPickUp)) {
 			return;
 		}
 
@@ -250,8 +293,50 @@ public class LootingBagPlugin extends Plugin
 		);
 	}
 
-	private void handleInventoryUpdated(ItemContainer inventory) {
+	@Subscribe
+	void onChatMessage(final ChatMessage event)
+	{
+		final String message = event.getMessage();
+		final ChatMessageType type = event.getType();
+		if (type == ChatMessageType.GAMEMESSAGE)
+		{
+			Matcher matcher = WILDY_DISPENSER_REGEX.matcher(message);
+			Matcher extra_matcher = WILDY_DISPENSER_EXTRA_REGEX.matcher(message);
+			if (matcher.matches()) {
+				// Used wilderness agility dispenser with full inventory
+				wildyItems.setupWildernessItemsIfEmpty();
+				int quantity = Integer.parseInt(matcher.group(1));
+				String item = matcher.group(2);
+				int quantity2 = Integer.parseInt(matcher.group(3));
+				String item2 = matcher.group(4);
+				addWildernessItems(quantity, item, quantity2, item2);
+			} else if (extra_matcher.matches()) {
+				// Used wilderness agility dispenser with extra space for spare supply
+				wildyItems.setupWildernessItemsIfEmpty();
+				int quantity = Integer.parseInt(extra_matcher.group(1));
+				String item = extra_matcher.group(2);
+				int quantity2 = Integer.parseInt(extra_matcher.group(3));
+				String item2 = extra_matcher.group(4);
+				addWildernessItems(quantity, item, quantity2, item2);
+			}
+		}
+	}
 
+	private void addWildernessItems(int quantity, String itemName, int quantity2, String itemName2) {
+		// Check if player has open looting bag in inventory
+		ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
+		if (inventory == null || !inventory.contains(ItemID.LOOTING_BAG_22586)) {
+			return;
+		}
+
+		int itemId = wildyItems.nameToItemId(itemName);
+		int itemId2 = wildyItems.nameToItemId(itemName2);
+
+		lootingBag.addItem(itemId, quantity);
+		lootingBag.addItem(itemId2, quantity2);
+	}
+
+	private void handleInventoryUpdated(ItemContainer inventory) {
 		// We've deposited X
 		if (lastDepositedXAmount > 0) {
 			int numAddedToInventory = getNumberOfItemsAddedToInventory(
