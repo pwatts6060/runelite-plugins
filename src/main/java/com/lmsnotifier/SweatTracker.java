@@ -47,49 +47,75 @@ public class SweatTracker {
     }
 
 
+    /*
+    Outdated
+    Range 1
+    Construction 16
+    Herblore 52
+    Crafting 43
+    Fletching 60
+    Hunter 1
+    Mining 18 or 41
+    Smithing 39
+    Fishing 24
+    Farming 9
+    total level 750-760
+     */
     public int botCriteriaCount(HiscoreResult r) {
         int criteriaMet = 0;
-		/*
-		Range 1
-		Construction 16
-		Herblore 52
-		Crafting 43
-		Fletching 60
-		Hunter 1
-		Mining 18 or 41
-		Smithing 39
-		Fishing 24
-		Farming 9
-		total level 750-760
-		 */
-        if (r.getSkill(HiscoreSkill.RANGED).getLevel() == 1) {
+        /*
+        Outdated
+        Att/Str 40
+        Construction 20
+        Herblore 23-24
+        Crafting 37-38
+        Fletching 95+
+        Hunter 9/11
+        Mining 40-46
+        Smithing 40-41
+        Fishing 24
+        Farming 9
+        RC 9
+        FM 40
+         */
+        if (r.getSkill(HiscoreSkill.ATTACK).getLevel() == 40 &&
+                r.getSkill(HiscoreSkill.STRENGTH).getLevel() == 40) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.CONSTRUCTION).getLevel() == 16) {
+        if (r.getSkill(HiscoreSkill.CONSTRUCTION).getLevel() == 20) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.HERBLORE).getLevel() == 52) {
+        if (r.getSkill(HiscoreSkill.HERBLORE).getLevel() >= 23 && r.getSkill(HiscoreSkill.HERBLORE).getLevel() <= 24) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.CRAFTING).getLevel() == 43) {
+        if (r.getSkill(HiscoreSkill.CRAFTING).getLevel() >= 37 && r.getSkill(HiscoreSkill.CRAFTING).getLevel() <= 38) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.FLETCHING).getLevel() == 60) {
+        if (r.getSkill(HiscoreSkill.FLETCHING).getLevel() >= 95) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.HUNTER).getLevel() == 1) {
+        if (r.getSkill(HiscoreSkill.HUNTER).getLevel() == 9 || r.getSkill(HiscoreSkill.HUNTER).getLevel() == 13) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.MINING).getLevel() == 18 || r.getSkill(HiscoreSkill.MINING).getLevel() == 41) {
+        if (r.getSkill(HiscoreSkill.MINING).getLevel() >= 40 && r.getSkill(HiscoreSkill.MINING).getLevel() <= 46) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.SMITHING).getLevel() == 39) {
+        if (r.getSkill(HiscoreSkill.SMITHING).getLevel() >= 40 && r.getSkill(HiscoreSkill.SMITHING).getLevel() <= 41) {
             criteriaMet++;
         }
         if (r.getSkill(HiscoreSkill.FISHING).getLevel() == 24) {
             criteriaMet++;
         }
         if (r.getSkill(HiscoreSkill.FARMING).getLevel() == 9) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.FIREMAKING).getLevel() == 40) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.COOKING).getLevel() == 16) {
+            criteriaMet++;
+        }
+        if (r.getSkill(HiscoreSkill.RUNECRAFT).getLevel() == 9) {
             criteriaMet++;
         }
         return criteriaMet;
