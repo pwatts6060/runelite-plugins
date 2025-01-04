@@ -28,7 +28,7 @@ public class ItemUpgrade {
         this.itemManager = itemManager;
     }
 
-    private static Set<Integer> ignoreIds;
+    private static final Set<Integer> ignoreIds;
     static {
         ignoreIds = new HashSet<>(Arrays.asList(
                 ItemID.OPAL_DRAGON_BOLTS_E_27192,
@@ -64,6 +64,7 @@ public class ItemUpgrade {
                 ItemID.ABYSSAL_WHIP_20405,
                 ItemID.AMULET_OF_GLORY_20586,
                 ItemID.DRAGON_ARROW_20389,
+                ItemID.TOME_OF_FIRE_27358,
                 ItemID.ROPE_20587
         ));
     }
