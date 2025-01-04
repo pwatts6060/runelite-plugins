@@ -65,6 +65,7 @@ public class ItemUpgrade {
                 ItemID.AMULET_OF_GLORY_20586,
                 ItemID.DRAGON_ARROW_20389,
                 ItemID.TOME_OF_FIRE_27358,
+                ItemID.ATLATL_DART_29852,
                 ItemID.ROPE_20587
         ));
     }
