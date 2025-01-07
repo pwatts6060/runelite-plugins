@@ -71,7 +71,7 @@ public class ItemUpgrade {
     }
 
     // set of item ids that player has had access to during this game.
-    private final Set<Integer> foundItems = new HashSet<>();
+    final Set<Integer> foundItems = new HashSet<>();
 
     public boolean notifyItem(ItemSpawned itemSpawned, ItemContainer inv, ItemContainer equip) {
         int id = itemSpawned.getItem().getId();
@@ -92,14 +92,6 @@ public class ItemUpgrade {
 
     private boolean has(int id, ItemContainer inv, ItemContainer equip) {
         return inv.contains(id) || equip.contains(id);
-    }
-
-    public void reset() {
-        foundItems.clear();
-        for (LMSPlugin.FloorItem floorItem : plugin.floorItems) {
-            plugin.infoBoxManager.removeInfoBox(floorItem.getInfoBox());
-        }
-        plugin.floorItems.clear();
     }
 
     public void droppedItem(int itemId) {

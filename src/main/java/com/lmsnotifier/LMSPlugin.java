@@ -120,6 +120,14 @@ public class LMSPlugin extends Plugin {
         sweatTracker.load();
     }
 
+    public void itemReset() {
+        itemUpgrade.foundItems.clear();
+        for (LMSPlugin.FloorItem floorItem : floorItems) {
+            infoBoxManager.removeInfoBox(floorItem.getInfoBox());
+        }
+        floorItems.clear();
+    }
+
     @Override
     protected void shutDown() throws Exception {
         log.info("Lms Notifier stopped!");
@@ -127,7 +135,7 @@ public class LMSPlugin extends Plugin {
         overlayManager.remove(overlay2d);
         deathTracker.save();
         sweatTracker.save();
-        itemUpgrade.reset();
+        itemReset();
         if (client != null)
         {
             menuManager.get().removePlayerMenuItem(MARK);
@@ -250,7 +258,7 @@ public class LMSPlugin extends Plugin {
             }
 
             if (!config.showUpgrades()) {
-                itemUpgrade.reset();
+                itemReset();
             }
         }
     }
@@ -339,7 +347,7 @@ public class LMSPlugin extends Plugin {
             chests.clear();
             lootCrates.clear();
             botIdentification.reset();
-            itemUpgrade.reset();
+            itemReset();
             if (config.getSweatDisplay()) {
                 menuManager.get().removePlayerMenuItem(MARK);
             }
