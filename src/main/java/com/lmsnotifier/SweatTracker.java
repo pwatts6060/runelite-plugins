@@ -66,10 +66,10 @@ public class SweatTracker {
         /*
         Outdated
         Att/Str 40
-        Construction 20
+        Construction 16-20
         Herblore 23-24
         Crafting 37-38
-        Fletching 95+
+        Fletching 95+ or low fletching and high range
         Hunter 9/11
         Mining 40-46
         Smithing 40-41
@@ -82,16 +82,16 @@ public class SweatTracker {
                 r.getSkill(HiscoreSkill.STRENGTH).getLevel() == 40) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.CONSTRUCTION).getLevel() == 20) {
+        if (r.getSkill(HiscoreSkill.CONSTRUCTION).getLevel() >= 14 && r.getSkill(HiscoreSkill.CONSTRUCTION).getLevel() <= 20) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.HERBLORE).getLevel() >= 23 && r.getSkill(HiscoreSkill.HERBLORE).getLevel() <= 24) {
+        if (r.getSkill(HiscoreSkill.HERBLORE).getLevel() >= 23 && r.getSkill(HiscoreSkill.HERBLORE).getLevel() <= 27) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.CRAFTING).getLevel() >= 37 && r.getSkill(HiscoreSkill.CRAFTING).getLevel() <= 38) {
+        if (r.getSkill(HiscoreSkill.CRAFTING).getLevel() >= 37 && r.getSkill(HiscoreSkill.CRAFTING).getLevel() <= 39) {
             criteriaMet++;
         }
-        if (r.getSkill(HiscoreSkill.FLETCHING).getLevel() >= 95) {
+        if (r.getSkill(HiscoreSkill.FLETCHING).getLevel() >= 95 || (r.getSkill(HiscoreSkill.FLETCHING).getLevel() < 20 && r.getSkill(HiscoreSkill.RANGED).getLevel() >= 80)) {
             criteriaMet++;
         }
         if (r.getSkill(HiscoreSkill.HUNTER).getLevel() == 9 || r.getSkill(HiscoreSkill.HUNTER).getLevel() == 13) {

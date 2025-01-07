@@ -34,7 +34,7 @@ class LMSHiscores
 			Skill hiscoreSkill = result.getSkill(HiscoreSkill.LAST_MAN_STANDING);
 			int score = hiscoreSkill.getLevel();
 			int rank = hiscoreSkill.getRank();
-			if (config.autoMarkSweats() && !sweatTracker.isSweat(name) && sweatTracker.botCriteriaCount(result) >= 10) {
+			if (config.autoMarkSweats() && !sweatTracker.isSweat(name) && sweatTracker.botCriteriaCount(result) >= 8) {
 				sweatTracker.markPlayer(name);
 			}
 			log.debug("Retrieved hiscores for {} {} {}", username, rank, score);
