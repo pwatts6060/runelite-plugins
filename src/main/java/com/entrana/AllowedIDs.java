@@ -192,7 +192,6 @@ public class AllowedIDs {
             ItemID.ROCKSHELL_BOOTS,
             ItemID.BOOTS_OF_STONE,
             ItemID.WIZARD_BOOTS,
-            ItemID.FIGHTING_BOOTS,
 			ItemID.TWITCHERS_GLOVES,
 			ItemID.TOME_OF_WATER,
 			ItemID.TOME_OF_WATER_EMPTY
