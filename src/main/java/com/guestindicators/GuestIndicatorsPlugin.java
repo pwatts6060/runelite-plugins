@@ -17,7 +17,6 @@ import net.runelite.client.game.ChatIconManager;
 import net.runelite.client.party.PartyService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.playerindicators.PlayerIndicatorsConfig;
 import net.runelite.client.plugins.playerindicators.PlayerIndicatorsConfig.HighlightSetting;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
@@ -130,22 +129,7 @@ public class GuestIndicatorsPlugin extends Plugin
 				|| type == PLAYER_EIGTH_OPTION
 				|| type == RUNELITE_PLAYER)
 			{
-				Player[] players = client.getCachedPlayers();
-				Player player = null;
-
-				int identifier = entry.getIdentifier();
-
-				// 'Walk here' identifiers are offset by 1 because the default
-				// identifier for this option is 0, which is also a player index.
-				if (type == WALK)
-				{
-					identifier--;
-				}
-
-				if (identifier >= 0 && identifier < players.length)
-				{
-					player = players[identifier];
-				}
+				Player player = entry.getPlayer();
 
 				if (player == null)
 				{
