@@ -29,6 +29,15 @@ public interface LootingBagConfig extends Config
 	default boolean bagValue() {
 		return true;
 	}
+	
+	@ConfigItem(
+		keyName = "alchValue",
+		name = "High Alchemy Value",
+		description = "Use high alchemy value to determine bag value"
+	)
+	default boolean alchValue() {
+		return true;
+	}
 
 	@ConfigItem(
 		keyName = "freeSlots",
