@@ -150,9 +150,9 @@ public class LootingBag
 	private long getPriceOfItem(int itemId, int quantity) {
 		int itemValue = 0;
 		if (config.alchValue()) {
-			itemValue = itemManager.alchValue(itemId)
+			itemValue = itemManager.alchValue(itemId);
 		} else {
-			itemValue = itemManager.getItemPrice(itemId)
+			itemValue = itemManager.getItemPrice(itemId);
 		}
 		return itemValue * (long) quantity;
 	}
