@@ -36,7 +36,7 @@ public interface LootingBagConfig extends Config
 		description = "Use high alchemy value to determine bag value"
 	)
 	default boolean alchValue() {
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
