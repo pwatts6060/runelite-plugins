@@ -63,6 +63,9 @@ public class LootingBagPlugin extends Plugin
 	@Inject
 	private ItemManager itemManager;
 
+	@Inject
+	private LootingBagConfig lootingBagConfig;
+
 	@Getter
 	private LootingBag lootingBag;
 
@@ -97,7 +100,7 @@ public class LootingBagPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		lootingBag = new LootingBag(client, itemManager);
+		lootingBag = new LootingBag(client, itemManager, lootingBagConfig);
 		wildyItems = new WildernessAgilityItems(itemManager);
 		overlayManager.add(overlay);
 		possibleSuppliesPickupActions = new ArrayList<>();

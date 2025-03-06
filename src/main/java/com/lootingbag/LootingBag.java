@@ -26,6 +26,8 @@ public class LootingBag
 
 	private final Map<Integer, Integer> items;
 
+	private final LootingBagConfig config;
+
 	@Getter
 	private boolean isSynced;
 
@@ -35,10 +37,11 @@ public class LootingBag
 	@Getter
 	private long valueOfItems = 0;
 
-	public LootingBag(Client client, ItemManager itemManager)
+	public LootingBag(Client client, ItemManager itemManager, LootingBagConfig config)
 	{
 		this.client = client;
 		this.itemManager = itemManager;
+		this.config = config;
 		this.items = new HashMap<>();
 		this.isSynced = false;
 	}
@@ -150,7 +153,7 @@ public class LootingBag
 	private long getPriceOfItem(int itemId, int quantity) {
 		int itemValue = 0;
 		if (config.alchValue()) {
-			itemValue = itemManager.alchValue(itemId);
+			itemValue = itemManager.getItemComposition(itemId).getHaPrice();
 		} else {
 			itemValue = itemManager.getItemPrice(itemId);
 		}
