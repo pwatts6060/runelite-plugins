@@ -6,7 +6,8 @@ A plugin that plays a sound of your choice when you gain xp / get an xp drop.
 * Have your own use case? Create an issue and comment it.
 
 ## Changing Sounds
-You can use any OSRS sound effect to use. There are over 5322 available. This list https://pastie.io/chuphe.makefile may help you as well as this list https://github.com/runelite/runelite/blob/master/runelite-api/src/main/java/net/runelite/api/SoundEffectID.java
+You can use any OSRS sound effect to use. There are 10200 available. This
+list https://oldschool.runescape.wiki/w/List_of_sound_IDs may help you
 
 ## Changing Volume
 The volume used is your sound effects volume in your normal settings tab. However, if that is muted the plugin will use the volume setting in the plugin configuration, 0-127 with 0 as muted and 127 as the loudest.
