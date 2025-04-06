@@ -20,8 +20,8 @@ public interface XpNotifyConfig extends Config {
     }
 
     @Range(
-            max = 5322 // Manually have to increase over time to let people use newer sounds
-    )
+		max = 10200 // Manually have to increase over time to let people use newer sounds
+	)
     @ConfigItem(
             keyName = "soundId",
             name = "Sound ID",
