@@ -72,7 +72,7 @@ public class StarInfoOverlay extends Overlay
 		}
 		Star star = plugin.stars.get(0);
 
-		if (config.colorStar())
+		if (config.colorStar() && star.getObject() != null)
 		{
 			Shape shape = star.getObject().getConvexHull();
 			if (shape != null)
