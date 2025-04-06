@@ -31,6 +31,7 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.Notification;
 import net.runelite.client.config.Range;
 
 @ConfigGroup("starinfoplugin")
@@ -49,6 +50,7 @@ public interface StarInfoConfig extends Config
 	String CLIPBOARD = "copyToClipboard";
 	String T0_IN_COPY = "t0inCopy";
 	String ADD_TO_CHAT = "addToChat";
+	String NOTIFY_TIER_CHANGE = "notifyTierChange";
 	String REMOVE_DISTANCE = "removeDistance";
 	String ESTIMATE_LAYER = "estimateLayerTime";
 	String ESTIMATE_DEPLETION_TIME = "estimateFullTime";
@@ -246,16 +248,27 @@ public interface StarInfoConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		position = 20,
+		keyName = NOTIFY_TIER_CHANGE,
+		name = "Notify Tier Change",
+		description = "Notifies you when a star changes tier"
+	)
+	default Notification notifyTierChange()
+	{
+		return Notification.ON;
+	}
+
 	@ConfigSection(
 		name = "Health Bar",
 		description = "Settings for the health bar on stars",
-		position = 20,
+		position = 21,
 		closedByDefault = true
 	)
 	String healthBarSection = "healthBarSection";
 
 	@ConfigItem(
-		position = 21,
+		position = 22,
 		keyName = "hideHealthBar",
 		name = "Hide health bar",
 		section = healthBarSection,
@@ -271,7 +284,7 @@ public interface StarInfoConfig extends Config
 		max = 40
 	)
 	@ConfigItem(
-		position = 22,
+		position = 23,
 		keyName = "healthBarHeight",
 		name = "Health bar height",
 		section = healthBarSection,
@@ -287,7 +300,7 @@ public interface StarInfoConfig extends Config
 		max = 400
 	)
 	@ConfigItem(
-		position = 23,
+		position = 24,
 		keyName = "healthBarWidth",
 		name = "Health bar width",
 		section = healthBarSection,
@@ -300,7 +313,7 @@ public interface StarInfoConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 24,
+		position = 25,
 		keyName = "hpColorFore",
 		name = "Hp left color",
 		section = healthBarSection,
@@ -313,7 +326,7 @@ public interface StarInfoConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 25,
+		position = 26,
 		keyName = "hpColorBack",
 		name = "Hp background color",
 		section = healthBarSection,
@@ -329,7 +342,7 @@ public interface StarInfoConfig extends Config
 		max = 90
 	)
 	@ConfigItem(
-		position = 26,
+		position = 27,
 		keyName = REMOVE_DISTANCE,
 		name = "Remove distance",
 		description = "The tile distance above which star info is removed"

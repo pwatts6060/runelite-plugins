@@ -52,16 +52,7 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
-import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_BOOTS;
-import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_HELMET;
-import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_JACKET;
-import static net.runelite.api.ItemID.GOLDEN_PROSPECTOR_LEGS;
-import static net.runelite.api.ItemID.PROSPECTOR_BOOTS;
-import static net.runelite.api.ItemID.PROSPECTOR_HELMET;
-import static net.runelite.api.ItemID.PROSPECTOR_JACKET;
-import static net.runelite.api.ItemID.PROSPECTOR_LEGS;
-import static net.runelite.api.ItemID.VARROCK_ARMOUR_4;
-import static net.runelite.api.ItemID.STARDUST;
+import static net.runelite.api.ItemID.*;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
@@ -86,6 +77,7 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.kit.KitType;
+import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
@@ -196,6 +188,9 @@ public class StarInfoPlugin extends Plugin
 
 	@Inject
 	private Hooks hooks;
+
+	@Inject
+	private Notifier notifier;
 
 	@Provides
 	StarInfoConfig
@@ -354,6 +349,13 @@ public class StarInfoPlugin extends Plugin
 		refresh();
 	}
 
+	private boolean nextToStar(Player p, Star star)
+	{
+		WorldArea areaH = new WorldArea(star.getWorldPoint().dx(-1), 4, 2);
+		WorldArea areaV = new WorldArea(star.getWorldPoint().dy(-1), 2, 4);
+		return p.getWorldLocation().isInArea2D(areaH, areaV);
+	}
+
 	@Subscribe
 	public void onGameObjectDespawned(GameObjectDespawned event)
 	{
@@ -368,6 +370,9 @@ public class StarInfoPlugin extends Plugin
 			if (event.getGameObject().equals(event.getGameObject()) || event.getGameObject().getWorldLocation().equals(star.getWorldPoint()))
 			{
 				despawnQueue.add(star);
+				if (nextToStar(client.getLocalPlayer(), star)) {
+					notifier.notify(starConfig.notifyTierChange(), "Star layer mined (Shooting Star Info)");
+				}
 				break;
 			}
 		}
