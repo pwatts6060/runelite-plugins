@@ -14,7 +14,7 @@ import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.ObjectID;
@@ -123,7 +123,10 @@ public class TickHelperPlugin extends Plugin
 				|| itemsMatch(id1, id2, ItemID.TARROMIN, ItemID.SWAMP_TAR)
 				|| itemsMatch(id1, id2, ItemID.IRIT_LEAF, ItemID.SWAMP_TAR)
 				|| itemsMatch(id1, id2, ItemID.HARRALANDER, ItemID.SWAMP_TAR)
-				|| itemsMatch(id1, id2, ItemID.MARRENTILL, ItemID.SWAMP_TAR)) {
+				|| itemsMatch(id1, id2, ItemID.MARENTILL, ItemID.SWAMP_TAR)
+				|| itemsMatch(id1, id2, ItemID.KNIFE, ItemID.BRUT_SPAWNING_TROUT)
+				|| itemsMatch(id1, id2, ItemID.KNIFE, ItemID.BRUT_SPAWNING_SALMON)
+				|| itemsMatch(id1, id2, ItemID.KNIFE, ItemID.BRUT_STURGEON)) {
 				actionTimer = 3;
 			} else if (itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.REDWOOD_LOGS)
 				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.MAGIC_LOGS)
@@ -136,15 +139,15 @@ public class TickHelperPlugin extends Plugin
 				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.BLISTERWOOD_LOGS)
 				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.TEAK_LOGS)
 				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.MAHOGANY_LOGS)
-				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.ARCTIC_PINE_LOGS)) {
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.ARCTIC_PINE_LOG)) {
 				lightLogTime = 6;
 			}
 		} else if (e.getMenuAction().equals(MenuAction.CC_OP)) {;
-			if (e.getItemId() == ItemID.BOX_TRAP && e.getMenuOption().equals("Lay")) {
+			if (e.getItemId() == ItemID.HUNTING_BOX_TRAP && e.getMenuOption().equals("Lay")) {
 				if (actionTimer == 0 && blockTimer <= 0) {
 					actionTimer = 5;
 				}
-			} else if (e.getItemId() == ItemID.CELASTRUS_BARK && e.getMenuOption().equals("Fletch")) {
+			} else if (e.getItemId() == ItemID.CELASTRUS_WOOD && e.getMenuOption().equals("Fletch")) {
 				if (actionTimer == 0) {
 					actionTimer = 4;
 				}
