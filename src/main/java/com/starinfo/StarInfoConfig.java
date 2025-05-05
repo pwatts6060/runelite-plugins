@@ -42,6 +42,7 @@ public interface StarInfoConfig extends Config
 	String THICK_OUTLINE = "thickOutline";
 	String INFO_BOX_KEY = "infoBox";
 	String BONUS_INFO_BOX_KEY = "showStarDiscovery";
+	String DISCOVERY_HIDE_TIME = "discoveryHideTime";
 	String HINT_ARROW_KEY = "hintArrow";
 	String SHOW_PERCENT = "showPercent";
 	String SHOW_DUST = "showDust";
@@ -195,6 +196,17 @@ public interface StarInfoConfig extends Config
 
 	@ConfigItem(
 		position = 15,
+		keyName = DISCOVERY_HIDE_TIME,
+		name = "Discovery Box Hide Time",
+		description = "After this many minutes of not encountering a star, the discovery boost info box will be hidden"
+	)
+	default int discoveryHideTime()
+	{
+		return 10;
+	}
+
+	@ConfigItem(
+		position = 16,
 		keyName = HINT_ARROW_KEY,
 		name = "Show Hint Arrow",
 		description = "Whether to display hint arrow pointing to star"
@@ -205,7 +217,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 16,
+		position = 17,
 		keyName = COLOR_STAR,
 		name = "Highlight Star",
 		description = "Highlights stars green if you can mine it, and red if you can't"
@@ -216,7 +228,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 17,
+		position = 18,
 		keyName = CLIPBOARD,
 		name = "Copy to Clipboard Option",
 		description = "Allows you to right click stars and copy their information"
@@ -227,7 +239,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 18,
+		position = 19,
 		keyName = T0_IN_COPY,
 		name = "T0 Clipboard estimate",
 		description = "Adds time estimate till star is dead to copy option message"
@@ -238,7 +250,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 19,
+		position = 20,
 		keyName = ADD_TO_CHAT,
 		name = "Add Stars to Chat",
 		description = "Adds a message to the game chat when stars are found with their tier/world/location"
@@ -249,7 +261,7 @@ public interface StarInfoConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 20,
+		position = 21,
 		keyName = NOTIFY_TIER_CHANGE,
 		name = "Notify Tier Change",
 		description = "Notifies you when a star changes tier"
@@ -262,13 +274,13 @@ public interface StarInfoConfig extends Config
 	@ConfigSection(
 		name = "Health Bar",
 		description = "Settings for the health bar on stars",
-		position = 21,
+		position = 22,
 		closedByDefault = true
 	)
 	String healthBarSection = "healthBarSection";
 
 	@ConfigItem(
-		position = 22,
+		position = 23,
 		keyName = "hideHealthBar",
 		name = "Hide health bar",
 		section = healthBarSection,
@@ -284,7 +296,7 @@ public interface StarInfoConfig extends Config
 		max = 40
 	)
 	@ConfigItem(
-		position = 23,
+		position = 24,
 		keyName = "healthBarHeight",
 		name = "Health bar height",
 		section = healthBarSection,
@@ -300,7 +312,7 @@ public interface StarInfoConfig extends Config
 		max = 400
 	)
 	@ConfigItem(
-		position = 24,
+		position = 25,
 		keyName = "healthBarWidth",
 		name = "Health bar width",
 		section = healthBarSection,
@@ -313,7 +325,7 @@ public interface StarInfoConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 25,
+		position = 26,
 		keyName = "hpColorFore",
 		name = "Hp left color",
 		section = healthBarSection,
@@ -326,7 +338,7 @@ public interface StarInfoConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 26,
+		position = 27,
 		keyName = "hpColorBack",
 		name = "Hp background color",
 		section = healthBarSection,
@@ -342,7 +354,7 @@ public interface StarInfoConfig extends Config
 		max = 90
 	)
 	@ConfigItem(
-		position = 27,
+		position = 28,
 		keyName = REMOVE_DISTANCE,
 		name = "Remove distance",
 		description = "The tile distance above which star info is removed"

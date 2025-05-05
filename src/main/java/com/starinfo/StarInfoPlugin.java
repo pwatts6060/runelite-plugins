@@ -159,6 +159,8 @@ public class StarInfoPlugin extends Plugin
 
 	public int bonusCount;
 
+	private int lastStarTime;
+
 	@Inject
 	private InfoBoxManager infoBoxManager;
 
@@ -206,6 +208,7 @@ public class StarInfoPlugin extends Plugin
 		starOverlay.updateConfig();
 		hooks.registerRenderableDrawListener(drawListener);
 		BONUS_IMAGE = itemManager.getImage(STARDUST, 175, false);
+		lastStarTime = -101 * starConfig.discoveryHideTime(); // make the star discovery hidden on first login
 
 		clientThread.invoke(() ->
 		{
@@ -215,11 +218,6 @@ public class StarInfoPlugin extends Plugin
 			}
 
 			bonusCount = client.getVarbitValue(VARBIT_STAR_DISCOVERY);
-
-			if (starConfig.showStarDiscovery())
-			{
-				updateBonusCounter();
-			}
 		});
 	}
 
@@ -340,6 +338,11 @@ public class StarInfoPlugin extends Plugin
 			worldInfo.update(star);
 			stars.add(0, star);
 			newStar = true;
+
+			if (starConfig.showStarDiscovery())
+			{
+				updateBonusCounter();
+			}
 		}
 
 		if (newStar && starConfig.addToChat())
@@ -536,8 +539,10 @@ public class StarInfoPlugin extends Plugin
 	{
 		if (stars.isEmpty())
 		{
+			checkDiscoveryRemoval();
 			return;
 		}
+		lastStarTime = client.getTickCount();
 		Iterator<Star> it = stars.iterator();
 		boolean refresh = false;
 		while (it.hasNext())
@@ -549,6 +554,7 @@ public class StarInfoPlugin extends Plugin
 				it.remove();
 				refresh = true;
 				despawnQueue.remove(star);
+				lastStarTime = client.getTickCount();
 			}
 		}
 
@@ -567,6 +573,13 @@ public class StarInfoPlugin extends Plugin
 		if (refresh)
 		{
 			refresh();
+		}
+	}
+
+	private void checkDiscoveryRemoval()
+	{
+		if (bonusCounter != null && client.getTickCount() - lastStarTime >= starConfig.discoveryHideTime() * 100) {
+			removeBonusCounter();
 		}
 	}
 
@@ -722,7 +735,7 @@ public class StarInfoPlugin extends Plugin
 			return;
 		}
 
-		final Tile tile = client.getScene().getTiles()[client.getPlane()][event.getActionParam0()][event.getActionParam1()];
+		final Tile tile = client.getTopLevelWorldView().getScene().getTiles()[client.getTopLevelWorldView().getPlane()][event.getActionParam0()][event.getActionParam1()];
 		final TileObject tileObject = findTileObject(tile, event.getIdentifier());
 
 		if (tileObject == null || !tile.getWorldLocation().equals(stars.get(0).getWorldPoint()) || Star.getTier(tileObject.getId()) < 0)
