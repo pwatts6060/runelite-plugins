@@ -126,7 +126,12 @@ public class TickHelperPlugin extends Plugin
 				|| itemsMatch(id1, id2, ItemID.MARENTILL, ItemID.SWAMP_TAR)
 				|| itemsMatch(id1, id2, ItemID.KNIFE, ItemID.BRUT_SPAWNING_TROUT)
 				|| itemsMatch(id1, id2, ItemID.KNIFE, ItemID.BRUT_SPAWNING_SALMON)
-				|| itemsMatch(id1, id2, ItemID.KNIFE, ItemID.BRUT_STURGEON)) {
+				|| itemsMatch(id1, id2, ItemID.KNIFE, ItemID.BRUT_STURGEON)
+				|| itemsMatch(id1, id2, ItemID.HUNTINGBEAST_CLAWS, ItemID.BLACK_DRAGON_VAMBRACES)
+				|| itemsMatch(id1, id2, ItemID.HUNTINGBEAST_CLAWS, ItemID.BLUE_DRAGON_VAMBRACES)
+				|| itemsMatch(id1, id2, ItemID.HUNTINGBEAST_CLAWS, ItemID.RED_DRAGON_VAMBRACES)
+				|| itemsMatch(id1, id2, ItemID.HUNTINGBEAST_CLAWS, ItemID.DRAGON_VAMBRACES)
+				|| itemsMatch(id1, id2, ItemID.HUNTINGBEAST_CLAWS, ItemID.LEATHER_VAMBRACES)) {
 				actionTimer = 3;
 			} else if (itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.REDWOOD_LOGS)
 				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.MAGIC_LOGS)
