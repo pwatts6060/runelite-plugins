@@ -6,11 +6,11 @@ import java.util.Map;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.widgets.InterfaceID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
@@ -59,14 +59,14 @@ public class InstantNotifyPlugin extends Plugin {
 
     @Subscribe
     public void onItemContainerChanged(ItemContainerChanged itemContainerChanged) {
-        if (itemContainerChanged.getContainerId() == InventoryID.INVENTORY.getId()) {
+        if (itemContainerChanged.getContainerId() == InventoryID.INV) {
             invChange(itemContainerChanged);
         }
     }
 
     private void loadInv() {
         itemAmounts = new HashMap<>();
-        ItemContainer itemContainer = client.getItemContainer(InventoryID.INVENTORY);
+        ItemContainer itemContainer = client.getItemContainer(InventoryID.INV);
         if (itemContainer == null) {
             return;
         }
