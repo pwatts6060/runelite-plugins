@@ -10,8 +10,8 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.InventoryID;
-import net.runelite.api.widgets.InterfaceID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -82,7 +82,7 @@ public class InstantNotifyPlugin extends Plugin {
             return;
         }
 
-        if (client.getWidget(InterfaceID.BANK) != null) {
+        if (client.getWidget(InterfaceID.BANKMAIN) != null) {
             return;
         }
 
