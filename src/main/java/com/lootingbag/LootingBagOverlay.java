@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.WidgetItemOverlay;
@@ -26,7 +26,7 @@ public class LootingBagOverlay extends WidgetItemOverlay
 	@Override
 	public void renderItemOverlay(Graphics2D graphics, int itemId, WidgetItem widgetItem)
 	{
-		if (itemId != ItemID.LOOTING_BAG && itemId != ItemID.LOOTING_BAG_22586) {
+		if (itemId != ItemID.LOOTING_BAG && itemId != ItemID.LOOTING_BAG_OPEN) {
 			return;
 		}
 		graphics.setFont(FontManager.getRunescapeSmallFont());

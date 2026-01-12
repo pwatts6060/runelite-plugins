@@ -15,12 +15,31 @@ import java.util.stream.IntStream;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
+import net.runelite.api.Item;
+import net.runelite.api.ItemComposition;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.MenuAction;
+import net.runelite.api.Player;
+import net.runelite.api.VarClientInt;
+import net.runelite.api.VarClientStr;
+import net.runelite.api.WorldView;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.*;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.ProjectileMoved;
+import net.runelite.api.events.VarClientIntChanged;
+import net.runelite.api.events.WidgetLoaded;
+import static net.runelite.api.gameval.InterfaceID.WILDERNESS_LOOTINGBAG;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.widgets.ComponentID;
-import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -35,8 +54,6 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class LootingBagPlugin extends Plugin
 {
-	public static final int LOOTING_BAG_CONTAINER = 516;
-
 	private static final int LOOTING_BAG_SUPPLIES_SETTING_VARBIT_ID = 15310;
 
 	private static final int TELE_GRAB_PROJECTILE_ID = 143;
@@ -157,21 +174,22 @@ public class LootingBagPlugin extends Plugin
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded event)
 	{
-		if (event.getGroupId() == InterfaceID.LOOTING_BAG)
+
+		if (event.getGroupId() == WILDERNESS_LOOTINGBAG)
 		{
 			// We can use the ItemContainer as a source of truth!
-			ItemContainer lootingBagContainer = client.getItemContainer(LOOTING_BAG_CONTAINER);
+			ItemContainer lootingBagContainer = client.getItemContainer(InventoryID.LOOTING_BAG);
 			lootingBag.syncItems(lootingBagContainer);
 		}
 	}
 
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event) {
-		if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
+		if (event.getContainerId() == InventoryID.INV) {
 			handleInventoryUpdated(event.getItemContainer());
 		}
 
-		if (event.getContainerId() == LOOTING_BAG_CONTAINER) {
+		if (event.getContainerId() == InventoryID.LOOTING_BAG) {
 			lootingBag.syncItems(event.getItemContainer());
 		}
 	}
@@ -205,12 +223,12 @@ public class LootingBagPlugin extends Plugin
 
 		// Telegrab item
 		boolean isTelegrab = false;
+		WorldView wv = client.getWorldView(event.getMenuEntry().getWorldViewId());
 		if (event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GROUND_ITEM ) {
 			List<String> widgetGroundItem = Arrays.asList(event.getMenuTarget().split(" -> "));
 			isTelegrab = widgetGroundItem.get(0).contains("Telekinetic Grab");
-			WorldPoint point = WorldPoint.fromScene(client, event.getParam0(), event.getParam1(), client.getPlane());
 			// get end tile based click, telegrab check in projectileMoved
-			telegrabEndTile = point;
+			telegrabEndTile = WorldPoint.fromScene(wv, event.getParam0(), event.getParam1(), wv.getPlane());
 		}
 
 		boolean isTakeItemOffGround = event.getMenuAction() == MenuAction.GROUND_ITEM_THIRD_OPTION
@@ -218,7 +236,7 @@ public class LootingBagPlugin extends Plugin
 
 		// Take an item off the ground, or telegrab
 		if (isTakeItemOffGround || isTelegrab) {
-			WorldPoint point = WorldPoint.fromScene(client, event.getParam0(), event.getParam1(), client.getPlane());
+			WorldPoint point = WorldPoint.fromScene(wv, event.getParam0(), event.getParam1(), wv.getPlane());
 			lastPickUpAction = new PickupAction(event.getId(), point);
 		}
 	}
@@ -234,11 +252,10 @@ public class LootingBagPlugin extends Plugin
 			return;
 		}
 
-		LocalPoint playerLocalPoint = player.getLocalLocation();
-		int wv = playerLocalPoint.getWorldView();
-		WorldView worldView = client.getWorldView(wv);
+		WorldView worldView = client.getLocalPlayer().getWorldView();
 		LocalPoint telegrabStartLocation = new LocalPoint(event.getProjectile().getX1(), event.getProjectile().getY1(), worldView);
 
+		LocalPoint playerLocalPoint = player.getLocalLocation();
 		WorldPoint playerWorldPoint = WorldPoint.fromLocal(client, playerLocalPoint);
 		WorldPoint telegrabWorldPoint = WorldPoint.fromLocal(client, telegrabStartLocation);
 
@@ -253,8 +270,8 @@ public class LootingBagPlugin extends Plugin
 	@Subscribe
 	public void onItemDespawned(ItemDespawned event) {
 		// Check if player has open looting bag in inventory
-		ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
-		if (inventory == null || !inventory.contains(ItemID.LOOTING_BAG_22586)) {
+		ItemContainer inventory = client.getItemContainer(InventoryID.INV);
+		if (inventory == null || !inventory.contains(ItemID.LOOTING_BAG_OPEN)) {
 			return;
 		}
 
@@ -331,8 +348,8 @@ public class LootingBagPlugin extends Plugin
 
 	private void addWildernessItems(int quantity, String itemName, int quantity2, String itemName2) {
 		// Check if player has open looting bag in inventory
-		ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
-		if (inventory == null || !inventory.contains(ItemID.LOOTING_BAG_22586)) {
+		ItemContainer inventory = client.getItemContainer(InventoryID.INV);
+		if (inventory == null || !inventory.contains(ItemID.LOOTING_BAG_OPEN)) {
 			return;
 		}
 
@@ -418,7 +435,7 @@ public class LootingBagPlugin extends Plugin
 			? itemId2
 			: itemId1;
 
-		ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
+		ItemContainer inventory = client.getItemContainer(InventoryID.INV);
 		if (inventory == null) {
 			log.error("Could not get inventory ItemContainer when using item on looting bag.");
 			return;
@@ -444,7 +461,7 @@ public class LootingBagPlugin extends Plugin
 
 		if (amountText.equals("All"))
 		{
-			ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
+			ItemContainer inventory = client.getItemContainer(InventoryID.INV);
 			if (inventory == null) {
 				log.error("Could not get inventory ItemContainer when selected put 'All' into looting bag.");
 				return;
@@ -480,6 +497,6 @@ public class LootingBagPlugin extends Plugin
 	private boolean isLootingBag(int itemId)
 	{
 		return itemId == ItemID.LOOTING_BAG
-			|| itemId == ItemID.LOOTING_BAG_22586;
+			|| itemId == ItemID.LOOTING_BAG_OPEN;
 	}
 }
