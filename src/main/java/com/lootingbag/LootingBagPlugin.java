@@ -172,18 +172,6 @@ public class LootingBagPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onWidgetLoaded(WidgetLoaded event)
-	{
-
-		if (event.getGroupId() == WILDERNESS_LOOTINGBAG)
-		{
-			// We can use the ItemContainer as a source of truth!
-			ItemContainer lootingBagContainer = client.getItemContainer(InventoryID.LOOTING_BAG);
-			lootingBag.syncItems(lootingBagContainer);
-		}
-	}
-
-	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event) {
 		if (event.getContainerId() == InventoryID.INV) {
 			handleInventoryUpdated(event.getItemContainer());
@@ -191,6 +179,7 @@ public class LootingBagPlugin extends Plugin
 
 		if (event.getContainerId() == InventoryID.LOOTING_BAG) {
 			lootingBag.syncItems(event.getItemContainer());
+			System.out.println("changed");
 		}
 	}
 
