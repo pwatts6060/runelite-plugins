@@ -2,9 +2,9 @@ package com.entrana;
 
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.ItemComposition;
+import net.runelite.client.game.ItemEquipmentStats;
 import net.runelite.client.game.ItemManager;
-import net.runelite.http.api.item.ItemEquipmentStats;
-import net.runelite.http.api.item.ItemStats;
+import net.runelite.client.game.ItemStats;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,13 +44,12 @@ public class ProhibitedItems
 
 	private boolean isCombatGear(int id)
 	{
-		ItemStats itemStats = itemManager.getItemStats(id, false);
+		ItemStats itemStats = itemManager.getItemStats(id);
 		if (itemStats == null || !itemStats.isEquipable())
 		{
 			return false;
 		}
 
-		ItemEquipmentStats stats = itemStats.getEquipment();
 		int slot = itemStats.getEquipment().getSlot();
 		if (slot == EquipmentInventorySlot.AMMO.getSlotIdx())
 		{
@@ -68,6 +67,12 @@ public class ProhibitedItems
 		ItemComposition itemComposition = itemManager.getItemComposition(id);
 		String name = itemComposition.getName().toLowerCase();
 		if (name.contains("bracelet"))
+		{
+			return false;
+		}
+
+		ItemEquipmentStats stats = itemStats.getEquipment();
+		if (stats == null)
 		{
 			return false;
 		}
