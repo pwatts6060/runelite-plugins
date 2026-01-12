@@ -5,9 +5,11 @@ import com.google.gson.Gson;
 import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -22,6 +24,8 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.MenuAction;
 import net.runelite.api.Player;
+import net.runelite.api.ScriptEvent;
+import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.WorldView;
@@ -32,8 +36,11 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.PostClientTick;
 import net.runelite.api.events.ProjectileMoved;
+import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.VarClientIntChanged;
+import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import static net.runelite.api.gameval.InterfaceID.WILDERNESS_LOOTINGBAG;
 import net.runelite.api.gameval.InventoryID;
@@ -97,6 +104,8 @@ public class LootingBagPlugin extends Plugin
 	private WorldPoint telegrabEndTile;
 
 	private int lastItemIdUsedOnLootingBag;
+
+	private int tickBagViewed = -1;
 
 	/**
 	 * Used to keep track of whether the deposit X input is open.
@@ -172,6 +181,39 @@ public class LootingBagPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded event)
+	{
+		if (event.getGroupId() == WILDERNESS_LOOTINGBAG)
+		{
+			tickBagViewed = client.getTickCount();
+		}
+	}
+
+
+	@Subscribe
+	public void onPostClientTick(PostClientTick event)
+	{
+		/*
+		The bag can be opened and closed in the same game tick before it fully loaded.
+		This check only syncs items if the bag is open long enough to load items.
+		If it doesn't load the items the widget closed will be detected and this won't run.
+		 */
+		if (client.getTickCount() == tickBagViewed) {
+			ItemContainer lootingBagContainer = client.getItemContainer(InventoryID.LOOTING_BAG);
+			lootingBag.syncItems(lootingBagContainer);
+		}
+	}
+
+	@Subscribe
+	public void onWidgetClosed(WidgetClosed event)
+	{
+		if (event.getGroupId() == WILDERNESS_LOOTINGBAG)
+		{
+			tickBagViewed = -1;
+		}
+	}
+
+	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event) {
 		if (event.getContainerId() == InventoryID.INV) {
 			handleInventoryUpdated(event.getItemContainer());
@@ -179,7 +221,6 @@ public class LootingBagPlugin extends Plugin
 
 		if (event.getContainerId() == InventoryID.LOOTING_BAG) {
 			lootingBag.syncItems(event.getItemContainer());
-			System.out.println("changed");
 		}
 	}
 
