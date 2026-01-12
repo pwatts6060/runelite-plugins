@@ -15,15 +15,6 @@ public interface InstantNotifyConfig extends Config {
     String soundId = "soundId";
     String volume = "volume";
 
-    @ConfigItem(
-            keyName = "toggleNotifications",
-            name = "Notification Type",
-            description = "Runelite notification, Sound, or Both when idle"
-    )
-    default NotificationType notificationType() {
-        return NotificationType.RUNELITE;
-    }
-
 	@ConfigItem(
 		keyName = "notification",
 		name = "Notification",
@@ -48,7 +39,7 @@ public interface InstantNotifyConfig extends Config {
     @ConfigItem(
             keyName = volume,
             name = "Volume",
-            description = "The volume of the notify sound effect (used when your sound effect setting are muted)"
+            description = "0=disable. The volume of the notify sound effect (used when your sound effect setting are muted)"
     )
     default int volume() {
         return SoundEffectVolume.MEDIUM_LOW;

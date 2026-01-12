@@ -141,11 +141,8 @@ public class InstantNotifyPlugin extends Plugin {
     }
 
     private void playNotification() {
-        NotificationType type = config.notificationType();
-        if (type == NotificationType.RUNELITE || type == NotificationType.BOTH) {
-            notifier.notify(config.notification(), "Instant Idle Notify");
-        }
-        if (type == NotificationType.SOUND || type == NotificationType.BOTH) {
+		notifier.notify(config.notification(), "Instant Idle Notify");
+        if (config.volume() > 0) {
             clientThread.invoke(() -> client.playSoundEffect(config.soundId(), config.volume()));
         }
     }
