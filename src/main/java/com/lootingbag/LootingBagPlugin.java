@@ -229,7 +229,11 @@ public class LootingBagPlugin extends Plugin
 		if (player == null) {
 			return;
 		}
-		boolean isTelegrab = event.getProjectile().getId() == TELE_GRAB_PROJECTILE_ID;
+
+		if (event.getProjectile().getId() != TELE_GRAB_PROJECTILE_ID || event.getProjectile() == null) {
+			return;
+		}
+
 		LocalPoint playerLocalPoint = player.getLocalLocation();
 		int wv = playerLocalPoint.getWorldView();
 		WorldView worldView = client.getWorldView(wv);
@@ -239,7 +243,7 @@ public class LootingBagPlugin extends Plugin
 		WorldPoint telegrabWorldPoint = WorldPoint.fromLocal(client, telegrabStartLocation);
 
 		// not player's telegrab (telegrab start tile can be off by 5 if user is running/dragged around corners from what I can tell)
-		if (!(isTelegrab && telegrabWorldPoint.distanceTo(playerWorldPoint) <= 5)) {
+		if (telegrabWorldPoint.distanceTo(playerWorldPoint) > 5) {
 			return;
 		}
 
