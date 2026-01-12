@@ -193,7 +193,10 @@ public class AllowedIDs {
 		ItemID.BOOTS_OF_STONE,
 		ItemID.BOOTS_WIZARD,
 		ItemID.FORESTRY_GLOVES,
-		ItemID.TOME_OF_WATER
+		ItemID.TOME_OF_WATER,
+		ItemID.TOME_OF_WATER_UNCHARGED,
+		ItemID.TOME_OF_EARTH,
+		ItemID.TOME_OF_EARTH_UNCHARGED
 	);
 
     public static boolean contains(int id) {
