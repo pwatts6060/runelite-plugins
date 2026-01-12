@@ -7,7 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import net.runelite.api.widgets.InterfaceID;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.game.ItemManager;
@@ -36,7 +36,7 @@ public class ContainerHighlight extends WidgetItemOverlay
 		int interfaceId = WidgetUtil.componentToInterface(itemWidget.getWidget().getId());
 		if (!prohibitedItems.isProhibited(itemId) || (interfaceId != InterfaceID.EQUIPMENT
 			&& interfaceId != InterfaceID.INVENTORY
-			&& interfaceId != InterfaceID.DEPOSIT_BOX))
+			&& interfaceId != InterfaceID.BANK_DEPOSITBOX))
 		{
 			return;
 		}
