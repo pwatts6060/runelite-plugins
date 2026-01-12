@@ -5,6 +5,7 @@ import net.runelite.api.SoundEffectVolume;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Notification;
 import net.runelite.client.config.Range;
 
 @ConfigGroup(InstantNotifyConfig.configGroup)
@@ -22,6 +23,15 @@ public interface InstantNotifyConfig extends Config {
     default NotificationType notificationType() {
         return NotificationType.RUNELITE;
     }
+
+	@ConfigItem(
+		keyName = "notification",
+		name = "Notification",
+		description = "Runelite notification"
+	)
+	default Notification notification() {
+		return Notification.ON;
+	}
 
     @ConfigItem(
             keyName = soundId,
