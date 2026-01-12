@@ -1,5 +1,5 @@
 # Looting Bag Value
-####Overlays looting bag value / free spaces on the bag in inventory.
+#### Overlays looting bag value / free spaces on the bag in inventory.
 
 - Right click check the bag to calibrate the current contents. 
 - Updates value and free slots whenever checked or items are picked up into the bag.
