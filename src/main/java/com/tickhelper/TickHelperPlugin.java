@@ -136,6 +136,8 @@ public class TickHelperPlugin extends Plugin
 			} else if (itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.REDWOOD_LOGS)
 				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.MAGIC_LOGS)
 				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.YEW_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.IRONWOOD_LOGS)
+				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.ROSEWOOD_LOGS)
 				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.MAPLE_LOGS)
 				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.WILLOW_LOGS)
 				|| itemsMatch(id1, id2, ItemID.TINDERBOX, ItemID.OAK_LOGS)
