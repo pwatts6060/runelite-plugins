@@ -485,18 +485,18 @@ public class StarInfoPlugin extends Plugin
 			multi += 0.004;
 		}
 		if (playerComposition.getEquipmentId(KitType.BOOTS) == GOLDEN_PROSPECTOR_BOOTS
-			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_BOOTS)
+			|| playerComposition.getEquipmentId(KitType.BOOTS) == PROSPECTOR_BOOTS)
 		{
 			multi += 0.002;
 		}
 		if (playerComposition.getEquipmentId(KitType.TORSO) == GOLDEN_PROSPECTOR_JACKET
-			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_JACKET
-			|| playerComposition.getEquipmentId(KitType.HEAD) == VARROCK_ARMOUR_4)
+			|| playerComposition.getEquipmentId(KitType.TORSO) == PROSPECTOR_JACKET
+			|| playerComposition.getEquipmentId(KitType.TORSO) == VARROCK_ARMOUR_4)
 		{
 			multi += 0.008;
 		}
 		if (playerComposition.getEquipmentId(KitType.LEGS) == GOLDEN_PROSPECTOR_LEGS
-			|| playerComposition.getEquipmentId(KitType.HEAD) == PROSPECTOR_LEGS)
+			|| playerComposition.getEquipmentId(KitType.LEGS) == PROSPECTOR_LEGS)
 		{
 			multi += 0.006;
 		}
