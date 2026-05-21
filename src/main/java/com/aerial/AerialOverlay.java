@@ -2,9 +2,8 @@ package com.aerial;
 
 import static com.aerial.AerialPlugin.GLOVE_NO_BIRD;
 import static com.aerial.AerialPlugin.GLOVE_WITH_BIRD;
-import java.awt.BasicStroke;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
+
+import java.awt.*;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
@@ -16,10 +15,13 @@ import net.runelite.api.kit.KitType;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
 public class AerialOverlay extends Overlay
 {
 	Client client;
+
+	AerialPlugin plugin;
 
 	AerialConfig config;
 
@@ -28,9 +30,10 @@ public class AerialOverlay extends Overlay
 	static final WorldArea ignoreArea = new WorldArea(1360, 3627, 16, 32, 0);
 
 	@Inject
-	public AerialOverlay(Client client, AerialConfig config)
+	public AerialOverlay(Client client, AerialPlugin plugin, AerialConfig config)
 	{
 		this.client = client;
+		this.plugin = plugin;
 		this.config = config;
 
 		setPosition(OverlayPosition.DYNAMIC);
@@ -40,21 +43,75 @@ public class AerialOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		renderRadii(graphics);
+		renderIdleTimer(graphics);
+
+		return null;
+	}
+
+	private void renderRadii(Graphics2D graphics)
+	{
 		if (!config.drawRadius()) {
-			return null;
+			return;
 		}
 
-		int weaponId = client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON);
-		if (weaponId != GLOVE_WITH_BIRD && weaponId != GLOVE_NO_BIRD) {
-			return null;
+		if (plugin.getPointToEndTick().isEmpty())
+		{
+			return;
 		}
 
 		WorldPoint center = client.getLocalPlayer().getWorldLocation();
 		for (int dist : distances) {
 			square(center, graphics, dist);
 		}
+	}
 
-		return null;
+	private void renderIdleTimer(Graphics2D graphics)
+	{
+		if (config.idleTimerRenderLoc() == TimerRenderLocation.NONE) {
+			return;
+		}
+
+		if (plugin.getPointToEndTick().isEmpty())
+		{
+			return;
+		}
+
+		if (plugin.getTimerStartTick() == -1)
+		{
+			return;
+		}
+
+		LocalPoint pLocPoint = client.getLocalPlayer().getLocalLocation();
+		int plane = client.getLocalPlayer().getWorldView().getPlane();
+		if (pLocPoint == null)
+		{
+			return;
+		}
+		int clientTick = client.getTickCount();
+		float percent = (float) (clientTick - plugin.getTimerStartTick()) / (plugin.getTimerCompleteTick() - plugin.getTimerStartTick() + 1);
+
+		Point point = null;
+		switch (config.idleTimerRenderLoc()) {
+			case POINTER:
+				point = client.getMouseCanvasPosition();
+				break;
+			case PLAYER:
+				point = Perspective.localToCanvas(client, pLocPoint, plane);
+				break;
+		}
+		if (point == null || percent > 1.0f)
+		{
+			return;
+		}
+
+		Color fillColor = percent < 1.0f ? Color.YELLOW : Color.GREEN;
+		ProgressPieComponent pie = new ProgressPieComponent();
+		pie.setPosition(point);
+		pie.setBorderColor(fillColor);
+		pie.setFill(fillColor);
+		pie.setProgress(percent);
+		pie.render(graphics);
 	}
 
 	private void square(WorldPoint center, Graphics2D graphics, int dist)

@@ -34,6 +34,17 @@ public interface AerialConfig extends Config
 
 	@ConfigItem(
 		position = 2,
+		keyName = "idleTimerRenderLoc",
+		name = "Time-To-Idle Timer Location",
+		description = "Configure where to render the timer overlay for Time-To-Idle."
+	)
+	default TimerRenderLocation idleTimerRenderLoc()
+	{
+		return TimerRenderLocation.NONE;
+	}
+
+	@ConfigItem(
+		position = 3,
 		keyName = "drawBorder",
 		name = "Draw Distance Squares",
 		description = "Toggle overlay to help spot closer fishing spots."
@@ -44,7 +55,7 @@ public interface AerialConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 3,
+		position = 4,
 		keyName = "borderColor",
 		name = "Border color",
 		description = "Color of the overlay's border."
@@ -56,7 +67,7 @@ public interface AerialConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 4,
+		position = 5,
 		keyName = "borderWidth",
 		name = "Border width",
 		description = "Width of the overlay's border."

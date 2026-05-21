@@ -4,7 +4,10 @@ import com.google.inject.Provides;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import javax.inject.Inject;
+
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Projectile;
@@ -42,6 +45,11 @@ public class AerialPlugin extends Plugin
 	@Inject
 	private OverlayManager overlayManager;
 
+	@Getter
+	private int timerCompleteTick = -1;
+	@Getter
+	private int timerStartTick = -1;
+
 	@Override
 	protected void startUp() throws Exception
 	{
@@ -67,12 +75,16 @@ public class AerialPlugin extends Plugin
 		pointToEndTick.clear();
 	}
 
+	@Getter
 	private final Map<Integer, Integer> pointToEndTick = new HashMap<>();
 
 	@Subscribe
 	public void onGameTick(GameTick event) {
 		int weaponId = client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON);
 		if (weaponId != GLOVE_WITH_BIRD && weaponId != GLOVE_NO_BIRD) {
+			pointToEndTick.clear();
+			timerCompleteTick = -1;
+			timerStartTick = -1;
 			return;
 		}
 
@@ -80,18 +92,20 @@ public class AerialPlugin extends Plugin
 			if (p.getId() != BIRD_PROJECTILE) {
 				continue;
 			}
-			if (p.getInteracting() == null || !p.getInteracting().getName().equals(client.getLocalPlayer().getName())) {
+			if (p.getTargetActor() == null || !Objects.equals(p.getTargetActor().getName(), client.getLocalPlayer().getName())) {
 				continue;
 			}
-			WorldPoint point = WorldPoint.fromLocal(client, new LocalPoint(p.getX1(), p.getY1()));
-			int distance = point.distanceTo2D(WorldPoint.fromLocal(client, p.getTarget()));
+			WorldPoint point = p.getSourcePoint();
+			int distance = point.distanceTo2D(p.getTargetPoint());
 
 			int hash = getPointHash(point);
 			if (pointToEndTick.containsKey(hash)) {
 				continue;
 			}
 
-			pointToEndTick.put(hash, client.getTickCount() + distToTicks.getOrDefault(distance, -1));
+			timerCompleteTick = client.getTickCount() + distToTicks.getOrDefault(distance, -1);
+			timerStartTick = client.getTickCount();
+			pointToEndTick.put(hash, timerCompleteTick);
 		}
 
 
