@@ -1,8 +1,5 @@
 package com.aerial;
 
-import static com.aerial.AerialPlugin.GLOVE_NO_BIRD;
-import static com.aerial.AerialPlugin.GLOVE_WITH_BIRD;
-
 import java.awt.*;
 import javax.inject.Inject;
 import net.runelite.api.Client;
@@ -161,14 +158,14 @@ public class AerialOverlay extends Overlay
 
 		if (topBorder)
 		{
-			Point canvasPointA = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() - 64, localPoint.getY() + 64), plane);
+			Point canvasPointA = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() - 64, localPoint.getY() + 64, localPoint.getWorldView()), plane);
 
 			if (canvasPointA != null)
 			{
 				int x1 = canvasPointA.getX();
 				int y1 = canvasPointA.getY();
 
-				Point canvasPointB = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() + 64, localPoint.getY() + 64), plane);
+				Point canvasPointB = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() + 64, localPoint.getY() + 64, localPoint.getWorldView()), plane);
 
 				if (canvasPointB != null)
 				{
@@ -182,14 +179,14 @@ public class AerialOverlay extends Overlay
 
 		if (rightBorder)
 		{
-			Point canvasPointA = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() + 64, localPoint.getY() - 64), plane);
+			Point canvasPointA = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() + 64, localPoint.getY() - 64, localPoint.getWorldView()), plane);
 
 			if (canvasPointA != null)
 			{
 				int x1 = canvasPointA.getX();
 				int y1 = canvasPointA.getY();
 
-				Point canvasPointB = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() + 64, localPoint.getY() + 64), plane);
+				Point canvasPointB = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() + 64, localPoint.getY() + 64, localPoint.getWorldView()), plane);
 
 				if (canvasPointB != null)
 				{
@@ -203,14 +200,14 @@ public class AerialOverlay extends Overlay
 
 		if (bottomBorder)
 		{
-			Point canvasPointA = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() - 64, localPoint.getY() - 64), plane);
+			Point canvasPointA = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() - 64, localPoint.getY() - 64, localPoint.getWorldView()), plane);
 
 			if (canvasPointA != null)
 			{
 				int x1 = canvasPointA.getX();
 				int y1 = canvasPointA.getY();
 
-				Point canvasPointB = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() + 64, localPoint.getY() - 64), plane);
+				Point canvasPointB = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() + 64, localPoint.getY() - 64, localPoint.getWorldView()), plane);
 
 				if (canvasPointB != null)
 				{
@@ -224,14 +221,14 @@ public class AerialOverlay extends Overlay
 
 		if (leftBorder)
 		{
-			Point canvasPointA = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() - 64, localPoint.getY() - 64), plane);
+			Point canvasPointA = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() - 64, localPoint.getY() - 64, localPoint.getWorldView()), plane);
 
 			if (canvasPointA != null)
 			{
 				int x1 = canvasPointA.getX();
 				int y1 = canvasPointA.getY();
 
-				Point canvasPointB = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() - 64, localPoint.getY() + 64), plane);
+				Point canvasPointB = Perspective.localToCanvas(client, new LocalPoint(localPoint.getX() - 64, localPoint.getY() + 64, localPoint.getWorldView()), plane);
 
 				if (canvasPointB != null)
 				{

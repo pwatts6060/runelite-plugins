@@ -11,9 +11,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Projectile;
+import net.runelite.api.SoundEffectID;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.SpotanimID;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -27,10 +30,6 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class AerialPlugin extends Plugin
 {
-	static final int BIRD_PROJECTILE = 1632;
-	static final int GLOVE_NO_BIRD = 22816;
-	static final int GLOVE_WITH_BIRD = 22817;
-
 	public static Map<Integer, Integer> distToTicks = null;
 
 	@Inject
@@ -81,7 +80,7 @@ public class AerialPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event) {
 		int weaponId = client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON);
-		if (weaponId != GLOVE_WITH_BIRD && weaponId != GLOVE_NO_BIRD) {
+		if (weaponId != ItemID.AERIAL_FISHING_GLOVES_BIRD && weaponId != ItemID.AERIAL_FISHING_GLOVES_NO_BIRD) {
 			pointToEndTick.clear();
 			timerCompleteTick = -1;
 			timerStartTick = -1;
@@ -89,7 +88,7 @@ public class AerialPlugin extends Plugin
 		}
 
 		for (Projectile p : client.getProjectiles()) {
-			if (p.getId() != BIRD_PROJECTILE) {
+			if (p.getId() != SpotanimID.AERIAL_FISHING_TRAVEL) {
 				continue;
 			}
 			if (p.getTargetActor() == null || !Objects.equals(p.getTargetActor().getName(), client.getLocalPlayer().getName())) {
@@ -98,7 +97,7 @@ public class AerialPlugin extends Plugin
 			WorldPoint point = p.getSourcePoint();
 			int distance = point.distanceTo2D(p.getTargetPoint());
 
-			int hash = getPointHash(point);
+			int hash = p.getStartCycle();
 			if (pointToEndTick.containsKey(hash)) {
 				continue;
 			}
@@ -112,7 +111,7 @@ public class AerialPlugin extends Plugin
 		for(Iterator<Map.Entry<Integer, Integer>> it = pointToEndTick.entrySet().iterator(); it.hasNext(); ) {
 			Map.Entry<Integer, Integer> entry = it.next();
 			if (client.getTickCount() + 1 == entry.getValue() && config.warningSound()) {
-				client.playSoundEffect(3813);
+				client.playSoundEffect(SoundEffectID.TOWN_CRIER_BELL_DING);
 			}
 
 			if (client.getTickCount() == entry.getValue() && config.idleSound()) {
@@ -123,10 +122,6 @@ public class AerialPlugin extends Plugin
 				it.remove();
 			}
 		}
-	}
-
-	private static int getPointHash(WorldPoint point) {
-		return point.getX() << 15 + point.getY();
 	}
 
 	@Provides
