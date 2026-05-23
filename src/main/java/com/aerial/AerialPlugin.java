@@ -79,11 +79,8 @@ public class AerialPlugin extends Plugin
 
 	@Subscribe
 	public void onGameTick(GameTick event) {
-		int weaponId = client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON);
-		if (weaponId != ItemID.AERIAL_FISHING_GLOVES_BIRD && weaponId != ItemID.AERIAL_FISHING_GLOVES_NO_BIRD) {
-			pointToEndTick.clear();
-			timerCompleteTick = -1;
-			timerStartTick = -1;
+		if (!isGloveEquipped()) {
+			resetState();
 			return;
 		}
 
@@ -122,6 +119,20 @@ public class AerialPlugin extends Plugin
 				it.remove();
 			}
 		}
+	}
+
+	public boolean isGloveEquipped()
+	{
+		int weaponId = client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON);
+
+		// Whether worn weapon is the aerial fishing glove
+        return weaponId == ItemID.AERIAL_FISHING_GLOVES_BIRD || weaponId == ItemID.AERIAL_FISHING_GLOVES_NO_BIRD;
+    }
+
+	protected void resetState() {
+		pointToEndTick.clear();
+		timerCompleteTick = -1;
+		timerStartTick = -1;
 	}
 
 	@Provides

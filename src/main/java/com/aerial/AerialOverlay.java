@@ -52,8 +52,7 @@ public class AerialOverlay extends Overlay
 			return;
 		}
 
-		if (plugin.getPointToEndTick().isEmpty())
-		{
+		if (!plugin.isGloveEquipped()) {
 			return;
 		}
 
@@ -69,11 +68,13 @@ public class AerialOverlay extends Overlay
 			return;
 		}
 
+		// No active bird projectiles to track
 		if (plugin.getPointToEndTick().isEmpty())
 		{
 			return;
 		}
 
+		// No start tick for projectile tracked
 		if (plugin.getTimerStartTick() == -1)
 		{
 			return;
