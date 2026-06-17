@@ -4,13 +4,19 @@ import com.google.inject.Provides;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import javax.inject.Inject;
+
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Projectile;
+import net.runelite.api.SoundEffectID;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.SpotanimID;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -24,10 +30,6 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class AerialPlugin extends Plugin
 {
-	static final int BIRD_PROJECTILE = 1632;
-	static final int GLOVE_NO_BIRD = 22816;
-	static final int GLOVE_WITH_BIRD = 22817;
-
 	public static Map<Integer, Integer> distToTicks = null;
 
 	@Inject
@@ -41,6 +43,11 @@ public class AerialPlugin extends Plugin
 
 	@Inject
 	private OverlayManager overlayManager;
+
+	@Getter
+	private int timerCompleteTick = -1;
+	@Getter
+	private int timerStartTick = -1;
 
 	@Override
 	protected void startUp() throws Exception
@@ -67,38 +74,41 @@ public class AerialPlugin extends Plugin
 		pointToEndTick.clear();
 	}
 
+	@Getter
 	private final Map<Integer, Integer> pointToEndTick = new HashMap<>();
 
 	@Subscribe
 	public void onGameTick(GameTick event) {
-		int weaponId = client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON);
-		if (weaponId != GLOVE_WITH_BIRD && weaponId != GLOVE_NO_BIRD) {
+		if (!isGloveEquipped()) {
+			resetState();
 			return;
 		}
 
 		for (Projectile p : client.getProjectiles()) {
-			if (p.getId() != BIRD_PROJECTILE) {
+			if (p.getId() != SpotanimID.AERIAL_FISHING_TRAVEL) {
 				continue;
 			}
-			if (p.getInteracting() == null || !p.getInteracting().getName().equals(client.getLocalPlayer().getName())) {
+			if (p.getTargetActor() == null || !Objects.equals(p.getTargetActor().getName(), client.getLocalPlayer().getName())) {
 				continue;
 			}
-			WorldPoint point = WorldPoint.fromLocal(client, new LocalPoint(p.getX1(), p.getY1()));
-			int distance = point.distanceTo2D(WorldPoint.fromLocal(client, p.getTarget()));
+			WorldPoint point = p.getSourcePoint();
+			int distance = point.distanceTo2D(p.getTargetPoint());
 
-			int hash = getPointHash(point);
+			int hash = p.getStartCycle();
 			if (pointToEndTick.containsKey(hash)) {
 				continue;
 			}
 
-			pointToEndTick.put(hash, client.getTickCount() + distToTicks.getOrDefault(distance, -1));
+			timerCompleteTick = client.getTickCount() + distToTicks.getOrDefault(distance, -1);
+			timerStartTick = client.getTickCount();
+			pointToEndTick.put(hash, timerCompleteTick);
 		}
 
 
 		for(Iterator<Map.Entry<Integer, Integer>> it = pointToEndTick.entrySet().iterator(); it.hasNext(); ) {
 			Map.Entry<Integer, Integer> entry = it.next();
 			if (client.getTickCount() + 1 == entry.getValue() && config.warningSound()) {
-				client.playSoundEffect(3813);
+				client.playSoundEffect(SoundEffectID.TOWN_CRIER_BELL_DING);
 			}
 
 			if (client.getTickCount() == entry.getValue() && config.idleSound()) {
@@ -111,8 +121,18 @@ public class AerialPlugin extends Plugin
 		}
 	}
 
-	private static int getPointHash(WorldPoint point) {
-		return point.getX() << 15 + point.getY();
+	public boolean isGloveEquipped()
+	{
+		int weaponId = client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON);
+
+		// Whether worn weapon is the aerial fishing glove
+        return weaponId == ItemID.AERIAL_FISHING_GLOVES_BIRD || weaponId == ItemID.AERIAL_FISHING_GLOVES_NO_BIRD;
+    }
+
+	protected void resetState() {
+		pointToEndTick.clear();
+		timerCompleteTick = -1;
+		timerStartTick = -1;
 	}
 
 	@Provides
