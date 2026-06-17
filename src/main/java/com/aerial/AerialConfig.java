@@ -18,7 +18,7 @@ public interface AerialConfig extends Config
 	)
 	default boolean idleSound()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
@@ -29,7 +29,7 @@ public interface AerialConfig extends Config
 	)
 	default boolean warningSound()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
@@ -40,7 +40,7 @@ public interface AerialConfig extends Config
 	)
 	default TimerRenderLocation idleTimerRenderLoc()
 	{
-		return TimerRenderLocation.NONE;
+		return TimerRenderLocation.PLAYER;
 	}
 
 	@ConfigItem(
