@@ -59,7 +59,7 @@ public class ItemUpgrade {
                 ItemID.SANFEW_SERUM2_23563,
                 ItemID.SANFEW_SERUM1_23565,
                 ItemID.SHARK_20390,
-                ItemID.BERSERKER_RING_23595,
+                ItemID.BERSERKER_RING_I_23595,
                 ItemID.HELM_OF_NEITIZNOT_23591,
                 ItemID.ABYSSAL_WHIP_20405,
                 ItemID.AMULET_OF_GLORY_20586,
