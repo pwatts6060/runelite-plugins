@@ -46,6 +46,7 @@ import static net.runelite.api.gameval.InterfaceID.WILDERNESS_LOOTINGBAG;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.VarClientID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
@@ -67,6 +68,8 @@ public class LootingBagPlugin extends Plugin
 
 	private static final Pattern WILDY_DISPENSER_REGEX = Pattern.compile("You have been awarded <[A-Za-z0-9=\\/]+>([\\d]+) x ([ a-zA-Z(4)]+)<[A-Za-z0-9=\\/]+> and <[A-Za-z0-9=\\/]+>([\\d]+) x ([ a-zA-Z]+)<[A-Za-z0-9=\\/]+> from the Agility dispenser.");
 	private static final Pattern WILDY_DISPENSER_EXTRA_REGEX = Pattern.compile("You have been awarded <[A-Za-z0-9=\\/]+>([\\d]+) x ([ a-zA-Z(4)]+)<[A-Za-z0-9=\\/]+> and <[A-Za-z0-9=\\/]+>([\\d]+) x ([ a-zA-Z]+)<[A-Za-z0-9=\\/]+>, and an extra <[A-Za-z0-9=\\/]+>[ a-zA-Z(4)]+<[A-Za-z0-9=\\/]+> from the Agility dispenser.");
+
+	private static final Pattern ROGUES_CHEST_REGEX = Pattern.compile("You find (?:a|some) ([A-Za-z]+(?: [A-Za-z]+)*) inside\\.");
 
 	private static final Map<String, Integer> AmountTextToInt = ImmutableMap.of(
 		"One", 1,
@@ -95,6 +98,9 @@ public class LootingBagPlugin extends Plugin
 
 	@Getter
 	private WildernessAgilityItems wildyItems;
+
+	@Getter
+	private RoguesChestItems roguesChestItems;
 
 	@Inject
 	private Gson gson;
@@ -128,6 +134,7 @@ public class LootingBagPlugin extends Plugin
 	{
 		lootingBag = new LootingBag(client, itemManager, lootingBagConfig);
 		wildyItems = new WildernessAgilityItems(itemManager);
+		roguesChestItems = new RoguesChestItems(itemManager);
 		overlayManager.add(overlay);
 		possibleSuppliesPickupActions = new ArrayList<>();
 	}
@@ -370,6 +377,16 @@ public class LootingBagPlugin extends Plugin
 				addWildernessItems(quantity, item, quantity2, item2);
 			}
 		}
+		else if (type == ChatMessageType.SPAM)
+		{
+			Matcher rogues_chest_matcher = ROGUES_CHEST_REGEX.matcher(message);
+
+			if (rogues_chest_matcher.matches()) {
+				String matchedItem = rogues_chest_matcher.group(1);
+				// log.debug("Looted from Rogues' Chest: " + matchedItem);
+				addRoguesChestItem(matchedItem);
+			}
+		}
 	}
 
 	private void addWildernessItems(int quantity, String itemName, int quantity2, String itemName2) {
@@ -384,6 +401,30 @@ public class LootingBagPlugin extends Plugin
 
 		lootingBag.addItem(itemId, quantity);
 		lootingBag.addItem(itemId2, quantity2);
+	}
+
+	private void addRoguesChestItem(String matchedItem) {
+		// Check if player has open looting bag in inventory
+		ItemContainer inventory = client.getItemContainer(InventoryID.INV);
+		if (inventory == null || !inventory.contains(ItemID.LOOTING_BAG_OPEN)) {
+			return;
+		}
+
+		// Get item from loot pool
+		Object[] chestLoot = roguesChestItems.getItemFromMatchedString(matchedItem);
+		if (chestLoot == null) { return; }
+
+		// Check for diary completion level
+		// chestLoot = { ITEM_ID, NOTED, COMMON_NAME, MEDIUM_DIARY_QUANTITY, HARD_DIARY_QUANTITY }
+		if (isWildernessHardDiaryComplete()) { // Hard diary complete
+			lootingBag.addItem((Integer) chestLoot[0], (Integer) chestLoot[4]);
+		} else { // Hard diary incomplete
+			lootingBag.addItem((Integer) chestLoot[0], (Integer) chestLoot[3]);
+		}
+	}
+
+	private boolean isWildernessHardDiaryComplete() {
+		return client.getVarbitValue(VarbitID.WILDERNESS_DIARY_HARD_COMPLETE) == 1;
 	}
 
 	private void handleInventoryUpdated(ItemContainer inventory) {
