@@ -55,14 +55,14 @@ public class AerialPlugin extends Plugin
 		overlayManager.add(aerialOverlay);
 		distToTicks = new HashMap<>();
 		distToTicks.put(1, 0);
-		distToTicks.put(2, 1);
+		distToTicks.put(2, 0);
 		distToTicks.put(3, 1);
-		distToTicks.put(4, 2);
-		distToTicks.put(5, 3);
+		distToTicks.put(4, 1);
+		distToTicks.put(5, 2);
 		distToTicks.put(6, 3);
-		distToTicks.put(7, 4);
+		distToTicks.put(7, 3);
 		distToTicks.put(8, 4);
-		distToTicks.put(9, 5);
+		distToTicks.put(9, 4);
 		distToTicks.put(10, 5);
 	}
 

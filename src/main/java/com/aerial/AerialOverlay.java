@@ -24,7 +24,7 @@ public class AerialOverlay extends Overlay
 
 	AerialConfig config;
 
-	static final int[] distances = new int[] {1, 3, 4, 6, 8 };
+	static final int[] distances = new int[] {2, 4, 5, 7, 9};
 
 	static final WorldArea ignoreArea = new WorldArea(1360, 3627, 16, 32, 0);
 
