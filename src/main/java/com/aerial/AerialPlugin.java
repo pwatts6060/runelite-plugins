@@ -12,10 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Projectile;
 import net.runelite.api.SoundEffectID;
-import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.NpcID;
 import net.runelite.api.gameval.SpotanimID;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.config.ConfigManager;
@@ -30,6 +32,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class AerialPlugin extends Plugin
 {
+	private static final int FRENZIED_DURATION = 3;
 	public static Map<Integer, Integer> distToTicks = null;
 
 	@Inject
@@ -48,6 +51,8 @@ public class AerialPlugin extends Plugin
 	private int timerCompleteTick = -1;
 	@Getter
 	private int timerStartTick = -1;
+
+	private WorldPoint frenziedPoint = null;
 
 	@Override
 	protected void startUp() throws Exception
@@ -71,6 +76,7 @@ public class AerialPlugin extends Plugin
 	{
 		overlayManager.remove(aerialOverlay);
 		distToTicks = null;
+		frenziedPoint = null;
 		pointToEndTick.clear();
 	}
 
@@ -91,15 +97,22 @@ public class AerialPlugin extends Plugin
 			if (p.getTargetActor() == null || !Objects.equals(p.getTargetActor().getName(), client.getLocalPlayer().getName())) {
 				continue;
 			}
-			WorldPoint point = p.getSourcePoint();
-			int distance = point.distanceTo2D(p.getTargetPoint());
 
 			int hash = p.getStartCycle();
 			if (pointToEndTick.containsKey(hash)) {
 				continue;
 			}
 
-			timerCompleteTick = client.getTickCount() + distToTicks.getOrDefault(distance, -1);
+			WorldPoint point = p.getSourcePoint();
+			int distanceToTicks;
+			if (point.equals(frenziedPoint)) {
+				distanceToTicks = FRENZIED_DURATION - 1; // duration is offset by 1 tick
+			} else {
+				int distance = point.distanceTo2D(p.getTargetPoint());
+				distanceToTicks = distToTicks.getOrDefault(distance, -1);
+			}
+
+			timerCompleteTick = client.getTickCount() + distanceToTicks;
 			timerStartTick = client.getTickCount();
 			pointToEndTick.put(hash, timerCompleteTick);
 		}
@@ -121,6 +134,23 @@ public class AerialPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
+	private void onNpcSpawned(NpcSpawned event)
+	{
+		if (event.getNpc().getId() == NpcID.FISHING_SPOT_AERIAL_LARGE) {
+			WorldPoint swTilePoint = event.getNpc().getWorldLocation();
+			int offset = event.getNpc().getComposition().getSize()/2;
+			frenziedPoint = swTilePoint.dx(offset).dy(offset); // offset to the center of the
+		}
+	}
+
+	@Subscribe
+	private void onNpcDespawned(NpcDespawned event) {
+		if (event.getNpc().getId() == NpcID.FISHING_SPOT_AERIAL_LARGE) {
+			frenziedPoint = null;
+		}
+	}
+
 	public boolean isGloveEquipped()
 	{
 		int weaponId = client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.WEAPON);
@@ -133,6 +163,7 @@ public class AerialPlugin extends Plugin
 		pointToEndTick.clear();
 		timerCompleteTick = -1;
 		timerStartTick = -1;
+		frenziedPoint = null;
 	}
 
 	@Provides
