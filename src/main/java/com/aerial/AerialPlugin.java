@@ -1,8 +1,10 @@
 package com.aerial;
 
 import com.google.inject.Provides;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.inject.Inject;
@@ -52,7 +54,7 @@ public class AerialPlugin extends Plugin
 	@Getter
 	private int timerStartTick = -1;
 
-	private WorldPoint frenziedPoint = null;
+	private List<WorldPoint> frenziedPoints = new ArrayList<>();
 
 	@Override
 	protected void startUp() throws Exception
@@ -76,7 +78,7 @@ public class AerialPlugin extends Plugin
 	{
 		overlayManager.remove(aerialOverlay);
 		distToTicks = null;
-		frenziedPoint = null;
+		frenziedPoints.clear();
 		pointToEndTick.clear();
 	}
 
@@ -105,7 +107,7 @@ public class AerialPlugin extends Plugin
 
 			WorldPoint point = p.getSourcePoint();
 			int distanceToTicks;
-			if (point.equals(frenziedPoint)) {
+			if (frenziedPoints.contains(point)) {
 				distanceToTicks = FRENZIED_DURATION - 1; // duration is offset by 1 tick
 			} else {
 				int distance = point.distanceTo2D(p.getTargetPoint());
@@ -140,14 +142,18 @@ public class AerialPlugin extends Plugin
 		if (event.getNpc().getId() == NpcID.FISHING_SPOT_AERIAL_LARGE) {
 			WorldPoint swTilePoint = event.getNpc().getWorldLocation();
 			int offset = event.getNpc().getComposition().getSize()/2;
-			frenziedPoint = swTilePoint.dx(offset).dy(offset); // offset to the center of the
+			// offset to the center of the npc to match projectile point
+			frenziedPoints.add(swTilePoint.dx(offset).dy(offset));
 		}
 	}
 
 	@Subscribe
 	private void onNpcDespawned(NpcDespawned event) {
 		if (event.getNpc().getId() == NpcID.FISHING_SPOT_AERIAL_LARGE) {
-			frenziedPoint = null;
+			WorldPoint swTilePoint = event.getNpc().getWorldLocation();
+			int offset = event.getNpc().getComposition().getSize()/2;
+			// offset to the center of the npc to match projectile point
+			frenziedPoints.remove(swTilePoint.dx(offset).dy(offset));
 		}
 	}
 
@@ -163,7 +169,7 @@ public class AerialPlugin extends Plugin
 		pointToEndTick.clear();
 		timerCompleteTick = -1;
 		timerStartTick = -1;
-		frenziedPoint = null;
+		frenziedPoints.clear();
 	}
 
 	@Provides
