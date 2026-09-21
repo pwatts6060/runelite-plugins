@@ -8,6 +8,8 @@ import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
 public class TickHelperOverlay extends Overlay
@@ -19,6 +21,9 @@ public class TickHelperOverlay extends Overlay
 	public TickHelperOverlay(Client client, TickHelperPlugin plugin) {
 		this.client = client;
 		this.plugin = plugin;
+
+		setPosition(OverlayPosition.DYNAMIC);
+		setLayer(OverlayLayer.UNDER_WIDGETS);
 	}
 
 	@Override
