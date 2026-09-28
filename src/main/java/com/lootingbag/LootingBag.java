@@ -144,7 +144,7 @@ public class LootingBag
 			|| FEROX_REGION.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
 	}
 
-	private void calculateValueOfItems() {
+	public void calculateValueOfItems() {
 		valueOfItems = items.keySet().stream()
 			.mapToLong(itemId -> getPriceOfItem(itemId, items.get(itemId)))
 			.sum();

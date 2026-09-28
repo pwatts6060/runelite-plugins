@@ -48,8 +48,10 @@ import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -83,6 +85,9 @@ public class LootingBagPlugin extends Plugin
 
 	@Inject
 	private Client client;
+
+	@Inject
+	private ClientThread clientThread;
 
 	@Inject
 	private ItemManager itemManager;
@@ -136,6 +141,17 @@ public class LootingBagPlugin extends Plugin
 	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		// The bag value is cached, so recalculate it when switching between GE and high alchemy prices.
+		// Config changes arrive on the Swing thread, but item lookups must run on the client thread.
+		if (event.getGroup().equals(LootingBagConfig.CONFIG_GROUP) && event.getKey().equals("alchValue"))
+		{
+			clientThread.invokeLater(lootingBag::calculateValueOfItems);
+		}
 	}
 
 	@Subscribe
