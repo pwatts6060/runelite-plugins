@@ -151,7 +151,7 @@ public class LootingBag
 	}
 
 	private long getPriceOfItem(int itemId, int quantity) {
-		int itemValue = 0;
+		long itemValue = 0;
 		if (config.alchValue()) {
 			itemValue = itemManager.getItemComposition(itemId).getHaPrice();
 		} else {
